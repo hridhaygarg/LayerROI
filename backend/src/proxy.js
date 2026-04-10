@@ -7,12 +7,20 @@ const OPENAI_API_BASE = 'https://api.openai.com';
 export const requestLog = [];
 
 export async function forwardToOpenAI(req, res, agentName = 'unknown') {
-  const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
+  const OPENAI_API_KEY = (process.env.OPENAI_API_KEY || '').trim();
 
   if (!OPENAI_API_KEY) {
     console.error('ERROR: OPENAI_API_KEY environment variable is not set');
     return res.status(500).json({
       error: 'OpenAI API key not configured. Please set OPENAI_API_KEY environment variable.'
+    });
+  }
+
+  if (!OPENAI_API_KEY.startsWith('sk-')) {
+    console.error('ERROR: OPENAI_API_KEY does not look valid (should start with sk-)');
+    console.error('Key starts with:', OPENAI_API_KEY.substring(0, 10));
+    return res.status(500).json({
+      error: 'OpenAI API key is invalid. Please check your credentials.'
     });
   }
 
