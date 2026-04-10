@@ -5,7 +5,8 @@ import { logAPICall } from './database.js';
 export const requestLog = [];
 
 export async function forwardToOpenAI(req, res, agentName = 'unknown') {
-  const OPENAI_API_KEY = (process.env.OPENAI_API_KEY || '').trim();
+  // Remove all whitespace including newlines
+  const OPENAI_API_KEY = (process.env.OPENAI_API_KEY || '').replace(/\s+/g, '');
 
   if (!OPENAI_API_KEY) {
     console.error('ERROR: OPENAI_API_KEY environment variable is not set');
@@ -30,6 +31,10 @@ export async function forwardToOpenAI(req, res, agentName = 'unknown') {
   console.log(`[${timestamp}] Agent: ${agentName}, Model: ${requestBody.model}`);
 
   try {
+    console.log(`API Key length: ${OPENAI_API_KEY.length}`);
+    console.log(`API Key starts with: ${OPENAI_API_KEY.substring(0, 20)}`);
+    console.log(`Initializing OpenAI client...`);
+
     const openai = new OpenAI({ apiKey: OPENAI_API_KEY });
 
     console.log(`Forwarding request to OpenAI for model: ${requestBody.model}`);
