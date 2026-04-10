@@ -5,10 +5,12 @@ import { forwardToOpenAI, requestLog } from './proxy.js';
 import { initDatabase, logAPICall, getAgentCosts, getAllAgents } from './database.js';
 import { initLoopDetector, checkRunawayLoop, getAgentCallStats } from './loopDetector.js';
 import { sendSlackAlert } from './slack.js';
+import { initAutomations } from './automations/cron.js';
 
 dotenv.config();
 initDatabase();
 initLoopDetector();
+initAutomations();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
