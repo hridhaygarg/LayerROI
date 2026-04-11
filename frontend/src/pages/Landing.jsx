@@ -49,7 +49,7 @@ function useInView(ref, threshold = 0.1) {
     }, { threshold });
     if (ref.current) observer.observe(ref.current);
     return () => observer.disconnect();
-  }, [threshold]);
+  }, [ref, threshold]);
   return isVisible;
 }
 
@@ -88,7 +88,7 @@ export default function Landing() {
           <span style={{ fontFamily: 'DM Mono, monospace', fontSize: '14px', fontWeight: '600', letterSpacing: '1px' }}>Layer ROI</span>
         </div>
         <div style={{ display: 'flex', gap: '24px', alignItems: 'center' }}>
-          <a href="#" style={{ textDecoration: 'none', color: colors.textSecondary, fontSize: '14px', fontFamily: 'DM Mono' }}>Sign in</a>
+          <button style={{ textDecoration: 'none', color: colors.textSecondary, fontSize: '14px', fontFamily: 'DM Mono', background: 'none', border: 'none', cursor: 'pointer' }}>Sign in</button>
           <a href="/signup" style={{ background: colors.accentGreen, color: colors.bg, padding: '10px 20px', borderRadius: '6px', textDecoration: 'none', fontSize: '14px', fontFamily: 'DM Mono', fontWeight: '600', border: 'none', cursor: 'pointer' }}>Start free</a>
         </div>
       </nav>
