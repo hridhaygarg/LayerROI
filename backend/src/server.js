@@ -28,6 +28,82 @@ app.get('/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
+// Health check with detailed status
+app.get('/health/detailed', async (req, res) => {
+  try {
+    const { createClient } = await import('@supabase/supabase-js');
+    const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
+
+    // Test database connectivity
+    const { error: dbError } = await supabase
+      .from('users')
+      .select('id', { count: 'exact', head: true })
+      .limit(1);
+
+    const dbHealthy = !dbError;
+
+    // Test API proxy connectivity (light check)
+    let proxyHealthy = true;
+    try {
+      const testResponse = await fetch('https://api.openai.com/v1/models', {
+        headers: { 'Authorization': `Bearer ${process.env.OPENAI_API_KEY}` }
+      });
+      proxyHealthy = testResponse.status === 200;
+    } catch {
+      proxyHealthy = false;
+    }
+
+    res.json({
+      status: 'ok',
+      timestamp: new Date().toISOString(),
+      uptime: process.uptime(),
+      checks: {
+        database: dbHealthy ? 'healthy' : 'unhealthy',
+        openaiProxy: proxyHealthy ? 'healthy' : 'unhealthy',
+        automation: 'scheduled',
+      },
+      environment: {
+        nodeEnv: process.env.NODE_ENV || 'production',
+        port: PORT,
+      }
+    });
+  } catch (err) {
+    res.status(503).json({
+      status: 'degraded',
+      error: err.message,
+      timestamp: new Date().toISOString(),
+    });
+  }
+});
+
+// Metrics endpoint for monitoring
+app.get('/api/metrics/weekly', async (req, res) => {
+  try {
+    const { getMetricsSummary } = await import('./automations/weeklyReport.js');
+    const metrics = await getMetricsSummary();
+    res.json({ metrics });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// System status dashboard
+app.get('/api/system-status', (req, res) => {
+  res.json({
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime(),
+    memoryUsage: process.memoryUsage(),
+    blockedAgents: Array.from(blockedAgents),
+    automations: {
+      seo: 'Scheduled: Tue/Fri 10:00 UTC',
+      coldEmails: 'Scheduled: Mon 08:00 UTC',
+      clickDetection: 'Scheduled: Every 6 hours',
+      freeTierChecks: 'Scheduled: Every 6 hours',
+      weeklyReports: 'Scheduled: Sun 09:00 UTC',
+    }
+  });
+});
+
 app.post('/v1/chat/completions', (req, res) => {
   const agentName = getAgentName(req);
 
@@ -125,6 +201,14 @@ app.post('/api/signup', async (req, res) => {
 app.use((err, req, res, next) => {
   console.error('Error:', err);
   res.status(500).json({ error: err.message });
+});
+
+// Graceful shutdown
+process.on('SIGTERM', async () => {
+  console.log('SIGTERM received: shutting down gracefully');
+  const { stopAutomations } = await import('./automations/cron.js');
+  stopAutomations();
+  process.exit(0);
 });
 
 app.listen(PORT, () => {
