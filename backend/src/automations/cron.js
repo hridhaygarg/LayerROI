@@ -2,7 +2,6 @@ import cron from 'node-cron';
 import { generateSEOArticle } from './seoEngine.js';
 import { sendColdEmailSequence, checkClicksAndAlert } from './emailEngine.js';
 import { checkFreeTierUpgradeTriggers } from './freeTierEngine.js';
-import { sendWeeklyAdminReport } from './weeklyReport.js';
 
 let cronJobs = [];
 
@@ -57,14 +56,20 @@ export function initAutomations() {
     })
   );
 
-  // Weekly Admin Report: Every Sunday at 9 AM UTC
+  // Weekly Admin Report: Every Sunday at 9 AM UTC (uses dynamic import)
   cronJobs.push(
     cron.schedule('0 9 * * 0', async () => {
       try {
         console.log('[CRON] Sending weekly admin report...');
+        // Dynamic import allows graceful handling if weeklyReport.js not yet created
+        const { sendWeeklyAdminReport } = await import('./weeklyReport.js');
         await sendWeeklyAdminReport();
       } catch (err) {
-        console.error('[CRON ERROR] Weekly report failed:', err.message);
+        if (err.code === 'MODULE_NOT_FOUND') {
+          console.warn('[CRON WARN] Weekly report module not yet available');
+        } else {
+          console.error('[CRON ERROR] Weekly report failed:', err.message);
+        }
       }
     })
   );
