@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://layeroi.com/sitemap.xml

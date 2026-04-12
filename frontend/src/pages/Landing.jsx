@@ -67,6 +67,7 @@ export default function Landing() {
   const [scrollY, setScrollY] = useState(0);
   const [navBorder, setNavBorder] = useState(false);
   const scrollProgress = (scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100;
+  const problemRef = useRef();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -76,6 +77,16 @@ export default function Landing() {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  const scrollToSection = () => {
+    if (problemRef.current) {
+      problemRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
+  const navigateToDashboard = () => {
+    window.location.href = '/dashboard';
+  };
 
   return (
     <div style={{ background: colors.bg, color: colors.textPrimary, minHeight: '100vh' }}>
@@ -88,8 +99,8 @@ export default function Landing() {
           <span style={{ fontFamily: 'DM Mono, monospace', fontSize: '14px', fontWeight: '600', letterSpacing: '1px' }}>Layer ROI</span>
         </div>
         <div style={{ display: 'flex', gap: '24px', alignItems: 'center' }}>
-          <button style={{ textDecoration: 'none', color: colors.textSecondary, fontSize: '14px', fontFamily: 'DM Mono', background: 'none', border: 'none', cursor: 'pointer' }}>Sign in</button>
-          <a href="/signup" style={{ background: colors.accentGreen, color: colors.bg, padding: '10px 20px', borderRadius: '6px', textDecoration: 'none', fontSize: '14px', fontFamily: 'DM Mono', fontWeight: '600', border: 'none', cursor: 'pointer' }}>Start free</a>
+          <button onClick={navigateToDashboard} style={{ textDecoration: 'none', color: colors.textSecondary, fontSize: '14px', fontFamily: 'DM Mono', background: 'none', border: 'none', cursor: 'pointer', transition: 'color 200ms ease' }} onMouseEnter={(e) => (e.target.style.color = colors.textPrimary)} onMouseLeave={(e) => (e.target.style.color = colors.textSecondary)}>Sign in</button>
+          <a href="/signup" style={{ background: colors.accentGreen, color: colors.bg, padding: '10px 20px', borderRadius: '6px', textDecoration: 'none', fontSize: '14px', fontFamily: 'DM Mono', fontWeight: '600', border: 'none', cursor: 'pointer', transition: 'transform 200ms ease' }} onMouseDown={(e) => (e.target.style.transform = 'scale(0.97)')} onMouseUp={(e) => (e.target.style.transform = 'scale(1)')}>Start free</a>
         </div>
       </nav>
 
@@ -123,7 +134,7 @@ export default function Landing() {
           <FadeUpChild delay={240}>
             <div style={{ display: 'flex', gap: '16px', justifyContent: 'center', marginBottom: '48px' }}>
               <a href="/signup" style={{ background: colors.accentGreen, color: colors.bg, padding: '16px 32px', borderRadius: '6px', textDecoration: 'none', fontSize: '16px', fontFamily: 'DM Mono', fontWeight: '600', border: 'none', cursor: 'pointer', transition: 'all 200ms ease' }} onMouseDown={(e) => (e.target.style.transform = 'scale(0.97)')} onMouseUp={(e) => (e.target.style.transform = 'scale(1)')}>Start for free →</a>
-              <button style={{ background: 'transparent', color: colors.textSecondary, padding: '16px 32px', borderRadius: '6px', border: `1px solid ${colors.border}`, cursor: 'pointer', fontSize: '16px', fontFamily: 'DM Mono', fontWeight: '600', transition: 'all 200ms ease' }} onMouseEnter={(e) => { e.target.style.borderColor = colors.borderHover; e.target.style.color = colors.textPrimary; }} onMouseLeave={(e) => { e.target.style.borderColor = colors.border; e.target.style.color = colors.textSecondary; }}>See how it works ↓</button>
+              <button onClick={scrollToSection} style={{ background: 'transparent', color: colors.textSecondary, padding: '16px 32px', borderRadius: '6px', border: `1px solid ${colors.border}`, cursor: 'pointer', fontSize: '16px', fontFamily: 'DM Mono', fontWeight: '600', transition: 'all 200ms ease' }} onMouseEnter={(e) => { e.target.style.borderColor = colors.borderHover; e.target.style.color = colors.textPrimary; }} onMouseLeave={(e) => { e.target.style.borderColor = colors.border; e.target.style.color = colors.textSecondary; }}>See how it works ↓</button>
             </div>
           </FadeUpChild>
 
@@ -144,7 +155,7 @@ export default function Landing() {
       </section>
 
       {/* Problem */}
-      <section style={{ padding: '80px 40px', maxWidth: '1400px', margin: '0 auto' }}>
+      <section ref={problemRef} style={{ padding: '80px 40px', maxWidth: '1400px', margin: '0 auto' }}>
         <FadeUpChild>
           <div style={{ textAlign: 'center', marginBottom: '80px' }}>
             <div style={{ fontFamily: 'DM Mono', fontSize: '12px', color: colors.accentGreen, fontWeight: '600', letterSpacing: '2px', marginBottom: '16px' }}>THE PROBLEM</div>
@@ -193,10 +204,7 @@ export default function Landing() {
           <p style={{ color: colors.textSecondary, fontSize: '18px', marginBottom: '48px', fontWeight: 300 }}>Join the early access program and get financial visibility into your AI agents today.</p>
         </FadeUpChild>
         <FadeUpChild delay={160}>
-          <div style={{ display: 'flex', gap: '16px', maxWidth: '500px', margin: '0 auto' }}>
-            <input type="email" placeholder="your@company.com" style={{ flex: 1, padding: '12px 16px', background: colors.bg, border: `1px solid ${colors.border}`, borderRadius: '6px', color: colors.textPrimary, fontFamily: 'DM Mono', fontSize: '14px' }} />
-            <button style={{ background: colors.accentGreen, color: colors.bg, padding: '12px 24px', borderRadius: '6px', border: 'none', fontFamily: 'DM Mono', fontWeight: '600', cursor: 'pointer', transition: 'all 200ms ease' }} onMouseDown={(e) => (e.target.style.transform = 'scale(0.97)')} onMouseUp={(e) => (e.target.style.transform = 'scale(1)')}>Start free →</button>
-          </div>
+          <a href="/signup" style={{ display: 'inline-block', background: colors.accentGreen, color: colors.bg, padding: '16px 32px', borderRadius: '6px', textDecoration: 'none', fontSize: '16px', fontFamily: 'DM Mono', fontWeight: '600', cursor: 'pointer', transition: 'all 200ms ease' }} onMouseDown={(e) => (e.target.style.transform = 'scale(0.97)')} onMouseUp={(e) => (e.target.style.transform = 'scale(1)')}>Get started free →</a>
         </FadeUpChild>
         <FadeUpChild delay={240}>
           <div style={{ marginTop: '64px', fontSize: '12px', color: colors.textTertiary, fontFamily: 'DM Mono' }}>© 2026 Layer ROI · The financial control layer for AI agents</div>
