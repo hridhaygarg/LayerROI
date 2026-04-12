@@ -1,9 +1,19 @@
 import { createClient } from '@supabase/supabase-js';
 
-const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_ANON_KEY
-);
+const supabaseUrl = process.env.SUPABASE_URL;
+const supabaseKey = process.env.SUPABASE_KEY || process.env.SUPABASE_ANON_KEY || process.env.SUPABASE_SERVICE_KEY;
+
+if (!supabaseUrl || !supabaseKey) {
+  console.error('❌ CRITICAL: Missing Supabase credentials', {
+    hasUrl: !!supabaseUrl,
+    hasKey: !!supabaseKey,
+    providedUrl: supabaseUrl ? 'yes' : 'no',
+    providedKey: supabaseKey ? 'yes' : 'no'
+  });
+  process.exit(1);
+}
+
+const supabase = createClient(supabaseUrl, supabaseKey);
 
 export async function logContent(data) {
   const { error } = await supabase.from('seo_content').insert([{

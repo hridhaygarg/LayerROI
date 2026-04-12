@@ -1,3 +1,6 @@
+// Log all environment variable names at startup (not values, just names)
+console.log('🔍 STARTUP: Environment variables present:', Object.keys(process.env).filter(k => !k.startsWith('npm') && !k.startsWith('_')).sort());
+
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
