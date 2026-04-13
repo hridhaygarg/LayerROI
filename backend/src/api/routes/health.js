@@ -1,14 +1,16 @@
 import express from 'express';
-import { CONFIG } from '../../config/constants.js';
 import { checkDatabaseHealth } from '../../config/database.js';
 
 const router = express.Router();
 
 router.get('/health', (req, res) => {
-  res.json({
+  res.status(200).json({
     status: 'ok',
+    service: 'Layer ROI API',
+    version: '2.0.0',
     timestamp: new Date().toISOString(),
-    version: '2.0.0'
+    uptime: Math.floor(process.uptime()),
+    environment: process.env.NODE_ENV || 'development'
   });
 });
 
@@ -30,15 +32,15 @@ router.get('/health/detailed', async (req, res) => {
     res.json({
       status: 'ok',
       timestamp: new Date().toISOString(),
-      uptime: process.uptime(),
+      uptime: Math.floor(process.uptime()),
       checks: {
         database: dbHealthy ? 'healthy' : 'unhealthy',
         openaiProxy: proxyHealthy ? 'healthy' : 'unhealthy',
         automations: 'scheduled',
       },
       environment: {
-        nodeEnv: CONFIG.NODE_ENV,
-        port: CONFIG.PORT,
+        nodeEnv: process.env.NODE_ENV || 'development',
+        port: process.env.PORT,
       }
     });
   } catch (err) {

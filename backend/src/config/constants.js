@@ -1,7 +1,6 @@
 // All configuration constants in one place
 export const CONFIG = {
   // API Configuration
-  PORT: process.env.PORT || 5000,
   NODE_ENV: process.env.NODE_ENV || 'development',
   API_BASE_URL: process.env.API_BASE_URL || 'https://api.layeroi.com',
 

@@ -32,9 +32,21 @@ initLoopDetector();
 initAutomations();
 
 const app = express();
-const PORT = CONFIG.PORT;
+const PORT = process.env.PORT;
 
-logger.info('Server initializing', { port: PORT, environment: CONFIG.NODE_ENV });
+logger.info('Server initializing', { port: PORT, environment: process.env.NODE_ENV || 'development' });
+
+// Health check FIRST - before all middleware
+app.get('/health', (req, res) => {
+  res.status(200).json({
+    status: 'ok',
+    service: 'Layer ROI API',
+    version: '2.0.0',
+    timestamp: new Date().toISOString(),
+    uptime: Math.floor(process.uptime()),
+    environment: process.env.NODE_ENV || 'development'
+  });
+});
 
 // Middleware
 app.use(corsMiddleware);
@@ -98,7 +110,7 @@ process.on('SIGTERM', async () => {
 });
 
 app.listen(PORT, '0.0.0.0', () => {
-  logger.info('Layer ROI backend is LIVE', { port: PORT, environment: CONFIG.NODE_ENV });
+  logger.info('Layer ROI backend started', { port: PORT, env: process.env.NODE_ENV });
 });
 
 export default app;
