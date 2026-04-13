@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { api } from '../config/api';
 
 const colors = {
   bgPrimary: '#fafaf9',
@@ -34,26 +35,23 @@ export default function Signup() {
     setLoading(true);
     setError('');
 
-    if (!formData.email) {
-      setError('Email is required');
+    if (!formData.email || !formData.name || !formData.company) {
+      setError('All fields are required');
       setLoading(false);
       return;
     }
 
     try {
-      const res = await fetch('https://api.layeroi.com/api/signup', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: formData.email, name: '', company: '' })
-      });
+      const response = await api.post('/auth/signup', formData);
 
-      const data = await res.json();
-
-      if (data.success) {
-        setApiKey(data.apiKey);
-        setStep('details');
+      if (response.success && response.token && response.apiKey) {
+        localStorage.setItem('layeroi_token', response.token);
+        localStorage.setItem('layeroi_api_key', response.apiKey);
+        localStorage.setItem('layeroi_org', JSON.stringify(response.organisation));
+        setApiKey(response.apiKey);
+        setStep('complete');
       } else {
-        setError(data.error || 'Signup failed');
+        setError(response.error || 'Signup failed');
       }
     } catch (err) {
       setError('Network error. Please try again.');

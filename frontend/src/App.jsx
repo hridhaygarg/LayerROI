@@ -6,6 +6,7 @@ import Budget from './screens/Budget'
 import Report from './screens/Report'
 import Onboarding from './screens/Onboarding'
 import Signup from './pages/Signup'
+import Login from './pages/Login'
 import Landing from './pages/Landing'
 
 const colors = {
@@ -84,9 +85,19 @@ export default function App() {
     return <Signup onSuccess={() => window.location.href = '/dashboard'} />
   }
 
-  // Dashboard layout for /dashboard and all dashboard routes
-  const isDashboard = currentPath === '/dashboard' || currentPath.startsWith('/dashboard')
+  // Show login page if on /login route
+  if (currentPath === '/login') {
+    return <Login />
+  }
 
+  // Check authentication for dashboard routes
+  const isDashboard = currentPath === '/dashboard' || currentPath.startsWith('/dashboard')
+  if (isDashboard && !localStorage.getItem('layeroi_token')) {
+    window.location.href = '/login'
+    return null
+  }
+
+  // Dashboard layout for /dashboard and all dashboard routes
   if (isDashboard) {
     return (
       <div style={{ display: 'flex', minHeight: '100vh', background: colors.bgPrimary, fontFamily: 'Inter, sans-serif' }}>

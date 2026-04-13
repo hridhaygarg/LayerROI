@@ -1,39 +1,38 @@
 import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import Dashboard from '../components/Dashboard'
 import AgentMetrics from '../components/AgentMetrics'
-
-const API_BASE = 'https://api.layeroi.com'
+import { api } from '../config/api'
 
 export default function DashboardPage() {
   const [costs, setCosts] = useState({})
   const [agents, setAgents] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+  const navigate = useNavigate()
 
   useEffect(() => {
+    const token = localStorage.getItem('layeroi_token')
+    if (!token) {
+      navigate('/login')
+      return
+    }
+
     fetchData()
     const interval = setInterval(fetchData, 10000)
     return () => clearInterval(interval)
-  }, [])
+  }, [navigate])
 
   async function fetchData() {
     try {
-      const [costsRes, agentsRes] = await Promise.all([
-        fetch(`${API_BASE}/api/costs`),
-        fetch(`${API_BASE}/api/agents`),
+      const [costsData, agentsData] = await Promise.all([
+        api.get('/v2/costs'),
+        api.get('/v2/agents'),
       ])
 
-      if (costsRes.ok && agentsRes.ok) {
-        const costsData = await costsRes.json()
-        const agentsData = await agentsRes.json()
-
-        setCosts(costsData.costs || {})
-
-        const agentList = agentsData.agents.map(name => ({
-          name,
-          ...costsData.costs?.[name],
-        }))
-        setAgents(agentList)
+      if (costsData.status === 'success' && agentsData.status === 'success') {
+        setCosts(costsData.data?.costs || {})
+        setAgents(agentsData.data?.agents || [])
         setError(null)
       }
     } catch (err) {
