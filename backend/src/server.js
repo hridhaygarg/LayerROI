@@ -19,6 +19,11 @@ import {
   automationsRoutes,
   authRoutes
 } from './api/routes/index.js';
+import v2Routes from './api/routes/v2.js';
+import docsRoutes from './api/routes/docs.js';
+import insightsRoutes from './api/routes/insights.js';
+import forecastRoutes from './api/routes/forecasts.js';
+import webhookRoutes from './api/routes/webhooks.js';
 
 dotenv.config();
 
@@ -40,6 +45,7 @@ app.use(extractAgentName);
 
 // Routes
 app.use(healthRoutes);
+app.use(docsRoutes);
 app.use(authRoutes);
 app.use(proxyRoutes);
 app.use(costsRoutes);
@@ -47,6 +53,10 @@ app.use(agentsRoutes);
 app.use(statsRoutes);
 app.use(managementRoutes);
 app.use(automationsRoutes);
+app.use(v2Routes);
+app.use(insightsRoutes);
+app.use(forecastRoutes);
+app.use(webhookRoutes);
 
 // Metrics endpoint for monitoring
 app.get('/api/metrics/weekly', async (req, res) => {
