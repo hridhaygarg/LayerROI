@@ -24,19 +24,37 @@ const transports = [
   })
 ];
 
-// File transport for errors (in production)
-if (config.NODE_ENV === 'production') {
-  transports.push(
-    new winston.transports.File({
-      filename: 'logs/error.log',
-      level: 'error',
-      format: jsonFormat
-    }),
-    new winston.transports.File({
-      filename: 'logs/combined.log',
-      format: jsonFormat
-    })
-  );
+// File transport for errors (in production, not in test)
+if (config.NODE_ENV === 'production' && process.env.NODE_ENV !== 'test') {
+  try {
+    transports.push(
+      new winston.transports.File({
+        filename: 'logs/error.log',
+        level: 'error',
+        format: jsonFormat
+      }),
+      new winston.transports.File({
+        filename: 'logs/combined.log',
+        format: jsonFormat
+      })
+    );
+  } catch (err) {
+    // Silently fail if logs directory doesn't exist
+    console.warn('Failed to setup file logging:', err.message);
+  }
+}
+
+// Create exception/rejection handlers only in non-test environments
+const exceptionHandlers = [];
+const rejectionHandlers = [];
+
+if (config.NODE_ENV !== 'test') {
+  try {
+    exceptionHandlers.push(new winston.transports.File({ filename: 'logs/exceptions.log' }));
+    rejectionHandlers.push(new winston.transports.File({ filename: 'logs/rejections.log' }));
+  } catch (err) {
+    // Silently fail if logs directory doesn't exist
+  }
 }
 
 // Create logger instance
@@ -45,12 +63,8 @@ const winstonLogger = winston.createLogger({
   format: jsonFormat,
   transports,
   // Don't exit on handled exceptions
-  exceptionHandlers: [
-    new winston.transports.File({ filename: 'logs/exceptions.log' })
-  ],
-  rejectionHandlers: [
-    new winston.transports.File({ filename: 'logs/rejections.log' })
-  ]
+  exceptionHandlers,
+  rejectionHandlers
 });
 
 // Add fatal method (alias for error with higher priority)
