@@ -4,6 +4,7 @@ import { logger } from './utils/logger.js';
 import { CONFIG } from './config/constants.js';
 import { initLoopDetector } from './loopDetector.js';
 import { initAutomations } from './automations/cron.js';
+import { initializeDatabase } from './db/initDb.js';
 
 // Import middleware
 import { corsMiddleware, errorHandler, requestLogger, extractAgentName } from './api/middleware/index.js';
@@ -31,6 +32,7 @@ dotenv.config();
 // Initialize core systems
 initLoopDetector();
 initAutomations();
+initializeDatabase();
 
 const app = express();
 const PORT = process.env.PORT;
