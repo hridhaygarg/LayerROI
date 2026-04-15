@@ -50,25 +50,44 @@ describe('Prospect Routes', () => {
   beforeEach(() => {
     vi.clearAllMocks();
 
-    // Setup default mock implementations
+    // Setup default mock implementations with fluent chaining
+    // Use .mockReturnValue() instead of .mockReturnThis() for stable chains
     mockSupabase = {
-      from: vi.fn().mockReturnThis(),
-      select: vi.fn().mockReturnThis(),
-      eq: vi.fn().mockReturnThis(),
-      ne: vi.fn().mockReturnThis(),
-      is: vi.fn().mockReturnThis(),
-      or: vi.fn().mockReturnThis(),
-      filter: vi.fn().mockReturnThis(),
-      order: vi.fn().mockReturnThis(),
-      range: vi.fn().mockReturnThis(),
-      insert: vi.fn().mockReturnThis(),
-      update: vi.fn().mockReturnThis(),
-      delete: vi.fn().mockReturnThis(),
+      from: vi.fn(),
+      select: vi.fn(),
+      eq: vi.fn(),
+      neq: vi.fn(),
+      ne: vi.fn(),
+      is: vi.fn(),
+      in: vi.fn(),
+      or: vi.fn(),
+      filter: vi.fn(),
+      order: vi.fn(),
+      range: vi.fn(),
+      insert: vi.fn(),
+      update: vi.fn(),
+      delete: vi.fn(),
       single: vi.fn(),
       data: null,
       error: null,
       count: 'exact'
     };
+
+    // All chain methods return mockSupabase for fluent chaining
+    mockSupabase.from.mockReturnValue(mockSupabase);
+    mockSupabase.select.mockReturnValue(mockSupabase);
+    mockSupabase.eq.mockReturnValue(mockSupabase);
+    mockSupabase.neq.mockReturnValue(mockSupabase);
+    mockSupabase.ne.mockReturnValue(mockSupabase);
+    mockSupabase.is.mockReturnValue(mockSupabase);
+    mockSupabase.in.mockReturnValue(mockSupabase);
+    mockSupabase.or.mockReturnValue(mockSupabase);
+    mockSupabase.filter.mockReturnValue(mockSupabase);
+    mockSupabase.order.mockReturnValue(mockSupabase);
+    mockSupabase.range.mockReturnValue(mockSupabase);
+    mockSupabase.insert.mockReturnValue(mockSupabase);
+    mockSupabase.update.mockReturnValue(mockSupabase);
+    mockSupabase.delete.mockReturnValue(mockSupabase);
 
     getSupabaseClient.mockReturnValue(mockSupabase);
 
@@ -367,8 +386,75 @@ describe('Prospect Routes', () => {
       mockSupabase.select.mockReturnValueOnce(mockSupabase);
       mockSupabase.eq.mockReturnValueOnce(mockSupabase);
       mockSupabase.eq.mockReturnValueOnce(mockSupabase);
+      mockSupabase.is.mockReturnValueOnce(mockSupabase);
       mockSupabase.single.mockResolvedValueOnce({
         data: { id: 'prospect-123', email: 'existing@example.com' },
+        error: null
+      });
+
+      const response = await request(app)
+        .post('/api/prospects')
+        .set('Authorization', authHeader)
+        .send(prospectData);
+
+      expect(response.status).toBe(409);
+      expect(response.body.error.code).toBe('DUPLICATE_EMAIL');
+    });
+
+    it('should normalize email to lowercase on create', async () => {
+      const prospectData = {
+        email: 'JOHN.DOE@EXAMPLE.COM',
+        name: 'John Doe',
+        company: 'TechCorp'
+      };
+
+      mockSupabase.from.mockReturnValueOnce(mockSupabase);
+      mockSupabase.select.mockReturnValueOnce(mockSupabase);
+      mockSupabase.eq.mockReturnValueOnce(mockSupabase);
+      mockSupabase.eq.mockReturnValueOnce(mockSupabase);
+      mockSupabase.is.mockReturnValueOnce(mockSupabase);
+      mockSupabase.single.mockResolvedValueOnce({
+        data: null,
+        error: { code: 'PGRST116' }
+      });
+
+      mockSupabase.from.mockReturnValueOnce(mockSupabase);
+      mockSupabase.insert.mockReturnValueOnce(mockSupabase);
+      mockSupabase.select.mockReturnValueOnce(mockSupabase);
+      mockSupabase.single.mockResolvedValueOnce({
+        data: {
+          id: 'prospect-uuid-123',
+          email: 'john.doe@example.com',
+          name: 'John Doe',
+          company: 'TechCorp',
+          status: 'new'
+        },
+        error: null
+      });
+
+      const response = await request(app)
+        .post('/api/prospects')
+        .set('Authorization', authHeader)
+        .send(prospectData);
+
+      expect(response.status).toBe(201);
+      expect(response.body.prospect.email).toBe('john.doe@example.com');
+    });
+
+    it('should prevent duplicate emails with different casing', async () => {
+      const prospectData = {
+        email: 'JOHN.DOE@EXAMPLE.COM',
+        name: 'John Doe',
+        company: 'TechCorp'
+      };
+
+      mockSupabase.from.mockReturnValueOnce(mockSupabase);
+      mockSupabase.select.mockReturnValueOnce(mockSupabase);
+      mockSupabase.eq.mockReturnValueOnce(mockSupabase);
+      mockSupabase.eq.mockReturnValueOnce(mockSupabase);
+      mockSupabase.is.mockReturnValueOnce(mockSupabase);
+      mockSupabase.single.mockResolvedValueOnce({
+        data: { id: '123', email: 'john.doe@example.com' },
         error: null
       });
 
@@ -681,23 +767,14 @@ describe('Prospect Routes', () => {
         ]
       };
 
-      // Mock checks for existing emails (both not found)
+      // Mock batch query for existing emails (none found)
       mockSupabase.from.mockReturnValueOnce(mockSupabase);
       mockSupabase.select.mockReturnValueOnce(mockSupabase);
       mockSupabase.eq.mockReturnValueOnce(mockSupabase);
-      mockSupabase.eq.mockReturnValueOnce(mockSupabase);
-      mockSupabase.single.mockResolvedValueOnce({
-        data: null,
-        error: { code: 'PGRST116' }
-      });
-
-      mockSupabase.from.mockReturnValueOnce(mockSupabase);
-      mockSupabase.select.mockReturnValueOnce(mockSupabase);
-      mockSupabase.eq.mockReturnValueOnce(mockSupabase);
-      mockSupabase.eq.mockReturnValueOnce(mockSupabase);
-      mockSupabase.single.mockResolvedValueOnce({
-        data: null,
-        error: { code: 'PGRST116' }
+      mockSupabase.in.mockReturnValueOnce(mockSupabase);
+      mockSupabase.is.mockResolvedValueOnce({
+        data: [],
+        error: null
       });
 
       // Mock bulk insert

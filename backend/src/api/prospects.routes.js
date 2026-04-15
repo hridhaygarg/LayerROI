@@ -84,27 +84,28 @@ router.post(
     const supabase = getSupabaseClient();
 
     try {
-      // Check for existing emails in database
+      // Check for existing emails in database using batch query with IN operator
       const existingEmails = new Set();
-      for (const prospect of prospectsList) {
-        const { data: existing, error } = await supabase
+      if (prospectsList.length > 0) {
+        const emailsToCheck = prospectsList.map(p => p.email.toLowerCase());
+        const { data: existingProspects, error } = await supabase
           .from('prospects')
-          .select('id')
+          .select('email')
           .eq('org_id', orgId)
-          .eq('email', prospect.email.toLowerCase())
-          .single();
+          .in('email', emailsToCheck)
+          .is('deleted_at', null);
 
         if (error && error.code !== 'PGRST116') {
-          logger.error('Failed to check email during bulk import', {
+          logger.error('Failed to check emails during bulk import', {
             orgId,
-            email: prospect.email,
+            count: emailsToCheck.length,
             error: error.message
           });
           throw new AppError('Failed to import prospects', 500);
         }
 
-        if (existing) {
-          existingEmails.add(prospect.email.toLowerCase());
+        if (existingProspects) {
+          existingProspects.forEach(p => existingEmails.add(p.email.toLowerCase()));
         }
       }
 
@@ -211,9 +212,11 @@ router.get(
       }
 
       // Apply search filter (case-insensitive across multiple fields)
+      // Supabase client automatically escapes wildcard values in filters
       if (search && search.trim()) {
+        const searchTerm = `%${search}%`;
         query = query.or(
-          `email.ilike.%${search}%,name.ilike.%${search}%,company.ilike.%${search}%`
+          `email.ilike.${searchTerm},name.ilike.${searchTerm},company.ilike.${searchTerm}`
         );
       }
 
@@ -266,25 +269,29 @@ router.post(
     const { email, name, company, title, industry, location, phone, website } = req.body;
     const orgId = req.user.org_id;
 
+    // Normalize email immediately before any validation
+    const normalizedEmail = email?.toLowerCase().trim();
+
     // Validate required fields
-    if (!email || !name) {
+    if (!normalizedEmail || !name || name.trim().length === 0) {
       throw new AppError('Email and name are required', 400, 'INVALID_INPUT');
     }
 
     // Validate email format
-    if (!isValidEmail(email)) {
-      throw new AppError('Invalid email format', 400, 'INVALID_INPUT');
+    if (!isValidEmail(normalizedEmail)) {
+      throw new AppError('Valid email is required', 400, 'INVALID_INPUT');
     }
 
     const supabase = getSupabaseClient();
 
     try {
-      // Check if email already exists in organization
+      // Check if email already exists in organization (with normalized email)
       const { data: existingProspect, error: checkError } = await supabase
         .from('prospects')
         .select('id')
         .eq('org_id', orgId)
-        .eq('email', email)
+        .eq('email', normalizedEmail)
+        .is('deleted_at', null)
         .single();
 
       if (checkError && checkError.code !== 'PGRST116') {
@@ -297,17 +304,17 @@ router.post(
       }
 
       if (existingProspect) {
-        throw new AppError('Email already exists in this organization', 409, 'DUPLICATE_EMAIL');
+        throw new AppError('Prospect with this email already exists', 409, 'DUPLICATE_EMAIL');
       }
 
-      // Create new prospect
+      // Create new prospect with normalized email
       const { data: newProspect, error: createError } = await supabase
         .from('prospects')
         .insert([
           {
             org_id: orgId,
-            email: email.toLowerCase(),
-            name,
+            email: normalizedEmail,
+            name: name.trim(),
             company: company || null,
             title: title || null,
             industry: industry || null,
@@ -427,39 +434,45 @@ router.patch(
         throw new AppError('Prospect not found', 404, 'NOT_FOUND');
       }
 
-      // Validate email format if provided
-      if (email && !isValidEmail(email)) {
-        throw new AppError('Invalid email format', 400, 'INVALID_INPUT');
-      }
-
-      // Check for duplicate email if email is being changed
-      if (email && email !== existingProspect.email) {
-        const { data: duplicateProspect, error: checkError } = await supabase
-          .from('prospects')
-          .select('id')
-          .eq('org_id', orgId)
-          .eq('email', email)
-          .ne('id', id)
-          .single();
-
-        if (checkError && checkError.code !== 'PGRST116') {
-          logger.error('Failed to check email uniqueness', {
-            prospectId: id,
-            orgId,
-            email,
-            error: checkError.message
-          });
-          throw new AppError('Failed to update prospect', 500);
+      // Validate and normalize email if provided
+      let normalizedEmail = null;
+      if (email) {
+        normalizedEmail = email.toLowerCase().trim();
+        if (!isValidEmail(normalizedEmail)) {
+          throw new AppError('Valid email is required', 400, 'INVALID_INPUT');
         }
 
-        if (duplicateProspect) {
-          throw new AppError('Email already exists in this organization', 409, 'DUPLICATE_EMAIL');
+        // Check for duplicate email if email is being changed (normalize for comparison)
+        const existingEmail = existingProspect.email.toLowerCase();
+        if (normalizedEmail !== existingEmail) {
+          const { data: duplicateProspect, error: checkError } = await supabase
+            .from('prospects')
+            .select('id')
+            .eq('org_id', orgId)
+            .eq('email', normalizedEmail)
+            .neq('id', id)
+            .is('deleted_at', null)
+            .single();
+
+          if (checkError && checkError.code !== 'PGRST116') {
+            logger.error('Failed to check email uniqueness', {
+              prospectId: id,
+              orgId,
+              email: normalizedEmail,
+              error: checkError.message
+            });
+            throw new AppError('Failed to update prospect', 500);
+          }
+
+          if (duplicateProspect) {
+            throw new AppError('Email already used by another prospect', 409, 'DUPLICATE_EMAIL');
+          }
         }
       }
 
       // Build update object with only provided fields
       const updateData = {};
-      if (email !== undefined) updateData.email = email.toLowerCase();
+      if (normalizedEmail !== null) updateData.email = normalizedEmail;
       if (name !== undefined) updateData.name = name;
       if (company !== undefined) updateData.company = company;
       if (title !== undefined) updateData.title = title;
