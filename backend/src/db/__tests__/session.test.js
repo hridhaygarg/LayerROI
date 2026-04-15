@@ -6,6 +6,7 @@ const mockRedisClient = {
   sAdd: vi.fn(),
   expire: vi.fn(),
   get: vi.fn(),
+  getDel: vi.fn(),
   del: vi.fn(),
   sRem: vi.fn(),
   sMembers: vi.fn(),
@@ -23,7 +24,8 @@ vi.mock('redis', () => ({
 vi.mock('../../config/env.js', () => ({
   getConfig: vi.fn(() => ({
     REDIS_URL: 'redis://localhost:6379',
-    NODE_ENV: 'test'
+    NODE_ENV: 'test',
+    SESSION_TTL_MS: 86400000
   }))
 }));
 
@@ -73,10 +75,10 @@ describe('Session Management', () => {
 
       expect(session).toHaveProperty('sessionId');
       expect(session).toHaveProperty('expiresAt');
-      expect(session.sessionId).toMatch(/^[a-zA-Z0-9]{24}$/);
+      expect(session.sessionId).toMatch(/^[a-f0-9]{36}$/);
     });
 
-    it('should generate 24-character session IDs', async () => {
+    it('should generate 36-character hexadecimal session IDs', async () => {
       mockRedisClient.setEx.mockResolvedValue(true);
       mockRedisClient.sAdd.mockResolvedValue(1);
       mockRedisClient.expire.mockResolvedValue(1);
@@ -84,8 +86,9 @@ describe('Session Management', () => {
       const session1 = await createSession('user-123', {});
       const session2 = await createSession('user-124', {});
 
-      expect(session1.sessionId).toHaveLength(24);
-      expect(session2.sessionId).toHaveLength(24);
+      expect(session1.sessionId).toHaveLength(36);
+      expect(session2.sessionId).toHaveLength(36);
+      expect(session1.sessionId).toMatch(/^[a-f0-9]{36}$/);
       expect(session1.sessionId).not.toBe(session2.sessionId);
     });
 
@@ -197,26 +200,25 @@ describe('Session Management', () => {
   describe('Session Invalidation', () => {
     it('should invalidate a session', async () => {
       const sessionData = {
-        sessionId: 'abc123xyz789abc123xyz789',
+        sessionId: 'abc123xyz789abc123xyz789abc123xyz789',
         userId: 'user-123',
         createdAt: new Date().toISOString(),
         expiresAt: new Date(Date.now() + 86400000).toISOString(),
         data: {}
       };
 
-      mockRedisClient.get.mockResolvedValueOnce(JSON.stringify(sessionData));
-      mockRedisClient.del.mockResolvedValue(1);
+      mockRedisClient.getDel.mockResolvedValueOnce(JSON.stringify(sessionData));
       mockRedisClient.sRem.mockResolvedValueOnce(1);
 
-      const result = await invalidateSession('abc123xyz789abc123xyz789');
+      const result = await invalidateSession('abc123xyz789abc123xyz789abc123xyz789');
 
       expect(result).toBe(true);
-      expect(mockRedisClient.del).toHaveBeenCalled();
+      expect(mockRedisClient.getDel).toHaveBeenCalled();
       expect(mockRedisClient.sRem).toHaveBeenCalled();
     });
 
     it('should return false when session does not exist', async () => {
-      mockRedisClient.get.mockResolvedValueOnce(null);
+      mockRedisClient.getDel.mockResolvedValueOnce(null);
 
       const result = await invalidateSession('non-existent-session');
       expect(result).toBe(false);

@@ -1,8 +1,20 @@
 import redis from 'redis';
+import crypto from 'crypto';
 import { getConfig } from '../config/env.js';
 import { logger } from '../utils/logger.js';
 
 let redisClient = null;
+let config = null;
+
+/**
+ * Get configuration with lazy loading
+ */
+function getSessionConfig() {
+  if (!config) {
+    config = getConfig();
+  }
+  return config;
+}
 
 /**
  * Initialize Redis connection
@@ -63,16 +75,11 @@ async function getRedisClient() {
 }
 
 /**
- * Generate random session ID
- * @returns {string} 24-character random session ID
+ * Generate cryptographically secure random session ID
+ * @returns {string} 36-character hex session ID
  */
 function generateSessionId() {
-  const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-  let sessionId = '';
-  for (let i = 0; i < 24; i++) {
-    sessionId += chars.charAt(Math.floor(Math.random() * chars.length));
-  }
-  return sessionId;
+  return crypto.randomBytes(18).toString('hex'); // 36 chars hex = 18 bytes
 }
 
 /**
@@ -85,9 +92,11 @@ function generateSessionId() {
 export async function createSession(userId, sessionData = {}) {
   try {
     const client = await getRedisClient();
+    const cfg = getSessionConfig();
     const sessionId = generateSessionId();
     const now = new Date();
-    const expiresAt = new Date(now.getTime() + 86400000); // 24 hours from now
+    const SESSION_TTL_MS = cfg.SESSION_TTL_MS || 86400000; // 24 hours in milliseconds
+    const expiresAt = new Date(now.getTime() + SESSION_TTL_MS);
 
     const session = {
       sessionId,
@@ -98,16 +107,16 @@ export async function createSession(userId, sessionData = {}) {
     };
 
     const key = `session:${sessionId}`;
-    const TTL = 86400; // 24 hours in seconds
+    const TTL_SECONDS = Math.floor(SESSION_TTL_MS / 1000); // Convert to seconds for Redis
 
     // Store session with TTL
-    await client.setEx(key, TTL, JSON.stringify(session));
+    await client.setEx(key, TTL_SECONDS, JSON.stringify(session));
 
     // Also track session ID by user for batch invalidation
     const userSessionsKey = `user:${userId}:sessions`;
     await client.sAdd(userSessionsKey, sessionId);
     // Set TTL on user sessions set
-    await client.expire(userSessionsKey, TTL);
+    await client.expire(userSessionsKey, TTL_SECONDS);
 
     logger.info('Session created', {
       userId,
@@ -146,7 +155,13 @@ export async function getSession(sessionId) {
       return null;
     }
 
-    const session = JSON.parse(sessionData);
+    let session;
+    try {
+      session = JSON.parse(sessionData);
+    } catch (err) {
+      logger.error('Failed to parse session data', { sessionId, error: err.message });
+      return null; // Treat as invalid session
+    }
 
     // Check if session has expired
     const expiresAt = new Date(session.expiresAt).getTime();
@@ -178,6 +193,7 @@ export async function getSession(sessionId) {
 export async function updateSession(sessionId, updates = {}) {
   try {
     const client = await getRedisClient();
+    const cfg = getSessionConfig();
     const key = `session:${sessionId}`;
 
     // Get existing session
@@ -198,10 +214,11 @@ export async function updateSession(sessionId, updates = {}) {
       session.expiresAt = updates.expiresAt;
     }
 
-    const TTL = 86400; // 24 hours
+    const SESSION_TTL_MS = cfg.SESSION_TTL_MS || 86400000; // 24 hours in milliseconds
+    const TTL_SECONDS = Math.floor(SESSION_TTL_MS / 1000); // Convert to seconds for Redis
 
     // Save updated session with reset TTL
-    await client.setEx(key, TTL, JSON.stringify(session));
+    await client.setEx(key, TTL_SECONDS, JSON.stringify(session));
 
     logger.info('Session updated', { sessionId });
     return session;
@@ -224,19 +241,22 @@ export async function invalidateSession(sessionId) {
   try {
     const client = await getRedisClient();
 
-    // Get session to find userId for cleanup
+    // Use atomic getdel instead of get then del to prevent race condition
     const key = `session:${sessionId}`;
-    const sessionData = await client.get(key);
+    const sessionData = await client.getDel(key);
 
     if (!sessionData) {
       logger.debug('Session not found for invalidation', { sessionId });
       return false;
     }
 
-    const session = JSON.parse(sessionData);
-
-    // Delete session
-    await client.del(key);
+    let session;
+    try {
+      session = JSON.parse(sessionData);
+    } catch (err) {
+      logger.error('Failed to parse session data during invalidation', { sessionId, error: err.message });
+      return true; // Still consider it invalidated even if parse fails
+    }
 
     // Remove from user sessions set
     const userSessionsKey = `user:${session.userId}:sessions`;

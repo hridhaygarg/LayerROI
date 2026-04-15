@@ -11,6 +11,15 @@ import { createSession, invalidateAllUserSessions } from '../db/session.js';
 
 const router = express.Router();
 
+// Helper function to safely get client IP address
+function getClientIp(req) {
+  // Trust proxy if configured
+  if (req.app.get('trust proxy')) {
+    return req.headers['x-forwarded-for']?.split(',')[0].trim() || req.ip || 'unknown';
+  }
+  return req.ip || 'unknown';
+}
+
 // Password strength validation
 function validatePasswordStrength(password) {
   if (!password || password.length < 8) {
@@ -22,7 +31,7 @@ function validatePasswordStrength(password) {
   if (!/[0-9]/.test(password)) {
     return false;
   }
-  if (!/[!@#$%^&*()_\-+=\[\]{};':"\\|,.<>\/?]/.test(password)) {
+  if (!/[!@#$%^&*()_\-+=\[\]{};':"\\|,.<>\/?\~`]/.test(password)) {
     return false;
   }
   return true;
@@ -103,8 +112,18 @@ router.post(
 
       if (orgError || !org) {
         logger.error('Organization creation failed after user created', { userId: newUser.id, error: orgError });
-        // Cleanup: delete user
-        await supabase.from('users').delete().eq('id', newUser.id);
+        // Cleanup: delete user and verify success
+        const { error: deleteError } = await supabase
+          .from('users')
+          .delete()
+          .eq('id', newUser.id);
+
+        if (deleteError) {
+          logger.error('Failed to cleanup user after org creation failed', {
+            userId: newUser.id,
+            error: deleteError.message
+          });
+        }
         throw new AppError('Failed to create organization', 500, 'DB_ERROR', { original: orgError });
       }
 
@@ -134,21 +153,18 @@ router.post(
         org_id: org.id
       });
 
-      // Create session for new user
-      try {
-        await createSession(newUser.id, {
-          userAgent: req.headers['user-agent'] || 'unknown',
-          ipAddress: req.ip || req.connection.remoteAddress,
-          device: 'web',
-          location: 'unknown'
-        });
-      } catch (sessionErr) {
-        logger.error('Failed to create session after registration', {
+      // Create session for new user (non-blocking, but log failures)
+      createSession(newUser.id, {
+        userAgent: req.headers['user-agent'] || 'unknown',
+        ipAddress: getClientIp(req),
+        device: 'web',
+        location: 'unknown'
+      }).catch(err => {
+        logger.warn('Failed to create session after registration', {
           userId: newUser.id,
-          error: sessionErr.message
+          error: err.message
         });
-        // Don't fail registration due to session error
-      }
+      });
 
       logger.info('User registered successfully', {
         userId: newUser.id,
@@ -225,21 +241,18 @@ router.post(
     // Generate tokens
     const tokens = generateTokens(user);
 
-    // Create session for logged-in user
-    try {
-      await createSession(user.id, {
-        userAgent: req.headers['user-agent'] || 'unknown',
-        ipAddress: req.ip || req.connection.remoteAddress,
-        device: 'web',
-        location: 'unknown'
-      });
-    } catch (sessionErr) {
-      logger.error('Failed to create session after login', {
+    // Create session for logged-in user (non-blocking, but log failures)
+    createSession(user.id, {
+      userAgent: req.headers['user-agent'] || 'unknown',
+      ipAddress: getClientIp(req),
+      device: 'web',
+      location: 'unknown'
+    }).catch(err => {
+      logger.warn('Failed to create session after login', {
         userId: user.id,
-        error: sessionErr.message
+        error: err.message
       });
-      // Don't fail login due to session error
-    }
+    });
 
     logger.info('User logged in successfully', {
       email,
@@ -325,21 +338,18 @@ router.post(
     // Generate tokens
     const tokens = generateTokens(user);
 
-    // Create session for logged-in user
-    try {
-      await createSession(user.id, {
-        userAgent: req.headers['user-agent'] || 'unknown',
-        ipAddress: req.ip || req.connection.remoteAddress,
-        device: 'web',
-        location: 'unknown'
-      });
-    } catch (sessionErr) {
-      logger.error('Failed to create session after MFA verification', {
+    // Create session for logged-in user (non-blocking, but log failures)
+    createSession(user.id, {
+      userAgent: req.headers['user-agent'] || 'unknown',
+      ipAddress: getClientIp(req),
+      device: 'web',
+      location: 'unknown'
+    }).catch(err => {
+      logger.warn('Failed to create session after MFA verification', {
         userId: user.id,
-        error: sessionErr.message
+        error: err.message
       });
-      // Don't fail MFA verification due to session error
-    }
+    });
 
     logger.info('MFA verified successfully', { userId: user.id });
 

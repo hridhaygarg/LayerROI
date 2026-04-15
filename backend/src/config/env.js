@@ -17,6 +17,7 @@ const OPTIONAL_VARS = {
   LOG_LEVEL: 'info',
   JWT_EXPIRY: '15m',
   REFRESH_TOKEN_EXPIRY: '7d',
+  SESSION_TTL_MS: '86400000', // 24 hours in milliseconds
   ANTHROPIC_API_KEY: '',
   STRIPE_SECRET_KEY: '',
   STRIPE_PUBLIC_KEY: '',
@@ -66,6 +67,7 @@ export function loadConfig() {
 
   // Type coercion
   config.PORT = parseInt(config.PORT, 10);
+  config.SESSION_TTL_MS = parseInt(config.SESSION_TTL_MS, 10);
 
   // Validate PORT is a valid number
   if (isNaN(config.PORT)) {
