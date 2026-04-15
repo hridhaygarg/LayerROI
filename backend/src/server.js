@@ -19,7 +19,8 @@ import {
   managementRoutes,
   automationsRoutes,
   authRoutes,
-  outreachRoutes
+  outreachRoutes,
+  prospectsRoutes
 } from './api/routes/index.js';
 import v2Routes from './api/routes/v2.js';
 import docsRoutes from './api/routes/docs.js';
@@ -62,6 +63,7 @@ app.use(extractAgentName);
 app.use(healthRoutes);
 app.use(docsRoutes);
 app.use(authRoutes);
+app.use(prospectsRoutes);
 app.use(proxyRoutes);
 app.use(costsRoutes);
 app.use(agentsRoutes);
