@@ -1,3 +1,7 @@
+import { useState, useEffect } from 'react';
+import { authService } from '../services/authService';
+import { apiService } from '../services/apiService';
+
 const colors = {
   bgSurface: '#ffffff',
   bgSubtle: '#f5f5f4',
@@ -9,15 +13,95 @@ const colors = {
 };
 
 export default function Budget() {
-  const monthlyBudget = 10000;
-  const spent = 5340;
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 640);
+  const [monthlyBudget, setMonthlyBudget] = useState(10000);
+  const [spent, setSpent] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [updating, setUpdating] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 640);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  useEffect(() => {
+    const fetchBudget = async () => {
+      try {
+        setLoading(true);
+        const orgId = authService.org?.id;
+
+        if (!orgId) {
+          setError('Organization not found');
+          setLoading(false);
+          return;
+        }
+
+        // Fetch both cost summary and org settings for budget info
+        const [costResponse, settingsResponse] = await Promise.all([
+          apiService.getCostsSummary(orgId, '30d'),
+          apiService.getOrgSettings(orgId),
+        ]);
+
+        if (costResponse) {
+          setSpent(costResponse.totalSpend || 0);
+        }
+
+        if (settingsResponse && settingsResponse.monthlyBudget) {
+          setMonthlyBudget(settingsResponse.monthlyBudget);
+        }
+
+        setError('');
+      } catch (err) {
+        setError(err.message || 'Failed to load budget');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchBudget();
+  }, []);
+
+  const handleBudgetChange = async (newBudget) => {
+    try {
+      setUpdating(true);
+      const orgId = authService.org?.id;
+      if (orgId) {
+        await apiService.updateOrgSettings(orgId, { monthlyBudget: newBudget });
+        setMonthlyBudget(newBudget);
+      }
+    } catch (err) {
+      setError('Failed to update budget');
+    } finally {
+      setUpdating(false);
+    }
+  };
+
   const percent = (spent / monthlyBudget) * 100;
+
+  if (loading) {
+    return (
+      <div style={{ textAlign: 'center', padding: '40px', color: colors.textSecondary }}>
+        <div style={{ fontSize: '16px' }}>Loading budget...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div style={{ background: '#fee2e2', border: `1px solid ${colors.dangerRed}`, color: colors.dangerRed, padding: '16px', borderRadius: '8px' }}>
+        <div style={{ fontSize: '16px', fontWeight: '600', marginBottom: '8px' }}>Error loading budget</div>
+        <div style={{ fontSize: '14px' }}>{error}</div>
+      </div>
+    );
+  }
 
   return (
     <div>
       <h2 style={{
         fontFamily: 'Playfair Display, serif',
-        fontSize: '32px',
+        fontSize: isMobile ? '24px' : '32px',
         fontWeight: '700',
         marginBottom: '32px',
         color: colors.textPrimary,
@@ -29,7 +113,7 @@ export default function Budget() {
         background: colors.bgSurface,
         border: `1px solid ${colors.borderDefault}`,
         borderRadius: '8px',
-        padding: '32px',
+        padding: isMobile ? '16px' : '32px',
         boxShadow: colors.shadowSm,
         maxWidth: '500px',
       }}>
@@ -51,7 +135,18 @@ export default function Budget() {
           </label>
           <input
             type="number"
-            defaultValue={monthlyBudget}
+            value={monthlyBudget}
+            onChange={(e) => {
+              const newBudget = parseInt(e.target.value) || 0;
+              setMonthlyBudget(newBudget);
+            }}
+            onBlur={(e) => {
+              const newBudget = parseInt(e.target.value) || monthlyBudget;
+              if (newBudget !== monthlyBudget) {
+                handleBudgetChange(newBudget);
+              }
+            }}
+            disabled={updating}
             style={{
               background: colors.bgSubtle,
               border: `1px solid ${colors.borderDefault}`,
@@ -63,10 +158,14 @@ export default function Budget() {
               width: '140px',
               fontWeight: '600',
               transition: 'all 200ms',
+              opacity: updating ? 0.6 : 1,
+              cursor: updating ? 'not-allowed' : 'text',
             }}
             onFocus={(e) => {
-              e.target.style.borderColor = colors.accentGreen;
-              e.target.style.boxShadow = `0 0 0 3px rgba(22, 163, 74, 0.1)`;
+              if (!updating) {
+                e.target.style.borderColor = colors.accentGreen;
+                e.target.style.boxShadow = `0 0 0 3px rgba(22, 163, 74, 0.1)`;
+              }
             }}
             onBlur={(e) => {
               e.target.style.borderColor = colors.borderDefault;

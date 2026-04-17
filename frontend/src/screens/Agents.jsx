@@ -1,4 +1,7 @@
+import { useState, useEffect } from 'react';
 import { Plus } from 'lucide-react';
+import { authService } from '../services/authService';
+import { apiService } from '../services/apiService';
 
 const colors = {
   bgSurface: '#ffffff',
@@ -11,15 +14,68 @@ const colors = {
 };
 
 export default function Agents() {
-  const agents = [
-    { id: 1, name: 'data-enrichment', cost: 4200, roi: 2.0, tasks: 150 },
-    { id: 2, name: 'document-classifier', cost: 800, roi: 1.5, tasks: 200 },
-  ];
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 640);
+  const [agents, setAgents] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 640);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  useEffect(() => {
+    const fetchAgents = async () => {
+      try {
+        setLoading(true);
+        const orgId = authService.org?.id;
+
+        if (!orgId) {
+          setError('Organization not found');
+          setLoading(false);
+          return;
+        }
+
+        const response = await apiService.getAgents(orgId);
+        if (Array.isArray(response)) {
+          setAgents(response);
+        } else if (response && response.agents) {
+          setAgents(response.agents);
+        }
+        setError('');
+      } catch (err) {
+        setError(err.message || 'Failed to load agents');
+        setAgents([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAgents();
+  }, []);
+
+  if (loading) {
+    return (
+      <div style={{ textAlign: 'center', padding: '40px', color: colors.textSecondary }}>
+        <div style={{ fontSize: '16px' }}>Loading agents...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div style={{ background: '#fee2e2', border: `1px solid ${colors.dangerRed}`, color: colors.dangerRed, padding: '16px', borderRadius: '8px' }}>
+        <div style={{ fontSize: '16px', fontWeight: '600', marginBottom: '8px' }}>Error loading agents</div>
+        <div style={{ fontSize: '14px' }}>{error}</div>
+      </div>
+    );
+  }
 
   return (
     <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
-        <h2 style={{ fontFamily: 'Playfair Display, serif', fontSize: '32px', fontWeight: '700', color: colors.textPrimary }}>Agents</h2>
+      <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', justifyContent: 'space-between', alignItems: isMobile ? 'flex-start' : 'center', marginBottom: '32px', gap: isMobile ? '16px' : '0' }}>
+        <h2 style={{ fontFamily: 'Playfair Display, serif', fontSize: isMobile ? '24px' : '32px', fontWeight: '700', color: colors.textPrimary }}>Agents</h2>
         <button style={{
           background: colors.accentGreen,
           color: '#ffffff',
@@ -34,6 +90,7 @@ export default function Agents() {
           fontSize: '14px',
           fontWeight: '600',
           transition: 'all 200ms',
+          whiteSpace: 'nowrap',
         }}
         onMouseDown={(e) => (e.target.style.transform = 'scale(0.98)')}
         onMouseUp={(e) => (e.target.style.transform = 'scale(1)')}
@@ -60,15 +117,15 @@ export default function Agents() {
       ) : (
         <div style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
-          gap: '20px',
+          gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fill, minmax(280px, 1fr))',
+          gap: isMobile ? '12px' : '20px',
         }}>
           {agents.map(agent => (
             <div key={agent.id} style={{
               background: colors.bgSurface,
               border: `1px solid ${colors.borderDefault}`,
               borderRadius: '8px',
-              padding: '24px',
+              padding: isMobile ? '16px' : '24px',
               boxShadow: colors.shadowSm,
               transition: 'all 200ms',
               cursor: 'pointer',

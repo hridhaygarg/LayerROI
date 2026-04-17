@@ -3,6 +3,7 @@ import { useScrollProgress } from '../hooks/useScrollProgress';
 import { useCountUp } from '../hooks/useCountUp';
 import { useIntersectionObserver } from '../hooks/useIntersectionObserver';
 import { AnimatedSection } from '../components/AnimatedSection';
+import { useResponsive } from '../hooks/useResponsive';
 import '../styles/landing-responsive.css';
 import '../styles/micro-interactions.css';
 
@@ -34,6 +35,7 @@ const colors = {
 export default function Landing() {
   const scrollProgress = useScrollProgress();
   const [navBlurred, setNavBlurred] = useState(false);
+  const { isMobile, isTablet } = useResponsive();
   const problemRef = useRef();
 
   useEffect(() => {
@@ -76,13 +78,13 @@ export default function Landing() {
         backdropFilter: navBlurred ? 'blur(12px)' : 'blur(0px)',
         backgroundColor: navBlurred ? 'rgba(255,255,255,0.95)' : colors.bgSurface,
       }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 40px', height: '64px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto', padding: `0 ${isMobile ? '12px' : isTablet ? '24px' : '40px'}`, height: '64px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', animation: 'fadeIn 600ms cubic-bezier(0.16,1,0.3,1) both' }}>
             <div style={{ width: '8px', height: '8px', background: colors.accentGreen, borderRadius: '50%' }} />
-            <span style={{ fontFamily: 'Playfair Display, serif', fontSize: '18px', fontWeight: '600', color: colors.textPrimary }}>Layer ROI</span>
+            <span style={{ fontFamily: 'Playfair Display, serif', fontSize: isMobile ? '14px' : '18px', fontWeight: '600', color: colors.textPrimary }}>Layer ROI</span>
           </div>
-          <div style={{ display: 'flex', gap: '24px', alignItems: 'center', animation: 'fadeIn 600ms cubic-bezier(0.16,1,0.3,1) both 100ms' }}>
-            <button onClick={navigateToDashboard} style={{
+          <div style={{ display: 'flex', gap: isMobile ? '8px' : '24px', alignItems: 'center', animation: 'fadeIn 600ms cubic-bezier(0.16,1,0.3,1) both 100ms' }}>
+            {!isMobile && <button onClick={navigateToDashboard} style={{
               background: 'none',
               border: 'none',
               fontSize: '14px',
@@ -105,21 +107,22 @@ export default function Landing() {
                 transform: 'scaleX(0)',
                 transformOrigin: 'right',
               }} onMouseEnter={(e) => { e.currentTarget.style.opacity = '1'; e.currentTarget.style.transform = 'scaleX(1)'; e.currentTarget.style.transformOrigin = 'left'; }} />
-            </button>
+            </button>}
             <a href="/signup" style={{
               background: colors.bgSurface,
               border: `1px solid ${colors.accentGreen}`,
               color: colors.accentGreen,
-              padding: '8px 20px',
+              padding: isMobile ? '6px 12px' : '8px 20px',
               borderRadius: '6px',
               textDecoration: 'none',
-              fontSize: '14px',
+              fontSize: isMobile ? '12px' : '14px',
               fontWeight: '500',
               cursor: 'pointer',
               transition: 'all 200ms cubic-bezier(0.16,1,0.3,1)',
               display: 'inline-block',
               position: 'relative',
               overflow: 'hidden',
+              whiteSpace: 'nowrap',
             }} onMouseEnter={(e) => {
               e.target.style.background = colors.accentGreen;
               e.target.style.color = colors.bgSurface;
@@ -134,7 +137,7 @@ export default function Landing() {
       </nav>
 
       {/* Hero Section */}
-      <section style={{ background: colors.bgSurface, padding: '96px 40px', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
+      <section style={{ background: colors.bgSurface, padding: `${isMobile ? '48px' : isTablet ? '64px' : '96px'} ${isMobile ? '16px' : isTablet ? '24px' : '40px'}`, textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
         {/* Mesh Background Glow */}
         <div style={{
           position: 'absolute',
@@ -167,33 +170,35 @@ export default function Landing() {
           </AnimatedSection>
 
           <AnimatedSection animation="fadeUp" delay={80}>
-            <h1 style={{ fontFamily: 'Playfair Display, serif', fontSize: '72px', fontWeight: '700', lineHeight: 1.05, marginBottom: '16px', color: colors.textPrimary }}>
+            <h1 style={{ fontFamily: 'Playfair Display, serif', fontSize: isMobile ? '32px' : isTablet ? '48px' : '72px', fontWeight: '700', lineHeight: 1.1, marginBottom: '16px', color: colors.textPrimary }}>
               Your AI agents are spending money.<br />
               <span style={{ color: colors.accentGreen, fontStyle: 'italic' }}>Are they earning it?</span>
             </h1>
           </AnimatedSection>
 
           <AnimatedSection animation="fadeUp" delay={160}>
-            <p style={{ fontSize: '20px', color: colors.textSecondary, marginBottom: '48px', lineHeight: 1.6, maxWidth: '560px', margin: '0 auto 48px' }}>
+            <p style={{ fontSize: isMobile ? '14px' : isTablet ? '16px' : '20px', color: colors.textSecondary, marginBottom: '48px', lineHeight: 1.6, maxWidth: '560px', margin: '0 auto 48px' }}>
               Layer ROI is the only financial control layer for AI agents. See your agent P&L in 15 minutes — built for CFOs, not engineers.
             </p>
           </AnimatedSection>
 
           <AnimatedSection animation="fadeUp" delay={240}>
-            <div style={{ display: 'flex', gap: '16px', justifyContent: 'center', marginBottom: '48px' }}>
+            <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: isMobile ? '12px' : '16px', justifyContent: 'center', marginBottom: '48px', width: isMobile ? '100%' : 'auto' }}>
               <a href="/signup" style={{
                 background: colors.accentGreen,
                 color: colors.bgSurface,
-                padding: '12px 28px',
+                padding: isMobile ? '10px 20px' : '12px 28px',
                 borderRadius: '6px',
                 textDecoration: 'none',
-                fontSize: '16px',
+                fontSize: isMobile ? '14px' : '16px',
                 fontWeight: '500',
                 fontFamily: 'Inter, sans-serif',
                 cursor: 'pointer',
                 transition: 'all 200ms cubic-bezier(0.16,1,0.3,1)',
                 display: 'inline-block',
                 position: 'relative',
+                textAlign: 'center',
+                minWidth: isMobile ? 'auto' : '120px',
               }} onMouseEnter={(e) => {
                 e.target.style.transform = 'translateY(-2px)';
                 e.target.style.boxShadow = `0 12px 20px rgba(22,163,74,0.3)`;

@@ -1,53 +1,25 @@
-import { useMediaQuery } from './useMediaQuery';
+import { useState, useEffect } from 'react';
 
 /**
- * High-level responsive hook that provides common breakpoint states
- * Returns object with boolean flags for each breakpoint
- *
- * @returns {Object} - Object with isMobile, isTablet, isDesktop, isWide properties
- *
- * @example
- * const { isMobile, isTablet, isDesktop, isWide } = useResponsive();
- * return (
- *   {isMobile && <MobileLayout />}
- *   {isDesktop && <DesktopLayout />}
- * );
+ * Hook to get responsive breakpoint info
+ * Returns an object with isMobile, isTablet, isDesktop booleans
  */
 export function useResponsive() {
-  // Mobile: 0px - 767px
-  const isMobile = useMediaQuery('(max-width: 767px)');
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 640);
+  const [isTablet, setIsTablet] = useState(window.innerWidth >= 640 && window.innerWidth < 1024);
+  const [isDesktop, setIsDesktop] = useState(window.innerWidth >= 1024);
 
-  // Tablet: 768px - 1023px
-  const isTablet = useMediaQuery('(min-width: 768px) and (max-width: 1023px)');
+  useEffect(() => {
+    const handleResize = () => {
+      const width = window.innerWidth;
+      setIsMobile(width < 640);
+      setIsTablet(width >= 640 && width < 1024);
+      setIsDesktop(width >= 1024);
+    };
 
-  // Desktop: 1024px - 1279px
-  const isDesktop = useMediaQuery('(min-width: 1024px) and (max-width: 1279px)');
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
-  // Wide: 1280px and above
-  const isWide = useMediaQuery('(min-width: 1280px)');
-
-  // Extra large: 1536px and above
-  const isXLarge = useMediaQuery('(min-width: 1536px)');
-
-  // Tablet and above
-  const isTabletUp = useMediaQuery('(min-width: 768px)');
-
-  // Desktop and above
-  const isDesktopUp = useMediaQuery('(min-width: 1024px)');
-
-  // Wide and above
-  const isWideUp = useMediaQuery('(min-width: 1280px)');
-
-  return {
-    isMobile,
-    isTablet,
-    isDesktop,
-    isWide,
-    isXLarge,
-    isTabletUp,
-    isDesktopUp,
-    isWideUp,
-  };
+  return { isMobile, isTablet, isDesktop };
 }
-
-export default useResponsive;

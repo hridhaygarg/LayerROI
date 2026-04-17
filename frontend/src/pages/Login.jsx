@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { api } from '../config/api';
+import { authService } from '../services/authService';
 
 const colors = {
   bgPrimary: '#fafaf9',
@@ -25,17 +25,14 @@ export default function Login() {
     setError('');
 
     try {
-      const response = await api.post('/auth/login', { email, password });
-
-      if (response.success && response.token) {
-        localStorage.setItem('layeroi_token', response.token);
-        localStorage.setItem('layeroi_user', JSON.stringify(response.user));
+      const result = await authService.login(email, password);
+      if (result.success) {
         navigate('/dashboard');
       } else {
-        setError(response.error || 'Login failed');
+        setError('Login failed');
       }
     } catch (err) {
-      setError('Network error. Please try again.');
+      setError(err.message || 'Login failed. Please try again.');
     } finally {
       setLoading(false);
     }

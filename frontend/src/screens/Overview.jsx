@@ -1,4 +1,7 @@
+import { useState, useEffect } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { authService } from '../services/authService';
+import { apiService } from '../services/apiService';
 
 const colors = {
   bgPrimary: '#fafaf9',
@@ -18,25 +21,91 @@ const colors = {
 };
 
 export default function Overview() {
-  const metrics = {
-    totalSpend: 12400,
-    valueGenerated: 52100,
-    roiMultiple: 4.2,
-    wastefulSpend: 340,
-  };
+  const [metrics, setMetrics] = useState({
+    totalSpend: 0,
+    valueGenerated: 0,
+    roiMultiple: 0,
+    wastefulSpend: 0,
+  });
+  const [agents, setAgents] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
-  const agents = [
-    { id: 1, name: 'data-enrichment', cost: 4200, tasks: 150, value: 8500, roi: 2.0 },
-    { id: 2, name: 'document-classifier', cost: 800, tasks: 200, value: 1200, roi: 1.5 },
-    { id: 3, name: 'cost-optimizer', cost: 340, tasks: 10, value: 200, roi: 0.6 },
-  ];
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const orgId = authService.org?.id;
+
+        if (!orgId) {
+          setError('Organization not found');
+          setLoading(false);
+          return;
+        }
+
+        // Fetch dashboard stats and agents in parallel
+        const [statsResponse, agentsResponse] = await Promise.all([
+          apiService.getDashboardStats(orgId),
+          apiService.getAgents(orgId),
+        ]);
+
+        if (statsResponse) {
+          setMetrics({
+            totalSpend: statsResponse.totalSpend || 0,
+            valueGenerated: statsResponse.valueGenerated || 0,
+            roiMultiple: statsResponse.roiMultiple || 0,
+            wastefulSpend: statsResponse.wastefulSpend || 0,
+          });
+        }
+
+        if (agentsResponse && Array.isArray(agentsResponse)) {
+          setAgents(agentsResponse);
+        } else if (agentsResponse && agentsResponse.agents) {
+          setAgents(agentsResponse.agents);
+        }
+
+        setError('');
+      } catch (err) {
+        setError(err.message || 'Failed to load dashboard data');
+        // Fallback to empty state instead of mock data
+        setMetrics({
+          totalSpend: 0,
+          valueGenerated: 0,
+          roiMultiple: 0,
+          wastefulSpend: 0,
+        });
+        setAgents([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const chartData = agents.map(agent => ({
     name: agent.name,
-    cost: agent.cost,
-    value: agent.value,
-    roi: agent.roi,
+    cost: agent.cost || 0,
+    value: agent.value || 0,
+    roi: agent.roi || 0,
   }));
+
+  if (loading) {
+    return (
+      <div style={{ textAlign: 'center', padding: '40px', color: colors.textSecondary }}>
+        <div style={{ fontSize: '16px' }}>Loading dashboard...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div style={{ background: '#fee2e2', border: `1px solid ${colors.dangerRed}`, color: colors.dangerRed, padding: '16px', borderRadius: '8px' }}>
+        <div style={{ fontSize: '16px', fontWeight: '600', marginBottom: '8px' }}>Error loading dashboard</div>
+        <div style={{ fontSize: '14px' }}>{error}</div>
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -193,41 +262,43 @@ export default function Overview() {
       </div>
 
       {/* Agent Cost Chart */}
-      <div style={{
-        background: colors.bgSurface,
-        border: `1px solid ${colors.borderDefault}`,
-        borderRadius: '8px',
-        padding: '24px',
-        marginBottom: '40px',
-        boxShadow: colors.shadowSm,
-      }}>
-        <h3 style={{
-          fontFamily: 'Playfair Display, serif',
-          fontSize: '18px',
-          fontWeight: '600',
-          color: colors.textPrimary,
-          marginBottom: '24px',
+      {agents.length > 0 && (
+        <div style={{
+          background: colors.bgSurface,
+          border: `1px solid ${colors.borderDefault}`,
+          borderRadius: '8px',
+          padding: '24px',
+          marginBottom: '40px',
+          boxShadow: colors.shadowSm,
         }}>
-          Cost by Agent
-        </h3>
-        <ResponsiveContainer width="100%" height={300}>
-          <BarChart data={chartData}>
-            <CartesianGrid strokeDasharray="3 3" stroke={colors.borderDefault} />
-            <XAxis dataKey="name" tick={{ fill: colors.textSecondary, fontSize: 12 }} />
-            <YAxis tick={{ fill: colors.textSecondary, fontSize: 12 }} />
-            <Tooltip
-              contentStyle={{
-                background: colors.bgSurface,
-                border: `1px solid ${colors.borderDefault}`,
-                borderRadius: '6px',
-              }}
-              formatter={(value) => `$${value.toLocaleString()}`}
-            />
-            <Legend />
-            <Bar dataKey="cost" fill={colors.accentGreen} name="Cost" radius={[6, 6, 0, 0]} />
-          </BarChart>
-        </ResponsiveContainer>
-      </div>
+          <h3 style={{
+            fontFamily: 'Playfair Display, serif',
+            fontSize: '18px',
+            fontWeight: '600',
+            color: colors.textPrimary,
+            marginBottom: '24px',
+          }}>
+            Cost by Agent
+          </h3>
+          <ResponsiveContainer width="100%" height={300}>
+            <BarChart data={chartData}>
+              <CartesianGrid strokeDasharray="3 3" stroke={colors.borderDefault} />
+              <XAxis dataKey="name" tick={{ fill: colors.textSecondary, fontSize: 12 }} />
+              <YAxis tick={{ fill: colors.textSecondary, fontSize: 12 }} />
+              <Tooltip
+                contentStyle={{
+                  background: colors.bgSurface,
+                  border: `1px solid ${colors.borderDefault}`,
+                  borderRadius: '6px',
+                }}
+                formatter={(value) => `$${value.toLocaleString()}`}
+              />
+              <Legend />
+              <Bar dataKey="cost" fill={colors.accentGreen} name="Cost" radius={[6, 6, 0, 0]} />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+      )}
 
       {/* Agent P&L Table */}
       <div style={{
@@ -246,98 +317,104 @@ export default function Overview() {
         }}>
           Agent P&L
         </h3>
-        <div style={{ overflowX: 'auto' }}>
-          <table style={{
-            width: '100%',
-            borderCollapse: 'collapse',
-            fontFamily: 'Inter, sans-serif',
-            fontSize: '14px',
-          }}>
-            <thead>
-              <tr style={{ borderBottom: `1px solid ${colors.borderDefault}` }}>
-                <th style={{
-                  padding: '12px',
-                  textAlign: 'left',
-                  color: colors.textSecondary,
-                  fontWeight: '600',
-                  fontSize: '12px',
-                }}>Agent</th>
-                <th style={{
-                  padding: '12px',
-                  textAlign: 'right',
-                  color: colors.textSecondary,
-                  fontWeight: '600',
-                  fontSize: '12px',
-                  fontFamily: 'IBM Plex Mono, monospace',
-                }}>Cost (30d)</th>
-                <th style={{
-                  padding: '12px',
-                  textAlign: 'right',
-                  color: colors.textSecondary,
-                  fontWeight: '600',
-                  fontSize: '12px',
-                  fontFamily: 'IBM Plex Mono, monospace',
-                }}>Tasks</th>
-                <th style={{
-                  padding: '12px',
-                  textAlign: 'right',
-                  color: colors.textSecondary,
-                  fontWeight: '600',
-                  fontSize: '12px',
-                  fontFamily: 'IBM Plex Mono, monospace',
-                }}>Value Generated</th>
-                <th style={{
-                  padding: '12px',
-                  textAlign: 'right',
-                  color: colors.textSecondary,
-                  fontWeight: '600',
-                  fontSize: '12px',
-                  fontFamily: 'IBM Plex Mono, monospace',
-                }}>ROI</th>
-              </tr>
-            </thead>
-            <tbody>
-              {agents.map((agent, i) => (
-                <tr key={agent.id} style={{
-                  borderBottom: i < agents.length - 1 ? `1px solid ${colors.borderDefault}` : 'none',
-                  background: i % 2 === 0 ? 'transparent' : colors.bgSubtle,
-                }}>
-                  <td style={{
+        {agents.length === 0 ? (
+          <div style={{ color: colors.textSecondary, textAlign: 'center', padding: '32px' }}>
+            No agents connected yet
+          </div>
+        ) : (
+          <div style={{ overflowX: 'auto' }}>
+            <table style={{
+              width: '100%',
+              borderCollapse: 'collapse',
+              fontFamily: 'Inter, sans-serif',
+              fontSize: '14px',
+            }}>
+              <thead>
+                <tr style={{ borderBottom: `1px solid ${colors.borderDefault}` }}>
+                  <th style={{
                     padding: '12px',
-                    color: colors.textPrimary,
-                    fontWeight: '500',
-                  }}>{agent.name}</td>
-                  <td style={{
-                    padding: '12px',
-                    textAlign: 'right',
-                    color: colors.textPrimary,
-                    fontFamily: 'IBM Plex Mono, monospace',
-                  }}>${agent.cost.toLocaleString()}</td>
-                  <td style={{
+                    textAlign: 'left',
+                    color: colors.textSecondary,
+                    fontWeight: '600',
+                    fontSize: '12px',
+                  }}>Agent</th>
+                  <th style={{
                     padding: '12px',
                     textAlign: 'right',
                     color: colors.textSecondary,
+                    fontWeight: '600',
+                    fontSize: '12px',
                     fontFamily: 'IBM Plex Mono, monospace',
-                  }}>{agent.tasks}</td>
-                  <td style={{
+                  }}>Cost (30d)</th>
+                  <th style={{
                     padding: '12px',
                     textAlign: 'right',
-                    color: colors.accentGreen,
-                    fontFamily: 'IBM Plex Mono, monospace',
+                    color: colors.textSecondary,
                     fontWeight: '600',
-                  }}>${agent.value.toLocaleString()}</td>
-                  <td style={{
+                    fontSize: '12px',
+                    fontFamily: 'IBM Plex Mono, monospace',
+                  }}>Tasks</th>
+                  <th style={{
                     padding: '12px',
                     textAlign: 'right',
-                    color: agent.roi > 1 ? colors.accentGreen : colors.dangerRed,
-                    fontFamily: 'IBM Plex Mono, monospace',
+                    color: colors.textSecondary,
                     fontWeight: '600',
-                  }}>{agent.roi}×</td>
+                    fontSize: '12px',
+                    fontFamily: 'IBM Plex Mono, monospace',
+                  }}>Value Generated</th>
+                  <th style={{
+                    padding: '12px',
+                    textAlign: 'right',
+                    color: colors.textSecondary,
+                    fontWeight: '600',
+                    fontSize: '12px',
+                    fontFamily: 'IBM Plex Mono, monospace',
+                  }}>ROI</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {agents.map((agent, i) => (
+                  <tr key={agent.id} style={{
+                    borderBottom: i < agents.length - 1 ? `1px solid ${colors.borderDefault}` : 'none',
+                    background: i % 2 === 0 ? 'transparent' : colors.bgSubtle,
+                  }}>
+                    <td style={{
+                      padding: '12px',
+                      color: colors.textPrimary,
+                      fontWeight: '500',
+                    }}>{agent.name}</td>
+                    <td style={{
+                      padding: '12px',
+                      textAlign: 'right',
+                      color: colors.textPrimary,
+                      fontFamily: 'IBM Plex Mono, monospace',
+                    }}>${(agent.cost || 0).toLocaleString()}</td>
+                    <td style={{
+                      padding: '12px',
+                      textAlign: 'right',
+                      color: colors.textSecondary,
+                      fontFamily: 'IBM Plex Mono, monospace',
+                    }}>{agent.tasks || 0}</td>
+                    <td style={{
+                      padding: '12px',
+                      textAlign: 'right',
+                      color: colors.accentGreen,
+                      fontFamily: 'IBM Plex Mono, monospace',
+                      fontWeight: '600',
+                    }}>${(agent.value || 0).toLocaleString()}</td>
+                    <td style={{
+                      padding: '12px',
+                      textAlign: 'right',
+                      color: (agent.roi || 0) > 1 ? colors.accentGreen : colors.dangerRed,
+                      fontFamily: 'IBM Plex Mono, monospace',
+                      fontWeight: '600',
+                    }}>{(agent.roi || 0).toFixed(1)}×</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
     </div>
   );

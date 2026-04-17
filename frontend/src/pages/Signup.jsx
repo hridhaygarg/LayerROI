@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { api } from '../config/api';
+import { useNavigate } from 'react-router-dom';
+import { authService } from '../services/authService';
 
 const colors = {
   bgPrimary: '#fafaf9',
@@ -20,6 +21,7 @@ const colors = {
 };
 
 export default function Signup() {
+  const navigate = useNavigate();
   const [step, setStep] = useState('email'); // 'email', 'details', 'complete'
   const [formData, setFormData] = useState({ email: '', name: '', company: '' });
   const [loading, setLoading] = useState(false);
@@ -42,19 +44,16 @@ export default function Signup() {
     }
 
     try {
-      const response = await api.post('/auth/signup', formData);
-
-      if (response.success && response.token && response.apiKey) {
-        localStorage.setItem('layeroi_token', response.token);
-        localStorage.setItem('layeroi_api_key', response.apiKey);
-        localStorage.setItem('layeroi_org', JSON.stringify(response.organisation));
-        setApiKey(response.apiKey);
+      const result = await authService.signup(formData.email, formData.name, formData.company);
+      if (result.success && result.apiKey) {
+        localStorage.setItem('layeroi_api_key', result.apiKey);
+        setApiKey(result.apiKey);
         setStep('complete');
       } else {
-        setError(response.error || 'Signup failed');
+        setError('Signup failed');
       }
     } catch (err) {
-      setError('Network error. Please try again.');
+      setError(err.message || 'Signup failed. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -248,7 +247,7 @@ apiKey: '${apiKey}'`}
                 </code>
               </div>
 
-              <a href="/dashboard" style={{ width: '100%', display: 'inline-block', background: colors.accentGreen, color: colors.bgSurface, padding: '12px', borderRadius: '6px', textDecoration: 'none', fontFamily: 'Inter, sans-serif', fontSize: '16px', fontWeight: '600', cursor: 'pointer', transition: 'all 200ms', textAlign: 'center' }} onMouseDown={(e) => (e.target.style.transform = 'scale(0.98)')} onMouseUp={(e) => (e.target.style.transform = 'scale(1)')}>Go to dashboard →</a>
+              <button onClick={() => navigate('/dashboard')} style={{ width: '100%', display: 'inline-block', background: colors.accentGreen, color: colors.bgSurface, padding: '12px', borderRadius: '6px', border: 'none', fontFamily: 'Inter, sans-serif', fontSize: '16px', fontWeight: '600', cursor: 'pointer', transition: 'all 200ms', textAlign: 'center', textDecoration: 'none' }} onMouseDown={(e) => (e.target.style.transform = 'scale(0.98)')} onMouseUp={(e) => (e.target.style.transform = 'scale(1)')}>Go to dashboard →</button>
             </div>
           )}
         </div>
