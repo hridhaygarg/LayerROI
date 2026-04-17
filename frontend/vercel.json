@@ -1,7 +1,11 @@
 {
+  "buildCommand": "CI=false npm run build",
   "rewrites": [
     { "source": "/robots.txt", "destination": "/robots.txt" },
     { "source": "/sitemap.xml", "destination": "/sitemap.xml" },
     { "source": "/(.*)", "destination": "/" }
-  ]
+  ],
+  "env": {
+    "CI": "false"
+  }
 }
