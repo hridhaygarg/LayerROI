@@ -1,4 +1,4 @@
-import { Home, BarChart3, Settings, Users, FileText, Target } from 'lucide-react';
+import { Home, BarChart3, Settings, Users, FileText, Target, Lock } from 'lucide-react';
 import { useResponsive } from '../hooks/useResponsive';
 
 export default function Sidebar({ active, onNavigate, colors }) {
@@ -11,6 +11,7 @@ export default function Sidebar({ active, onNavigate, colors }) {
     { icon: FileText, label: 'Reports', id: 'report' },
     { icon: Target, label: 'Outreach', id: 'outreach' },
     { icon: Settings, label: 'Onboarding', id: 'onboarding' },
+    { icon: Lock, label: 'Admin', id: 'admin' },
   ];
 
   // Responsive dimensions

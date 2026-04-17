@@ -12,6 +12,7 @@ const Budget = lazy(() => import('./screens/Budget'))
 const Report = lazy(() => import('./screens/Report'))
 const Onboarding = lazy(() => import('./screens/Onboarding'))
 const Outreach = lazy(() => import('./screens/Outreach'))
+const Admin = lazy(() => import('./screens/Admin'))
 const Signup = lazy(() => import('./pages/Signup'))
 const Login = lazy(() => import('./pages/Login'))
 
@@ -55,6 +56,7 @@ export default function App() {
     report: 'Reports',
     onboarding: 'Onboarding',
     outreach: 'Outreach',
+    admin: 'Admin',
   }
 
   // Set page title based on current screen
@@ -110,6 +112,7 @@ export default function App() {
     report: Report,
     onboarding: Onboarding,
     outreach: Outreach,
+    admin: Admin,
   }
 
   const CurrentScreen = screens[currentScreen] || Overview
@@ -297,6 +300,7 @@ export default function App() {
                   {key === 'report' && '📈'}
                   {key === 'onboarding' && '🚀'}
                   {key === 'outreach' && '🎯'}
+                  {key === 'admin' && '⚙️'}
                 </span>
                 {name}
               </button>
@@ -425,7 +429,7 @@ export default function App() {
           alignItems: 'center',
           zIndex: 60,
         }}>
-          {Object.entries(screenNames).map(([key, name]) => (
+          {Object.entries(screenNames).filter(([key]) => key !== 'admin').map(([key, name]) => (
             <button
               key={key}
               onClick={() => { setCurrentScreen(key); setIsMobileMenuOpen(false); }}
