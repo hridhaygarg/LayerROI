@@ -38,7 +38,7 @@ export default function PremiumLanding() {
   return (
     <div className="bg-gradient-to-b from-gray-50 via-white to-gray-50 min-h-screen">
       {/* Navigation */}
-      <PremiumNav logo="Layer ROI" items={navItems} />
+      <PremiumNav logo="layeroi" items={navItems} />
 
       {/* Hero Section */}
       <motion.section
@@ -340,7 +340,7 @@ export default function PremiumLanding() {
         transition={{ duration: 0.6 }}
       >
         <div className="max-w-6xl mx-auto text-center text-gray-600">
-          <p>&copy; 2026 Layer ROI. All rights reserved. | Privacy Policy | Terms of Service</p>
+          <p>&copy; 2026 layeroi. All rights reserved. | Privacy Policy | Terms of Service</p>
         </div>
       </motion.footer>
     </div>

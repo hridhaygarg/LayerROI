@@ -14,7 +14,7 @@ const anthropic = new Anthropic({
 
 const resend = RESEND_KEY ? new Resend(RESEND_KEY) : null;
 
-// ICP Definition for Layer ROI
+// ICP Definition for layeroi
 const ICP = {
   titles: ['CTO', 'VP Engineering', 'Chief AI Officer', 'Head of AI', 'Engineering Director', 'VP Product'],
   industries: ['SaaS', 'Technology', 'Financial Services', 'Healthcare Tech', 'Enterprise Software'],
@@ -206,7 +206,7 @@ export async function sendOutreachEmails() {
 
         // Send via Resend
         await resend.emails.send({
-          from: `Layer ROI <${COMPANY_EMAIL}>`,
+          from: `layeroi <${COMPANY_EMAIL}>`,
           to: prospect.prospect_email,
           subject: `AI Agent ROI for ${prospect.company_name}`,
           html: htmlEmail,
@@ -383,7 +383,7 @@ function generateFitReason(prospect, researchData) {
   const reasons = [];
 
   if (ICP.titles.some((t) => prospect.title?.toLowerCase().includes(t.toLowerCase()))) {
-    reasons.push(`${prospect.title} is a perfect fit for Layer ROI`);
+    reasons.push(`${prospect.title} is a perfect fit for layeroi`);
   }
 
   if (researchData.technologies?.some((t) => ICP.signals.some((s) => t.toLowerCase().includes(s.toLowerCase())))) {
@@ -395,7 +395,7 @@ function generateFitReason(prospect, researchData) {
 
 async function generatePersonalizedMessage(prospect) {
   try {
-    const prompt = `You are a B2B sales representative for Layer ROI, a platform that tracks AI agent ROI and profitability.
+    const prompt = `You are a B2B sales representative for layeroi, a platform that tracks AI agent ROI and profitability.
 
 Prospect:
 - Name: ${prospect.prospect_name}
@@ -425,7 +425,7 @@ Keep it conversational, not salesy. Include NO HTML or formatting.`;
   } catch (err) {
     logger.error('Message generation failed', err);
     // Return fallback message
-    return `Hi ${prospect.prospect_name}, Most engineering teams run AI agents but lack visibility into which ones are profitable. We built Layer ROI to solve this — 15-min setup, then live P&L for every agent. Would 20 minutes work for a quick walkthrough?`;
+    return `Hi ${prospect.prospect_name}, Most engineering teams run AI agents but lack visibility into which ones are profitable. We built layeroi to solve this — 15-min setup, then live P&L for every agent. Would 20 minutes work for a quick walkthrough?`;
   }
 }
 
@@ -433,7 +433,7 @@ async function generateFollowUpMessage(prospect) {
   try {
     const prompt = `Generate a brief follow-up message for ${prospect.prospect_name} at ${prospect.company_name}.
 
-Original context: They received an initial outreach about Layer ROI, an AI agent ROI tracking platform.
+Original context: They received an initial outreach about layeroi, an AI agent ROI tracking platform.
 
 Create a 2-3 sentence follow-up that:
 1. References the previous message subtly
@@ -451,7 +451,7 @@ Keep it casual and non-pushy.`;
     return message.content[0].text;
   } catch (err) {
     logger.error('Follow-up generation failed', err);
-    return `Hey ${prospect.prospect_name}, wanted to circle back on Layer ROI. Most teams we talk to are surprised by how much they're spending on unprofitable agents. Worth a quick 15-min call to see if it applies to you?`;
+    return `Hey ${prospect.prospect_name}, wanted to circle back on layeroi. Most teams we talk to are surprised by how much they're spending on unprofitable agents. Worth a quick 15-min call to see if it applies to you?`;
   }
 }
 
@@ -474,7 +474,7 @@ function generateEmailHTML(prospect) {
 <body>
   <div class="container">
     <div class="header">
-      <div class="logo">Layer ROI</div>
+      <div class="logo">layeroi</div>
     </div>
 
     <div class="content">
@@ -485,12 +485,12 @@ function generateEmailHTML(prospect) {
       <p><a href="https://layeroi.com/demo" class="cta">See It Live</a></p>
 
       <p>Best,<br/>
-      The Layer ROI Team</p>
+      The layeroi Team</p>
     </div>
 
     <div class="footer">
-      <p>Layer ROI helps engineering teams track AI agent profitability. No infrastructure changes needed.</p>
-      <p>&copy; 2026 Layer ROI. All rights reserved.</p>
+      <p>layeroi helps engineering teams track AI agent profitability. No infrastructure changes needed.</p>
+      <p>&copy; 2026 layeroi. All rights reserved.</p>
     </div>
   </div>
 </body>

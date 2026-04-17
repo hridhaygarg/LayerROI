@@ -7,7 +7,7 @@ import { useEffect } from 'react';
 export function usePageTitle(title) {
   useEffect(() => {
     const previousTitle = document.title;
-    document.title = title ? `${title} | Layer ROI` : 'Layer ROI';
+    document.title = title ? `${title} | layeroi` : 'layeroi';
 
     return () => {
       document.title = previousTitle;

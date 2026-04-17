@@ -81,7 +81,7 @@ export default function Landing() {
         <div style={{ maxWidth: '1200px', margin: '0 auto', padding: `0 ${isMobile ? '12px' : isTablet ? '24px' : '40px'}`, height: '64px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', animation: 'fadeIn 600ms cubic-bezier(0.16,1,0.3,1) both' }}>
             <div style={{ width: '8px', height: '8px', background: colors.accentGreen, borderRadius: '50%' }} />
-            <span style={{ fontFamily: 'Playfair Display, serif', fontSize: isMobile ? '14px' : '18px', fontWeight: '600', color: colors.textPrimary }}>Layer ROI</span>
+            <span style={{ fontFamily: 'Playfair Display, serif', fontSize: isMobile ? '14px' : '18px', fontWeight: '600', color: colors.textPrimary }}>layeroi</span>
           </div>
           <div style={{ display: 'flex', gap: isMobile ? '8px' : '24px', alignItems: 'center', animation: 'fadeIn 600ms cubic-bezier(0.16,1,0.3,1) both 100ms' }}>
             {!isMobile && <button onClick={navigateToDashboard} style={{
@@ -178,7 +178,7 @@ export default function Landing() {
 
           <AnimatedSection animation="fadeUp" delay={160}>
             <p style={{ fontSize: isMobile ? '14px' : isTablet ? '16px' : '20px', color: colors.textSecondary, marginBottom: '48px', lineHeight: 1.6, maxWidth: '560px', margin: '0 auto 48px' }}>
-              Layer ROI is the only financial control layer for AI agents. See your agent P&L in 15 minutes — built for CFOs, not engineers.
+              layeroi is the only financial control layer for AI agents. See your agent P&L in 15 minutes — built for CFOs, not engineers.
             </p>
           </AnimatedSection>
 
@@ -247,7 +247,7 @@ export default function Landing() {
           <StatCard number={37} suffix="+" label="Average AI agents per enterprise in 2026" delay={0} />
           <StatCard number={40} suffix="%" label="Of agentic AI projects cancelled due to unclear ROI" color={colors.dangerRed} delay={100} />
           <StatCard number={0} suffix="" label="What most CFOs can prove their agents are earning" delay={200} />
-          <StatCard number={15} suffix=" min" label="To connect Layer ROI and see your first P&L" delay={300} />
+          <StatCard number={15} suffix=" min" label="To connect layeroi and see your first P&L" delay={300} />
         </div>
       </section>
 
@@ -317,7 +317,7 @@ export default function Landing() {
           <AnimatedSection animation="fadeUp">
             <div style={{ marginBottom: '80px', textAlign: 'center' }}>
               <h2 style={{ fontFamily: 'Playfair Display, serif', fontSize: '48px', fontWeight: '600', marginBottom: '16px', color: colors.textPrimary }}>Calculate your AI agent waste</h2>
-              <p style={{ fontSize: '18px', color: colors.textSecondary, maxWidth: '600px', margin: '0 auto' }}>See how much your agents are costing you before Layer ROI.</p>
+              <p style={{ fontSize: '18px', color: colors.textSecondary, maxWidth: '600px', margin: '0 auto' }}>See how much your agents are costing you before layeroi.</p>
             </div>
           </AnimatedSection>
 
@@ -333,8 +333,8 @@ export default function Landing() {
           <AnimatedSection animation="fadeUp">
             <div style={{ marginBottom: '80px', textAlign: 'center' }}>
               <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '12px', fontWeight: '600', color: colors.accentGreen, letterSpacing: '2px', textTransform: 'uppercase' }}>How We Compare</span>
-              <h2 style={{ fontFamily: 'Playfair Display, serif', fontSize: '48px', fontWeight: '600', marginTop: '16px', color: colors.textPrimary }}>Why CFOs choose Layer ROI</h2>
-              <p style={{ fontSize: '18px', color: colors.textSecondary, maxWidth: '600px', margin: '24px auto 0' }}>Other tools monitor infrastructure. Layer ROI shows financial impact.</p>
+              <h2 style={{ fontFamily: 'Playfair Display, serif', fontSize: '48px', fontWeight: '600', marginTop: '16px', color: colors.textPrimary }}>Why CFOs choose layeroi</h2>
+              <p style={{ fontSize: '18px', color: colors.textSecondary, maxWidth: '600px', margin: '24px auto 0' }}>Other tools monitor infrastructure. layeroi shows financial impact.</p>
             </div>
           </AnimatedSection>
 
@@ -362,7 +362,7 @@ export default function Landing() {
           <AnimatedSection animation="fadeUp">
             <div style={{ marginBottom: '80px', textAlign: 'center' }}>
               <h2 style={{ fontFamily: 'Playfair Display, serif', fontSize: '48px', fontWeight: '600', marginBottom: '16px', color: colors.textPrimary }}>Frequently asked questions</h2>
-              <p style={{ fontSize: '18px', color: colors.textSecondary }}>Everything you need to know about Layer ROI.</p>
+              <p style={{ fontSize: '18px', color: colors.textSecondary }}>Everything you need to know about layeroi.</p>
             </div>
           </AnimatedSection>
 
@@ -427,9 +427,9 @@ export default function Landing() {
           <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '14px', color: colors.textTertiary }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <div style={{ width: '6px', height: '6px', background: colors.accentGreen, borderRadius: '50%' }} />
-              <span style={{ fontFamily: 'Playfair Display, serif', fontWeight: '600', color: colors.textPrimary }}>Layer ROI</span>
+              <span style={{ fontFamily: 'Playfair Display, serif', fontWeight: '600', color: colors.textPrimary }}>layeroi</span>
             </div>
-            <span>© 2026 Layer ROI · Financial intelligence for AI teams</span>
+            <span>© 2026 layeroi · Financial intelligence for AI teams</span>
           </div>
         </AnimatedSection>
       </footer>
@@ -603,7 +603,7 @@ function HowItWorksSection() {
   const { ref: svgRef, hasBeenVisible } = useIntersectionObserver({ threshold: 0.3, once: true });
   const steps = [
     { number: '01', title: 'Connect Agents', description: 'Copy one line into your agent code. Takes 5 minutes.' },
-    { number: '02', title: 'Track Spending', description: 'Layer ROI monitors every API call, models, tokens, and cost in real-time.' },
+    { number: '02', title: 'Track Spending', description: 'layeroi monitors every API call, models, tokens, and cost in real-time.' },
     { number: '03', title: 'Optimize ROI', description: 'See which agents make money and which burn it. Kill the losers.' }
   ];
 
@@ -762,7 +762,7 @@ function PricingSection() {
 
 function ComparisonTable() {
   const rows = [
-    { tool: 'Layer ROI', buildup: 'CFOs', shows: 'P&L per agent, ROI, cost per task, profitability', cfo: true, highlight: true },
+    { tool: 'layeroi', buildup: 'CFOs', shows: 'P&L per agent, ROI, cost per task, profitability', cfo: true, highlight: true },
     { tool: 'Datadog', buildup: 'Engineers', shows: 'Tokens, traces, infrastructure logs', cfo: false },
     { tool: 'Helicone', buildup: 'Engineers', shows: 'API logs, token usage, latency', cfo: false },
     { tool: 'LiteLLM', buildup: 'Developers', shows: 'Spend by API key, model costs', cfo: false },
@@ -823,12 +823,12 @@ function ComparisonTable() {
 
 function FAQSection() {
   const faqs = [
-    { question: 'Does this add latency?', answer: 'Under 5ms overhead, imperceptible to your users. Layer ROI runs asynchronously and doesn\'t block API calls.' },
+    { question: 'Does this add latency?', answer: 'Under 5ms overhead, imperceptible to your users. layeroi runs asynchronously and doesn\'t block API calls.' },
     { question: 'Is prompt data stored?', answer: 'No. We only store metadata: cost, tokens used, agent name, and timestamp. Your prompt content never leaves your system.' },
     { question: 'Works with Anthropic too?', answer: 'Yes. OpenAI, Anthropic, and any OpenAI-compatible endpoint. Full cost tracking across all providers.' },
-    { question: 'How long is setup?', answer: '15 minutes. Add one environment variable to your code and Layer ROI starts tracking immediately.' },
+    { question: 'How long is setup?', answer: '15 minutes. Add one environment variable to your code and layeroi starts tracking immediately.' },
     { question: 'More than 30 agents?', answer: 'Contact our sales team for Enterprise pricing and custom configurations for unlimited agents.' },
-    { question: 'If agent down, affects reliability?', answer: 'No. Layer ROI fallback to direct LLM calls. Your agents are never impacted if our service is unavailable.' }
+    { question: 'If agent down, affects reliability?', answer: 'No. layeroi fallback to direct LLM calls. Your agents are never impacted if our service is unavailable.' }
   ];
 
   return (
@@ -1118,7 +1118,7 @@ function ROICalculator() {
 
         <AnimatedSection animation="fadeUp" delay={500}>
           <div style={{ background: colors.bgSubtle, border: `1px solid ${colors.borderDefault}`, borderRadius: '8px', padding: '24px', animation: 'fadeUp 600ms cubic-bezier(0.16,1,0.3,1) both 500ms' }}>
-            <div style={{ fontFamily: 'IBM Plex Mono, monospace', fontSize: '12px', fontWeight: '600', color: colors.textTertiary, textTransform: 'uppercase', marginBottom: '8px' }}>Layer ROI Monthly Cost</div>
+            <div style={{ fontFamily: 'IBM Plex Mono, monospace', fontSize: '12px', fontWeight: '600', color: colors.textTertiary, textTransform: 'uppercase', marginBottom: '8px' }}>layeroi Monthly Cost</div>
             <div style={{ fontFamily: 'Playfair Display, serif', fontSize: '36px', fontWeight: '700', color: colors.textPrimary, marginBottom: '4px' }}>
               ${roiCost.toLocaleString()}/mo
             </div>
@@ -1134,7 +1134,7 @@ function ROICalculator() {
             <div style={{ fontFamily: 'Playfair Display, serif', fontSize: '36px', fontWeight: '700', color: colors.textPrimary, marginBottom: '4px' }}>
               {paybackDays} days
             </div>
-            <div style={{ fontSize: '13px', color: colors.textSecondary }}>Until Layer ROI pays for itself</div>
+            <div style={{ fontSize: '13px', color: colors.textSecondary }}>Until layeroi pays for itself</div>
           </div>
         </AnimatedSection>
       </div>

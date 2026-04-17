@@ -7,6 +7,10 @@ import {
   sendOutreachEmails,
   sendFollowUpReminders,
 } from '../../automations/outreachEngine.js';
+import {
+  initiateColdEmailSequence,
+  processColdEmailSequence,
+} from '../../automations/emailEngine.js';
 
 const router = express.Router();
 
@@ -187,6 +191,118 @@ router.post('/api/outreach/follow-ups', async (req, res) => {
       success: false,
       error: err.message,
     });
+  }
+});
+
+/**
+ * POST /api/cold-email/initiate
+ * Start the cold email sequence with leads from Apollo
+ */
+router.post('/api/cold-email/initiate', async (req, res) => {
+  try {
+    logger.info('Cold email sequence initiated');
+
+    await initiateColdEmailSequence();
+
+    res.json({
+      success: true,
+      message: 'Cold email sequence started successfully',
+    });
+  } catch (err) {
+    logger.error('Cold email initiate endpoint error', err);
+    res.status(500).json({
+      success: false,
+      error: err.message,
+    });
+  }
+});
+
+/**
+ * POST /api/cold-email/process
+ * Process next emails in the cold email sequence (should be called daily)
+ */
+router.post('/api/cold-email/process', async (req, res) => {
+  try {
+    logger.info('Processing cold email sequence');
+
+    await processColdEmailSequence();
+
+    res.json({
+      success: true,
+      message: 'Cold email sequence processed successfully',
+    });
+  } catch (err) {
+    logger.error('Cold email process endpoint error', err);
+    res.status(500).json({
+      success: false,
+      error: err.message,
+    });
+  }
+});
+
+/**
+ * GET /api/cold-email/stats
+ * Get statistics for the cold email campaign
+ */
+router.get('/api/cold-email/stats', async (req, res) => {
+  try {
+    const { data: stats, error } = await supabase
+      .from('cold_email_sequence_stats')
+      .select('*')
+      .single();
+
+    if (error) {
+      logger.error('Failed to fetch cold email stats', error);
+      return res.status(500).json({ error: error.message });
+    }
+
+    res.json({
+      success: true,
+      data: stats || {},
+    });
+  } catch (err) {
+    logger.error('Cold email stats endpoint error', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+/**
+ * GET /api/cold-email/leads
+ * List all cold email leads with filtering
+ */
+router.get('/api/cold-email/leads', async (req, res) => {
+  try {
+    const { sequence_day, responded, limit = 50, offset = 0 } = req.query;
+
+    let query = supabase.from('cold_email_leads').select('*', { count: 'exact' });
+
+    if (sequence_day !== undefined) {
+      query = query.eq('sequence_day', parseInt(sequence_day));
+    }
+
+    if (responded === 'true') {
+      query = query.not('response_received_at', 'is', null);
+    }
+
+    query = query.order('created_at', { ascending: false }).range(parseInt(offset), parseInt(offset) + parseInt(limit) - 1);
+
+    const { data, error, count } = await query;
+
+    if (error) {
+      logger.error('Failed to fetch cold email leads', error);
+      return res.status(500).json({ error: error.message });
+    }
+
+    res.json({
+      success: true,
+      data,
+      total: count,
+      limit: parseInt(limit),
+      offset: parseInt(offset),
+    });
+  } catch (err) {
+    logger.error('Cold email leads endpoint error', err);
+    res.status(500).json({ error: err.message });
   }
 });
 

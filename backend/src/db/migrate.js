@@ -63,7 +63,7 @@ const client = new Client({
 
 async function runMigrations() {
   try {
-    console.log('\n🚀 Layer ROI Database Migration Runner');
+    console.log('\n🚀 layeroi Database Migration Runner');
     console.log('════════════════════════════════════════\n');
 
     console.log('🔌 Connecting to database...');

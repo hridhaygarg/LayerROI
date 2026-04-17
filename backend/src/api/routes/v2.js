@@ -71,7 +71,7 @@ router.get('/v2/openapi.json', (req, res) => {
   const spec = {
     openapi: '3.0.0',
     info: {
-      title: 'Layer ROI API v2',
+      title: 'layeroi API v2',
       description: 'Enterprise LLM cost management and insights',
       version: '2.0.0',
       contact: { email: 'support@layeroi.com' },

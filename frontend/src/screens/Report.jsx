@@ -158,7 +158,7 @@ export default function Report() {
           marginBottom: '12px',
           color: colors.textPrimary,
         }}>
-          Layer ROI Weekly Report
+          layeroi Weekly Report
         </h1>
         <p style={{
           color: colors.textSecondary,

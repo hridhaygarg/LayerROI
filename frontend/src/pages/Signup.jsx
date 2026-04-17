@@ -80,7 +80,7 @@ export default function Signup() {
       <nav style={{ background: colors.bgSurface, borderBottom: `1px solid ${colors.borderDefault}`, padding: '0 40px', height: '64px', display: 'flex', alignItems: 'center' }}>
         <a href="/" style={{ display: 'flex', alignItems: 'center', gap: '8px', textDecoration: 'none' }}>
           <div style={{ width: '8px', height: '8px', background: colors.accentGreen, borderRadius: '50%' }} />
-          <span style={{ fontFamily: 'Playfair Display, serif', fontSize: '18px', fontWeight: '600', color: colors.textPrimary }}>Layer ROI</span>
+          <span style={{ fontFamily: 'Playfair Display, serif', fontSize: '18px', fontWeight: '600', color: colors.textPrimary }}>layeroi</span>
         </a>
       </nav>
 
@@ -118,7 +118,7 @@ export default function Signup() {
 
           {/* Testimonial */}
           <div style={{ background: colors.bgSubtle, border: `1px solid ${colors.borderDefault}`, borderRadius: '12px', padding: '24px' }}>
-            <p style={{ fontSize: '15px', color: colors.textSecondary, fontStyle: 'italic', marginBottom: '16px', lineHeight: 1.6 }}>"We went from having zero visibility into agent costs to seeing exactly which ones are money makers. Layer ROI showed us we were losing $40k/month on one agent."</p>
+            <p style={{ fontSize: '15px', color: colors.textSecondary, fontStyle: 'italic', marginBottom: '16px', lineHeight: 1.6 }}>"We went from having zero visibility into agent costs to seeing exactly which ones are money makers. layeroi showed us we were losing $40k/month on one agent."</p>
             <div style={{ fontWeight: '600', color: colors.textPrimary, fontSize: '14px' }}>Sarah Chen</div>
             <div style={{ fontSize: '13px', color: colors.textTertiary }}>CFO, FinTech Startup</div>
           </div>

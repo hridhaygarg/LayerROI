@@ -1,6 +1,6 @@
 import cron from 'node-cron';
 import { generateSEOArticle } from './seoEngine.js';
-import { sendColdEmailSequence, checkClicksAndAlert } from './emailEngine.js';
+import { sendColdEmailSequence, checkClicksAndAlert, processColdEmailSequence } from './emailEngine.js';
 import { checkFreeTierUpgradeTriggers } from './freeTierEngine.js';
 import {
   buildOutreachQueue,
@@ -8,18 +8,46 @@ import {
   sendOutreachEmails,
   sendFollowUpReminders,
 } from './outreachEngine.js';
+import { sendLaunchDayEmails, sendLaunchFollowUp } from './productHuntEngine.js';
+import { sendPartnershipOutreach } from './partnershipEngine.js';
+import { sendAcquisitionOutreach } from './acquisitionEngine.js';
 
 let cronJobs = [];
 
 export function initAutomations() {
   console.log('⏰ Initializing cron-based automations...');
 
-  // SEO Article Generation: Every Tuesday and Friday at 10 AM UTC
+  // SEO Article Generation: Monday, Wednesday, Friday at 9 AM UTC
+  // Monday: Intent keywords (how-to, best practices)
+  // Wednesday: Problem keywords (pain points, challenges)
+  // Friday: Comparison keywords (vs competitors, alternatives)
   cronJobs.push(
-    cron.schedule('0 10 * * 2,5', async () => {
+    cron.schedule('0 9 * * 1', async () => {
       try {
-        console.log('[CRON] Triggering SEO article generation...');
-        await generateSEOArticle();
+        console.log('[CRON] Triggering SEO article generation (Intent keywords)...');
+        await generateSEOArticle('intent');
+      } catch (err) {
+        console.error('[CRON ERROR] SEO generation failed:', err.message);
+      }
+    })
+  );
+
+  cronJobs.push(
+    cron.schedule('0 9 * * 3', async () => {
+      try {
+        console.log('[CRON] Triggering SEO article generation (Problem keywords)...');
+        await generateSEOArticle('problem');
+      } catch (err) {
+        console.error('[CRON ERROR] SEO generation failed:', err.message);
+      }
+    })
+  );
+
+  cronJobs.push(
+    cron.schedule('0 9 * * 5', async () => {
+      try {
+        console.log('[CRON] Triggering SEO article generation (Comparison keywords)...');
+        await generateSEOArticle('comparison');
       } catch (err) {
         console.error('[CRON ERROR] SEO generation failed:', err.message);
       }
@@ -34,6 +62,18 @@ export function initAutomations() {
         await sendColdEmailSequence();
       } catch (err) {
         console.error('[CRON ERROR] Cold email failed:', err.message);
+      }
+    })
+  );
+
+  // Process Cold Email Sequence: Every day at 10 AM UTC (advance leads to next day)
+  cronJobs.push(
+    cron.schedule('0 10 * * *', async () => {
+      try {
+        console.log('[CRON] Processing cold email sequence...');
+        await processColdEmailSequence();
+      } catch (err) {
+        console.error('[CRON ERROR] Cold email processing failed:', err.message);
       }
     })
   );
@@ -132,16 +172,79 @@ export function initAutomations() {
     })
   );
 
-  console.log(`✅ ${cronJobs.length} automation cron jobs scheduled`);
-  console.log('   → SEO generation: Tue/Fri 10:00 UTC');
-  console.log('   → Cold emails: Mon 08:00 UTC');
-  console.log('   → Click checks: Every 6 hours');
-  console.log('   → Free tier checks: Every 6 hours');
-  console.log('   → Weekly reports: Sun 09:00 UTC');
-  console.log('   → Outreach queue build: Mon 00:30 UTC (6:00 AM IST)');
-  console.log('   → Outreach message gen: Mon 01:00 UTC (6:30 AM IST)');
-  console.log('   → Outreach email send: Mon 02:00 UTC (7:30 AM IST)');
-  console.log('   → Follow-up reminders: Thu 00:30 UTC (6:00 AM IST)');
+  // Product Hunt Launch: Send launch emails on first Monday of each quarter (April, July, Oct, Jan)
+  cronJobs.push(
+    cron.schedule('0 8 7-13 1,4,7,10 1', async () => {
+      try {
+        console.log('[CRON] Sending Product Hunt launch day emails...');
+        const result = await sendLaunchDayEmails();
+        console.log(`[CRON] Launch emails sent: ${result.sentCount}`);
+      } catch (err) {
+        console.error('[CRON ERROR] Product Hunt launch failed:', err.message);
+      }
+    })
+  );
+
+  // Product Hunt Follow-up: Send follow-up emails 3 days after launch
+  cronJobs.push(
+    cron.schedule('0 10 10-16 1,4,7,10 1', async () => {
+      try {
+        console.log('[CRON] Sending Product Hunt 3-day follow-up emails...');
+        await sendLaunchFollowUp(3);
+      } catch (err) {
+        console.error('[CRON ERROR] Product Hunt follow-up failed:', err.message);
+      }
+    })
+  );
+
+  // Partnership Outreach: First business day of each month at 9 AM UTC
+  cronJobs.push(
+    cron.schedule('0 9 1-5 * 1-5', async () => {
+      try {
+        console.log('[CRON] Sending partnership outreach emails...');
+        const result = await sendPartnershipOutreach();
+        console.log(`[CRON] Partnership outreach sent: ${result.sentCount}`);
+      } catch (err) {
+        console.error('[CRON ERROR] Partnership outreach failed:', err.message);
+      }
+    })
+  );
+
+  // Acquisition Outreach: Quarterly on first Monday at 8 AM UTC
+  cronJobs.push(
+    cron.schedule('0 8 1-7 1,4,7,10 1', async () => {
+      try {
+        console.log('[CRON] Sending acquisition outreach emails...');
+        const result = await sendAcquisitionOutreach();
+        console.log(`[CRON] Acquisition outreach sent: ${result.sentCount}`);
+      } catch (err) {
+        console.error('[CRON ERROR] Acquisition outreach failed:', err.message);
+      }
+    })
+  );
+
+  console.log(`\n✅ ${cronJobs.length} TOTAL AUTOMATION CRON JOBS SCHEDULED\n`);
+  console.log('📝 SEO & Content Generation:');
+  console.log('   → Intent keywords: Mon 09:00 UTC');
+  console.log('   → Problem keywords: Wed 09:00 UTC');
+  console.log('   → Comparison keywords: Fri 09:00 UTC');
+  console.log('\n📧 Email Sequences:');
+  console.log('   → Cold email initiate: Mon 08:00 UTC');
+  console.log('   → Cold email processing: Daily 10:00 UTC');
+  console.log('   → Free tier triggers: Every 6 hours');
+  console.log('   → Email engagement: Every 6 hours');
+  console.log('\n👥 Outreach Automation:');
+  console.log('   → Outreach queue build: Mon 00:30 UTC');
+  console.log('   → Message generation: Mon 01:00 UTC');
+  console.log('   → Email sending: Mon 02:00 UTC');
+  console.log('   → Follow-up reminders: Thu 00:30 UTC');
+  console.log('\n🚀 Growth & Partnership:');
+  console.log('   → Product Hunt launch: 1st Mon of quarter 08:00 UTC');
+  console.log('   → PH follow-ups: 3 days after launch');
+  console.log('   → Partnership outreach: 1st weekday of month 09:00 UTC');
+  console.log('   → Acquisition outreach: Quarterly 08:00 UTC');
+  console.log('\n📊 Admin:');
+  console.log('   → Weekly reports: Sun 09:00 UTC\n');
 }
 
 export function stopAutomations() {

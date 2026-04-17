@@ -7,7 +7,7 @@ router.get('/docs', (req, res) => {
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Layer ROI API Documentation</title>
+  <title>layeroi API Documentation</title>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
@@ -19,7 +19,7 @@ router.get('/docs', (req, res) => {
   </style>
 </head>
 <body>
-  <h1>Layer ROI API Documentation</h1>
+  <h1>layeroi API Documentation</h1>
 
   <h2>Authentication</h2>
   <p>Use JWT Bearer tokens or API keys:</p>
@@ -91,7 +91,7 @@ curl -X POST https://api.layeroi.com/v1/chat/completions \\
 
 router.get('/docs/api', (req, res) => {
   res.json({
-    title: 'Layer ROI API v2',
+    title: 'layeroi API v2',
     version: '2.0.0',
     baseUrl: 'https://api.layeroi.com',
     endpoints: {

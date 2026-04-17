@@ -82,7 +82,7 @@ export const CONFIG = {
 
   // Email configuration
   EMAILS: {
-    from: 'Layer ROI <hello@layeroi.com>',
+    from: 'layeroi <hello@layeroi.com>',
     support: 'support@layeroi.com',
   },
 };

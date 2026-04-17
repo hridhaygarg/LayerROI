@@ -73,7 +73,7 @@ export default function TopBar({ isActive, onMenuToggle, sidebarOpen, isMobile }
           textOverflow: 'ellipsis',
         }}
       >
-        Layer ROI
+        layeroi
       </h1>
 
       {/* Date Range - hidden on mobile, shown on tablet and up */}

@@ -14,7 +14,7 @@ export default function OnboardingPage() {
   return (
     <div className="container py-12">
       <div className="max-w-3xl">
-        <h2 className="text-3xl font-bold text-gray-900 mb-2">Get Started with Layer ROI</h2>
+        <h2 className="text-3xl font-bold text-gray-900 mb-2">Get Started with layeroi</h2>
         <p className="text-gray-600 mb-12">Connect your AI agents in 15 minutes. No code changes to your agents needed.</p>
 
         <div className="space-y-8">
@@ -23,7 +23,7 @@ export default function OnboardingPage() {
               <div className="flex items-center justify-center h-8 w-8 rounded-full bg-blue-600 text-white font-bold">1</div>
               <h3 className="text-xl font-semibold text-gray-900 ml-3">Update Your API Endpoint</h3>
             </div>
-            <p className="text-gray-600 mb-4">Instead of calling OpenAI directly, point your code to Layer ROI. Change this line:</p>
+            <p className="text-gray-600 mb-4">Instead of calling OpenAI directly, point your code to layeroi. Change this line:</p>
             <div className="bg-gray-900 text-green-400 p-4 rounded-lg font-mono text-sm mb-4">
               <div className="mb-2"># Before (direct OpenAI):</div>
               <div className="text-gray-400">const client = new OpenAI(&#123;</div>
@@ -31,7 +31,7 @@ export default function OnboardingPage() {
               <div className="text-gray-400">&#125;)</div>
             </div>
             <div className="bg-gray-900 text-green-400 p-4 rounded-lg font-mono text-sm">
-              <div className="mb-2"># After (through Layer ROI proxy):</div>
+              <div className="mb-2"># After (through layeroi proxy):</div>
               <div className="text-gray-400">const client = new OpenAI(&#123;</div>
               <div className="text-gray-400">&nbsp;&nbsp;apiKey: process.env.OPENAI_API_KEY,</div>
               <div className="text-green-400 font-bold">&nbsp;&nbsp;baseURL: '{proxyUrl}' <span className="text-gray-400">// ← Add this</span></div>

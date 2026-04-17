@@ -11,5 +11,5 @@ export const corsMiddleware = cors({
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Agent-Name', 'X-LayerROI-Key'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Agent-Name', 'X-layeroi-Key'],
 });

@@ -20,11 +20,11 @@ export async function createFreeUser(name, email, company) {
 
   // Send welcome email
   await resend.emails.send({
-    from: 'Layer ROI <hello@layeroi.com>',
+    from: 'layeroi <hello@layeroi.com>',
     to: email,
-    subject: 'Welcome to Layer ROI – Your API Key Inside',
+    subject: 'Welcome to layeroi – Your API Key Inside',
     html: `
-      <h1>Welcome to Layer ROI, ${name}!</h1>
+      <h1>Welcome to layeroi, ${name}!</h1>
       <p>Your API key is ready. Update one line of code in your agent:</p>
       <pre>baseURL: 'https://api.layeroi.com'</pre>
       <p>Your API key: <code>${apiKey}</code></p>
@@ -55,65 +55,30 @@ export async function checkFreeTierUpgradeTriggers() {
       (new Date() - new Date(user.created_at)) / (1000 * 60 * 60 * 24)
     );
 
-    // Day 2: Show first costs
-    if (daysSinceSignup === 2) {
-      await sendDay2Email(user);
+    // Day 3: Show first costs (they've had time to connect agents)
+    if (daysSinceSignup === 3) {
+      await sendDay3Email(user);
     }
 
-    // Day 5: Alert if 2+ agents connected
-    const { data: agents } = await supabase
-      .from('api_calls')
-      .select('agent_name', { count: 'exact' })
-      .eq('user_id', user.id)
-      .distinct();
-
-    if (daysSinceSignup === 5 && agents && agents.length >= 2) {
-      await sendDay5Email(user, agents.length);
+    // Day 7: Show value with real data
+    if (daysSinceSignup === 7) {
+      await sendDay7Email(user);
     }
 
-    // Day 10: Show spending with upgrade pitch
-    if (daysSinceSignup === 10) {
-      await sendDay10Email(user);
-    }
-
-    // Day 14: Trial ending
+    // Day 14: Soft upgrade pitch (trial is halfway done)
     if (daysSinceSignup === 14) {
       await sendDay14Email(user);
     }
+
+    // Day 30: Trial ending - final push
+    if (daysSinceSignup === 30) {
+      await sendDay30Email(user);
+    }
   }
 }
 
-export async function sendDay2Email(user) {
-  const topAgent = await getTopAgent(user.id);
-
-  if (topAgent) {
-    await resend.emails.send({
-      from: 'Layer ROI <hello@layeroi.com>',
-      to: user.email,
-      subject: `Your first 48 hours — Layer ROI found something interesting`,
-      html: `
-        <p>Hi ${user.name},</p>
-        <p>Your ${topAgent.name} agent has cost $${topAgent.cost.toFixed(2)} so far.</p>
-        <p>Track all your agents on the <a href="https://layeroi.com">dashboard</a>.</p>
-      `,
-    });
-  }
-}
-
-export async function sendDay5Email(user, agentCount) {
-  await resend.emails.send({
-    from: 'Layer ROI <hello@layeroi.com>',
-    to: user.email,
-    subject: `Your free tier gets 2 agents – you've hit the limit`,
-    html: `
-      <p>Hi ${user.name},</p>
-      <p>You've connected ${agentCount} agents already – that's the free limit.</p>
-      <p>Upgrade to track unlimited agents: <a href="https://layeroi.com/upgrade">Get started</a></p>
-    `,
-  });
-}
-
-export async function sendDay10Email(user) {
+// Day 3: Onboarding complete, show them their first data
+export async function sendDay3Email(user) {
   const { createClient } = await import('@supabase/supabase-js');
   const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
 
@@ -124,32 +89,115 @@ export async function sendDay10Email(user) {
 
   const totalSpend = costs?.reduce((sum, call) => sum + call.cost_usd, 0) || 0;
 
-  if (totalSpend > 0) {
-    await resend.emails.send({
-      from: 'Layer ROI <hello@layeroi.com>',
-      to: user.email,
-      subject: `You've spent $${totalSpend.toFixed(2)} on AI in 10 days`,
-      html: `
-        <p>Hi ${user.name},</p>
-        <p>Your AI agents have already spent <strong>$${totalSpend.toFixed(2)}</strong> in 10 days.</p>
-        <p>Can you afford not to track ROI per agent? Upgrade for full visibility: <a href="https://layeroi.com/upgrade">Upgrade now</a></p>
-      `,
-    });
-  }
-}
-
-export async function sendDay14Email(user) {
-  const totalSpend = await getUserSpend(user.id, 14);
-
   await resend.emails.send({
-    from: 'Layer ROI <hello@layeroi.com>',
+    from: 'layeroi <hello@layeroi.com>',
     to: user.email,
-    subject: `Your trial is ending – 20% off your first month`,
+    subject: `Your AI agents are costing $${totalSpend.toFixed(2)} already`,
     html: `
       <p>Hi ${user.name},</p>
-      <p>You've spent $${totalSpend} in 2 weeks. Upgrade to unlimited agents and keep full history.</p>
-      <p>Use code <strong>SAVE20</strong> for 20% off your first month.</p>
-      <p><a href="https://layeroi.com/upgrade">Upgrade now</a></p>
+      <p>We've been tracking your AI agent spending for 3 days. Here's what we've found:</p>
+      <p><strong>Total spend: $${totalSpend.toFixed(2)}</strong></p>
+      <p>The good news? You now have full visibility into every agent's cost and ROI. Log in to your <a href="https://app.layeroi.com">dashboard</a> to see the breakdown.</p>
+      <p>Most teams are surprised when they see agent-level profitability data for the first time.</p>
+    `,
+  });
+}
+
+// Day 7: They've seen the value, show upgrade benefits
+export async function sendDay7Email(user) {
+  const { createClient } = await import('@supabase/supabase-js');
+  const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
+
+  const { data: agents } = await supabase
+    .from('api_calls')
+    .select('agent_name', { count: 'exact' })
+    .eq('user_id', user.id)
+    .distinct();
+
+  const agentCount = agents?.length || 0;
+
+  await resend.emails.send({
+    from: 'layeroi <hello@layeroi.com>',
+    to: user.email,
+    subject: `You're tracking ${agentCount} agents – free tier only supports 2`,
+    html: `
+      <p>Hi ${user.name},</p>
+      <p>You've connected ${agentCount} agents to layeroi this week. That's great engagement!</p>
+      <p>Here's the thing: the free plan is limited to 2 agents and 14 days of history. If you want full monitoring of all your agents and historical data:</p>
+      <ul>
+        <li><strong>Unlimited agents</strong> — track as many as you run</li>
+        <li><strong>Full history</strong> — 90+ days of spending data</li>
+        <li><strong>Smart alerts</strong> — get notified when agents drift from ROI targets</li>
+      </ul>
+      <p><a href="https://app.layeroi.com/upgrade">Try Premium for free</a> (no credit card needed) and see the full power of agent ROI tracking.</p>
+    `,
+  });
+}
+
+// Day 14: Halfway through trial, final pitch before days run out
+export async function sendDay14Email(user) {
+  const { createClient } = await import('@supabase/supabase-js');
+  const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
+
+  const { data: costs } = await supabase
+    .from('api_calls')
+    .select('cost_usd')
+    .eq('user_id', user.id);
+
+  const totalSpend = costs?.reduce((sum, call) => sum + call.cost_usd, 0) || 0;
+
+  await resend.emails.send({
+    from: 'layeroi <hello@layeroi.com>',
+    to: user.email,
+    subject: `Your 14-day free trial is halfway done — $${totalSpend.toFixed(2)} in AI spend tracked`,
+    html: `
+      <p>Hi ${user.name},</p>
+      <p>You've been using layeroi for 2 weeks now. You've tracked <strong>$${totalSpend.toFixed(2)}</strong> in AI agent costs.</p>
+      <p>Without this visibility, how would you even know which agents are profitable?</p>
+      <p>Your free trial ends in 2 weeks. After that, you'll lose access to your 14 days of history. Upgrade now to keep it:</p>
+      <ul>
+        <li>Keep all your historical data</li>
+        <li>Track unlimited agents</li>
+        <li>Get access to forecasting and insights</li>
+      </ul>
+      <p><a href="https://app.layeroi.com/upgrade">Upgrade to Premium</a> — designed for teams serious about AI ROI.</p>
+    `,
+  });
+}
+
+// Day 30: Trial ending - final offer
+export async function sendDay30Email(user) {
+  const { createClient } = await import('@supabase/supabase-js');
+  const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
+
+  const { data: costs } = await supabase
+    .from('api_calls')
+    .select('cost_usd')
+    .eq('user_id', user.id);
+
+  const totalSpend = costs?.reduce((sum, call) => sum + call.cost_usd, 0) || 0;
+
+  await resend.emails.send({
+    from: 'layeroi <hello@layeroi.com>',
+    to: user.email,
+    subject: `Your free trial ends today — last chance to upgrade`,
+    html: `
+      <p>Hi ${user.name},</p>
+      <p>Your 30-day free trial ends today. After today, you'll lose access to:</p>
+      <ul>
+        <li>All 30 days of your spending history ($${totalSpend.toFixed(2)} in data)</li>
+        <li>Agent-level ROI tracking</li>
+        <li>Dashboard access</li>
+      </ul>
+      <p><strong>Don't lose this data.</strong> Upgrade now to keep your full history and unlock:</p>
+      <ul>
+        <li>Unlimited historical data (90+ days)</li>
+        <li>Unlimited agents</li>
+        <li>ROI forecasting</li>
+        <li>Team access</li>
+      </ul>
+      <p><a href="https://app.layeroi.com/upgrade?utm_source=trial&utm_campaign=expiring">Upgrade now</a> (your data will be preserved)</p>
+      <p>Questions? <a href="https://layeroi.com/contact">Chat with us</a> — we can help find the right plan for your team.</p>
     `,
   });
 }

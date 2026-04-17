@@ -43,7 +43,7 @@ logger.info('Server initializing', { port: PORT, environment: process.env.NODE_E
 app.get('/health', (req, res) => {
   res.status(200).json({
     status: 'ok',
-    service: 'Layer ROI API',
+    service: 'layeroi API',
     version: '2.0.0',
     timestamp: new Date().toISOString(),
     uptime: Math.floor(process.uptime()),
@@ -114,7 +114,7 @@ process.on('SIGTERM', async () => {
 });
 
 app.listen(PORT, '0.0.0.0', () => {
-  logger.info('Layer ROI backend started', { port: PORT, env: process.env.NODE_ENV });
+  logger.info('layeroi backend started', { port: PORT, env: process.env.NODE_ENV });
 });
 
 export default app;

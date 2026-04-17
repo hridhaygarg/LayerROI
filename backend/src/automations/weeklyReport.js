@@ -61,11 +61,11 @@ export async function sendWeeklyAdminReport() {
     const adminEmail = process.env.ADMIN_EMAIL || 'founder@layeroi.com';
 
     await resend.emails.send({
-      from: 'Layer ROI <hello@layeroi.com>',
+      from: 'layeroi <hello@layeroi.com>',
       to: adminEmail,
-      subject: `📊 Layer ROI Weekly Report – ${new Date().toLocaleDateString()}`,
+      subject: `📊 layeroi Weekly Report – ${new Date().toLocaleDateString()}`,
       html: `
-        <h1>Layer ROI Weekly Report</h1>
+        <h1>layeroi Weekly Report</h1>
         <p>Week of ${sevenDaysAgo.toLocaleDateString()} – ${new Date().toLocaleDateString()}</p>
 
         <h2>📈 Key Metrics</h2>
@@ -95,7 +95,7 @@ export async function sendWeeklyAdminReport() {
           .join('') || '<p>No high-intent companies detected.</p>'}
 
         <hr />
-        <p><small>Generated automatically by Layer ROI automation system</small></p>
+        <p><small>Generated automatically by layeroi automation system</small></p>
       `,
     });
 

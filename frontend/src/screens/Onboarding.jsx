@@ -44,8 +44,8 @@ export default function Onboarding() {
 
       {[
         { step: 1, title: 'Name Your Agent', desc: 'Give your agent a human-readable name to track it in the dashboard' },
-        { step: 2, title: 'Change One Line of Code', desc: 'Update your baseURL to point to Layer ROI for cost tracking' },
-        { step: 3, title: 'Make an API Call', desc: 'Your agent will now route through Layer ROI and be monitored' },
+        { step: 2, title: 'Change One Line of Code', desc: 'Update your baseURL to point to layeroi for cost tracking' },
+        { step: 3, title: 'Make an API Call', desc: 'Your agent will now route through layeroi and be monitored' },
         { step: 4, title: 'Watch the Dashboard', desc: 'See costs and ROI appear in real-time as your agent runs' },
       ].map(({ step, title, desc }) => (
         <div key={step} style={{
@@ -237,7 +237,7 @@ export default function Onboarding() {
           color: colors.textSecondary,
           lineHeight: '1.6',
         }}>
-          Your agent is now connected to Layer ROI. View it in your dashboard to see real-time cost tracking, ROI calculations, and anomaly alerts.
+          Your agent is now connected to layeroi. View it in your dashboard to see real-time cost tracking, ROI calculations, and anomaly alerts.
         </p>
       </div>
     </div>

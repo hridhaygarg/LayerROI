@@ -77,7 +77,7 @@ export default function Sidebar({ active, onNavigate, colors }) {
               textOverflow: 'ellipsis',
             }}
           >
-            Layer ROI
+            layeroi
           </span>
         </div>
       )}

@@ -6,7 +6,7 @@ const router = express.Router();
 router.get('/health', (req, res) => {
   res.status(200).json({
     status: 'ok',
-    service: 'Layer ROI API',
+    service: 'layeroi API',
     version: '2.0.0',
     timestamp: new Date().toISOString(),
     uptime: Math.floor(process.uptime()),

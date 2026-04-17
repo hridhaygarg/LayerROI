@@ -6,7 +6,7 @@ export const getHeaders = () => {
   return {
     'Content-Type': 'application/json',
     ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
-    ...(apiKey ? { 'X-LayerROI-Key': apiKey } : {}),
+    ...(apiKey ? { 'X-layeroi-Key': apiKey } : {}),
   };
 };
 

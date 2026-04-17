@@ -60,7 +60,7 @@ export default function App() {
   }
 
   // Set page title based on current screen
-  usePageTitle(isDashboard ? screenNames[currentScreen] : 'Layer ROI')
+  usePageTitle(isDashboard ? screenNames[currentScreen] : 'layeroi')
 
   // Track page views in Google Analytics
   useEffect(() => {
