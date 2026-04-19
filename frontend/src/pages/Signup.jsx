@@ -23,7 +23,7 @@ const colors = {
 export default function Signup() {
   const navigate = useNavigate();
   const [step, setStep] = useState('email'); // 'email', 'details', 'complete'
-  const [formData, setFormData] = useState({ email: '', name: '', company: '' });
+  const [formData, setFormData] = useState({ email: '', name: '', company: '', password: '' });
   const [loading, setLoading] = useState(false);
   const [apiKey, setApiKey] = useState('');
   const [error, setError] = useState('');
@@ -37,20 +37,33 @@ export default function Signup() {
     setLoading(true);
     setError('');
 
-    if (!formData.email || !formData.name || !formData.company) {
+    if (!formData.email || !formData.name || !formData.company || !formData.password) {
       setError('All fields are required');
+      setLoading(false);
+      return;
+    }
+    if (formData.password.length < 8) {
+      setError('Password must be at least 8 characters');
       setLoading(false);
       return;
     }
 
     try {
-      const result = await authService.signup(formData.email, formData.name, formData.company);
-      if (result.success && result.apiKey) {
-        localStorage.setItem('layeroi_api_key', result.apiKey);
-        setApiKey(result.apiKey);
+      const res = await fetch('https://api.layeroi.com/auth/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
+      const result = await res.json();
+      if (result.success && result.token) {
+        localStorage.setItem('layeroi_token', result.token);
+        if (result.apiKey) {
+          localStorage.setItem('layeroi_api_key', result.apiKey);
+          setApiKey(result.apiKey);
+        }
         setStep('complete');
       } else {
-        setError('Signup failed');
+        setError(result.error?.message || 'Signup failed');
       }
     } catch (err) {
       setError(err.message || 'Signup failed. Please try again.');
@@ -133,19 +146,28 @@ export default function Signup() {
                 <p style={{ color: colors.textSecondary, fontSize: '14px', marginBottom: '24px' }}>Just your email to get started. We'll generate your API key instantly.</p>
               </div>
 
-              <div>
-                <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: colors.textPrimary, marginBottom: '8px' }}>Work email</label>
-                <input
-                  type="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  placeholder="sarah@company.com"
-                  style={{ width: '100%', padding: '12px 16px', border: `1px solid ${colors.borderDefault}`, borderRadius: '6px', fontFamily: 'Inter, sans-serif', fontSize: '16px', background: colors.bgSurface, color: colors.textPrimary, transition: 'all 200ms' }}
-                  onFocus={(e) => (e.target.style.borderColor = colors.accentGreen)}
-                  onBlur={(e) => (e.target.style.borderColor = colors.borderDefault)}
-                />
-              </div>
+              {[
+                { label: 'Full name', name: 'name', type: 'text', placeholder: 'Sarah Chen' },
+                { label: 'Work email', name: 'email', type: 'email', placeholder: 'sarah@company.com' },
+                { label: 'Company', name: 'company', type: 'text', placeholder: 'Acme Corp' },
+                { label: 'Password', name: 'password', type: 'password', placeholder: 'Min 8 characters' },
+              ].map(field => (
+                <div key={field.name}>
+                  <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: colors.textPrimary, marginBottom: '8px' }}>{field.label}</label>
+                  <input
+                    type={field.type}
+                    name={field.name}
+                    value={formData[field.name]}
+                    onChange={handleChange}
+                    placeholder={field.placeholder}
+                    required
+                    minLength={field.name === 'password' ? 8 : undefined}
+                    style={{ width: '100%', padding: '12px 16px', border: `1px solid ${colors.borderDefault}`, borderRadius: '6px', fontFamily: 'Inter, sans-serif', fontSize: '16px', background: colors.bgSurface, color: colors.textPrimary, transition: 'all 200ms', boxSizing: 'border-box' }}
+                    onFocus={(e) => (e.target.style.borderColor = colors.accentGreen)}
+                    onBlur={(e) => (e.target.style.borderColor = colors.borderDefault)}
+                  />
+                </div>
+              ))}
 
               {error && <div style={{ padding: '12px', background: '#fef2f2', border: `1px solid ${colors.dangerRed}`, borderRadius: '6px', color: colors.dangerRed, fontSize: '14px' }}>{error}</div>}
 

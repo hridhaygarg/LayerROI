@@ -59,8 +59,8 @@ router.post('/checkout', async (req, res) => {
 
     res.json({ success: true, data: { subscription_id: session.subscription_id, checkout_url: session.checkout_url } });
   } catch (error) {
-    logger.error('Checkout failed', { error: error.message });
-    res.status(500).json({ success: false, error: { code: 'CHECKOUT_FAILED', message: 'Could not create checkout session' } });
+    logger.error('Checkout failed', { error: error.message, stack: error.stack });
+    res.status(500).json({ success: false, error: { code: 'CHECKOUT_FAILED', message: error.message } });
   }
 });
 

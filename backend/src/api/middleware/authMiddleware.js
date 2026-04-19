@@ -4,7 +4,7 @@ import { validateApiKey } from '../../auth/apiKeys.js';
 
 export const authMiddleware = (req, res, next) => {
   // Skip auth for public endpoints
-  const publicEndpoints = ['/health', '/health/detailed', '/health/llm', '/api/signup', '/api/metrics/weekly', '/payments/plans', '/payments/webhook'];
+  const publicEndpoints = ['/health', '/health/detailed', '/health/llm', '/health/payments', '/api/signup', '/api/metrics/weekly', '/payments/plans', '/payments/webhook', '/auth/login', '/auth/signup', '/auth/verify', '/auth/forgot-password', '/auth/reset-password'];
   if (publicEndpoints.includes(req.path)) {
     return next();
   }

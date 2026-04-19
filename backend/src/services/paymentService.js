@@ -89,11 +89,20 @@ export async function createCheckoutSession({ orgId, planName, customerEmail, or
     body: JSON.stringify(payload),
   });
 
-  const data = await response.json().catch(() => ({}));
+  const responseText = await response.text();
+  let data;
+  try { data = JSON.parse(responseText); } catch { data = { raw: responseText }; }
 
   if (!response.ok) {
-    logger.error('Dodo checkout creation failed', { status: response.status, error: data, orgId, planName });
-    throw new Error(data.message || `Checkout failed (status ${response.status})`);
+    logger.error('Dodo API error', {
+      status: response.status,
+      statusText: response.statusText,
+      body: responseText.substring(0, 500),
+      productId: plan.product_id,
+      planName,
+      orgId,
+    });
+    throw new Error(`Dodo returned ${response.status}: ${responseText.substring(0, 200)}`);
   }
 
   logger.info('Dodo checkout created', { orgId, planName, subscriptionId: data.subscription_id });

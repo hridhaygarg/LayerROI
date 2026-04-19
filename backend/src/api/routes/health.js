@@ -66,4 +66,22 @@ router.get('/health/llm', async (req, res) => {
   }
 });
 
+router.get('/health/payments', (req, res) => {
+  res.json({
+    success: true,
+    config: {
+      dodo_api_key_set: !!process.env.DODO_API_KEY,
+      dodo_webhook_secret_set: !!process.env.DODO_WEBHOOK_SECRET,
+      starter_product_id_set: !!process.env.DODO_PRODUCT_STARTER,
+      business_product_id_set: !!process.env.DODO_PRODUCT_BUSINESS,
+      enterprise_product_id_set: !!process.env.DODO_PRODUCT_ENTERPRISE,
+      starter_product_id_prefix: process.env.DODO_PRODUCT_STARTER?.substring(0, 8) || null,
+      business_product_id_prefix: process.env.DODO_PRODUCT_BUSINESS?.substring(0, 8) || null,
+      enterprise_product_id_prefix: process.env.DODO_PRODUCT_ENTERPRISE?.substring(0, 8) || null,
+      resend_key_set: !!process.env.RESEND_API_KEY,
+      frontend_url: process.env.FRONTEND_URL || 'https://layeroi.com',
+    },
+  });
+});
+
 export default router;

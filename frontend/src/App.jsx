@@ -18,6 +18,7 @@ const Login = lazy(() => import('./pages/Login'))
 const Docs = lazy(() => import('./pages/Docs'))
 const Blog = lazy(() => import('./pages/Blog'))
 const SEOPages = lazy(() => import('./pages/SEOPages'))
+const MagicLinkVerify = lazy(() => import('./pages/MagicLinkVerify'))
 
 // Loading component
 const LoadingScreen = () => (
@@ -133,6 +134,11 @@ export default function App() {
   // Show login page if on /login route
   if (currentPath === '/login') {
     return <Suspense fallback={<LoadingScreen />}><Login /></Suspense>
+  }
+
+  // Magic link verification
+  if (currentPath === '/auth/verify') {
+    return <Suspense fallback={<LoadingScreen />}><MagicLinkVerify /></Suspense>
   }
 
   // Show docs page
