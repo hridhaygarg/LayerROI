@@ -52,4 +52,18 @@ router.get('/health/detailed', async (req, res) => {
   }
 });
 
+router.get('/health/llm', async (req, res) => {
+  try {
+    const { healthCheck: llmHealthCheck } = await import('../../services/llmService.js');
+    const status = await llmHealthCheck();
+    res.json({
+      success: true,
+      providers: status,
+      ready: status.groq || status.gemini,
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
 export default router;

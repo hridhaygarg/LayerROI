@@ -1,8 +1,6 @@
-import Anthropic from '@anthropic-ai/sdk';
+import { generateLongContent } from '../services/llmService.js';
 import { execSync } from 'child_process';
 import { logContent, getNextTopic } from './database.js';
-
-const client = new Anthropic();
 
 // Article topics organized by keyword intent
 const seoTopics = {
@@ -101,18 +99,13 @@ Format as HTML. Include these CTA elements:
 
 Return ONLY the HTML content, no markdown or extra text.`;
 
-  const message = await client.messages.create({
-    model: 'claude-sonnet-4-6',
-    max_tokens: 2048,
-    messages: [
-      {
-        role: 'user',
-        content: prompt,
-      },
-    ],
+  const result = await generateLongContent({
+    prompt,
+    systemPrompt: 'You are an expert SEO content writer. Return ONLY HTML content. No markdown. No preamble. Be concise. No meta-commentary.',
+    targetWords: 1200,
   });
 
-  const htmlContent = message.content[0].text;
+  const htmlContent = result.text;
   const slug = topic.replace(/_/g, '-');
   const filename = `frontend/public/blog/${slug}.html`;
 

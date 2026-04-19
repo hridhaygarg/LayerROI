@@ -1,8 +1,5 @@
-import Anthropic from '@anthropic-ai/sdk';
+import { generateText, generateShortContent } from '../services/llmService.js';
 import { logger } from '../utils/logger.js';
-
-const ANTHROPIC_KEY = process.env.ANTHROPIC_API_KEY;
-const anthropic = ANTHROPIC_KEY ? new Anthropic({ apiKey: ANTHROPIC_KEY }) : null;
 
 // Twitter API (add keys when ready)
 const TWITTER_BEARER = process.env.TWITTER_BEARER_TOKEN;
@@ -70,7 +67,15 @@ Rules:
 - Do NOT start with "We" — vary sentence openers
 - Sound like a founder, not a brand account
 
-Return ONLY the tweet text, nothing else.`,
+Examples of good tweets in our voice:
+
+"One of our early users found an AI agent burning $4,200/hour in a recursive loop. Our kill switch stops this in 60 seconds. layeroi.com"
+
+"Datadog shows tokens. LangSmith shows traces. Helicone shows latency. None of them answer: which agents are worth what they cost? layeroi.com"
+
+"40% of agentic AI projects cancelled due to unclear ROI (Gartner). Not because the tech failed. Because nobody could prove the ROI. layeroi.com"
+
+Write ONE tweet. Just the tweet text. No quotes. No explanation before or after.`,
   },
 
   tweet_thread: {
@@ -240,33 +245,42 @@ const WEEKLY_THEMES = [
  * Generate a single piece of content using Claude
  */
 export async function generateContent(type, theme) {
-  if (!anthropic) {
-    logger.warn('Anthropic API key not configured — cannot generate content');
-    return { success: false, error: 'ANTHROPIC_API_KEY not set' };
-  }
-
   const contentType = CONTENT_TYPES[type];
   if (!contentType) {
     return { success: false, error: `Unknown content type: ${type}` };
   }
 
   try {
-    const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-6',
-      max_tokens: 1024,
-      messages: [{ role: 'user', content: contentType.prompt(theme) }],
-    });
+    const isTweet = type === 'tweet';
+    const fullPrompt = contentType.prompt(theme);
 
-    const content = message.content[0].text.trim();
-    logger.info('Content generated', { type, theme, length: content.length });
+    let result;
+    if (isTweet) {
+      result = await generateShortContent({
+        prompt: fullPrompt,
+        systemPrompt: 'Be concise. No preamble. No meta-commentary. Just the output.',
+        maxLength: 280,
+      });
+    } else {
+      result = await generateText({
+        prompt: fullPrompt,
+        systemPrompt: 'Be concise. No preamble. No meta-commentary. Just the output.',
+        maxTokens: type === 'blog_outline' ? 2000 : 1024,
+        temperature: type === 'tweet_thread' ? 0.85 : 0.7,
+      });
+    }
+
+    logger.info('Content generated', { type, theme, provider: result.provider, length: result.text.length });
 
     return {
       success: true,
       type,
       theme,
-      content,
+      content: result.text,
+      provider: result.provider,
+      model: result.model,
       generatedAt: new Date().toISOString(),
-      tokens: message.usage,
+      tokens: result.tokens,
     };
   } catch (err) {
     logger.error('Content generation failed', err, { type, theme });

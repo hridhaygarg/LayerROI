@@ -1,4 +1,4 @@
-import { Anthropic } from '@anthropic-ai/sdk';
+import { generateText } from '../services/llmService.js';
 import { Resend } from 'resend';
 import { supabase } from '../config/database.js';
 import { logger } from '../utils/logger.js';
@@ -7,10 +7,6 @@ import axios from 'axios';
 const APOLLO_KEY = process.env.APOLLO_API_KEY;
 const RESEND_KEY = process.env.RESEND_API_KEY;
 const COMPANY_EMAIL = process.env.COMPANY_EMAIL || 'hello@layeroi.com';
-
-const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY,
-});
 
 const resend = RESEND_KEY ? new Resend(RESEND_KEY) : null;
 
@@ -415,13 +411,14 @@ Generate a short, personalized LinkedIn outreach message (3-4 sentences max) tha
 
 Keep it conversational, not salesy. Include NO HTML or formatting.`;
 
-    const message = await anthropic.messages.create({
-      model: 'claude-opus-4-1-20250805',
-      max_tokens: 200,
-      messages: [{ role: 'user', content: prompt }],
+    const result = await generateText({
+      prompt,
+      systemPrompt: 'You are a B2B sales rep. Write concise, personalized outreach. No preamble. Just the message.',
+      maxTokens: 200,
+      temperature: 0.7,
     });
 
-    return message.content[0].text;
+    return result.text;
   } catch (err) {
     logger.error('Message generation failed', err);
     // Return fallback message
@@ -442,13 +439,14 @@ Create a 2-3 sentence follow-up that:
 
 Keep it casual and non-pushy.`;
 
-    const message = await anthropic.messages.create({
-      model: 'claude-opus-4-1-20250805',
-      max_tokens: 150,
-      messages: [{ role: 'user', content: prompt }],
+    const result = await generateText({
+      prompt,
+      systemPrompt: 'Write a brief, casual follow-up email. No preamble. Just the message text.',
+      maxTokens: 150,
+      temperature: 0.7,
     });
 
-    return message.content[0].text;
+    return result.text;
   } catch (err) {
     logger.error('Follow-up generation failed', err);
     return `Hey ${prospect.prospect_name}, wanted to circle back on layeroi. Most teams we talk to are surprised by how much they're spending on unprofitable agents. Worth a quick 15-min call to see if it applies to you?`;

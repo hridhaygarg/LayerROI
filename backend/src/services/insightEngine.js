@@ -1,11 +1,7 @@
-import Anthropic from '@anthropic-ai/sdk';
+import { generateJSON } from './llmService.js';
 import { logger } from '../utils/logger.js';
 import { getAgentCosts } from '../database/queries/index.js';
 import { supabase } from '../config/database.js';
-
-const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY,
-});
 
 export async function generateInsights(orgId) {
   try {
@@ -66,20 +62,13 @@ Provide insights in JSON format with this structure:
   ]
 }`;
 
-    const message = await anthropic.messages.create({
-      model: 'claude-opus-4-6',
-      max_tokens: 1024,
-      messages: [
-        {
-          role: 'user',
-          content: prompt,
-        },
-      ],
+    const result = await generateJSON({
+      prompt,
+      systemPrompt: 'You are an AI cost analyst. Analyze the data and return structured JSON insights. Be concise. No preamble.',
+      schema: { insights: [{ type: 'string', severity: 'string', message: 'string', recommendation: 'string' }] },
     });
 
-    const responseText = message.content[0]?.type === 'text' ? message.content[0].text : '';
-    const jsonMatch = responseText.match(/\{[\s\S]*\}/);
-    const insightData = jsonMatch ? JSON.parse(jsonMatch[0]) : { insights: [] };
+    const insightData = result.data || { insights: [] };
 
     // Store insights in database
     const insights = [];
