@@ -15,6 +15,9 @@ const Outreach = lazy(() => import('./screens/Outreach'))
 const Admin = lazy(() => import('./screens/Admin'))
 const Signup = lazy(() => import('./pages/Signup'))
 const Login = lazy(() => import('./pages/Login'))
+const Docs = lazy(() => import('./pages/Docs'))
+const Blog = lazy(() => import('./pages/Blog'))
+const SEOPages = lazy(() => import('./pages/SEOPages'))
 
 // Loading component
 const LoadingScreen = () => (
@@ -130,6 +133,21 @@ export default function App() {
   // Show login page if on /login route
   if (currentPath === '/login') {
     return <Suspense fallback={<LoadingScreen />}><Login /></Suspense>
+  }
+
+  // Show docs page
+  if (currentPath === '/docs' || currentPath.startsWith('/docs')) {
+    return <Suspense fallback={<LoadingScreen />}><Docs /></Suspense>
+  }
+
+  // Show blog page
+  if (currentPath === '/blog' || currentPath.startsWith('/blog')) {
+    return <Suspense fallback={<LoadingScreen />}><Blog /></Suspense>
+  }
+
+  // SEO landing pages and comparison pages
+  if (currentPath === '/ai-agent-cost-tracking' || currentPath === '/ai-agent-roi' || currentPath.startsWith('/vs/')) {
+    return <Suspense fallback={<LoadingScreen />}><SEOPages path={currentPath} /></Suspense>
   }
 
   // Check authentication for dashboard routes

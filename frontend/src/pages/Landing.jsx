@@ -1,1143 +1,1210 @@
-import { useState, useRef, useEffect } from 'react';
-import { useScrollProgress } from '../hooks/useScrollProgress';
-import { useCountUp } from '../hooks/useCountUp';
-import { useIntersectionObserver } from '../hooks/useIntersectionObserver';
-import { AnimatedSection } from '../components/AnimatedSection';
-import { useResponsive } from '../hooks/useResponsive';
-import '../styles/landing-responsive.css';
-import '../styles/micro-interactions.css';
-
-const colors = {
-  bgPrimary: '#fafaf9',
-  bgSurface: '#ffffff',
-  bgSubtle: '#f5f5f4',
-  bgProfit: '#f0fdf4',
-  bgLoss: '#fef2f2',
-  bgWarning: '#fffbeb',
-  borderDefault: 'rgba(0,0,0,0.08)',
-  borderStrong: 'rgba(0,0,0,0.15)',
-  textPrimary: '#111827',
-  textSecondary: '#6b7280',
-  textTertiary: '#9ca3af',
-  accentGreen: '#16a34a',
-  accentGreenLight: '#dcfce7',
-  accentGreenBorder: '#86efac',
-  dangerRed: '#dc2626',
-  dangerLight: '#fef2f2',
-  dangerBorder: '#fca5a5',
-  warningAmber: '#d97706',
-  warningLight: '#fffbeb',
-  shadowSm: '0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04)',
-  shadowMd: '0 4px 6px rgba(0,0,0,0.06), 0 2px 4px rgba(0,0,0,0.04)',
-  shadowLg: '0 10px 15px rgba(0,0,0,0.06), 0 4px 6px rgba(0,0,0,0.04)',
-};
+import { useState, useEffect } from 'react';
+import '../styles/designSystem.css';
 
 export default function Landing() {
-  const scrollProgress = useScrollProgress();
-  const [navBlurred, setNavBlurred] = useState(false);
-  const { isMobile, isTablet } = useResponsive();
-  const problemRef = useRef();
+  return (
+    <div className="landing-root">
+      <Navigation />
+      <Hero />
+      <LogoBar />
+      <StatsBar />
+      <Problem />
+      <HowItWorks />
+      <Features />
+      <ComparisonTable />
+      <ROICalculator />
+      <Testimonials />
+      <Pricing />
+      <FAQ />
+      <ClosingCTA />
+      <Footer />
+    </div>
+  );
+}
+
+/* ─────────────────────────────────────────────
+   SECTION 1 — NAVIGATION
+   ───────────────────────────────────────────── */
+
+function Navigation() {
+  const [scrolled, setScrolled] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
-    const handleScroll = () => setNavBlurred(window.scrollY > 10);
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
+    const h = () => setScrolled(window.scrollY > 20);
+    window.addEventListener('scroll', h, { passive: true });
+    return () => window.removeEventListener('scroll', h);
   }, []);
 
-  const scrollToSection = () => {
-    problemRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
-
-  const navigateToDashboard = () => {
-    window.location.href = '/dashboard';
-  };
+  useEffect(() => {
+    if (menuOpen) document.body.style.overflow = 'hidden';
+    else document.body.style.overflow = '';
+    return () => { document.body.style.overflow = ''; };
+  }, [menuOpen]);
 
   return (
-    <div style={{ background: colors.bgPrimary, color: colors.textPrimary, minHeight: '100vh', fontFamily: 'Inter, sans-serif' }}>
-      {/* Scroll Progress Bar */}
-      <div style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        height: '3px',
-        background: colors.accentGreen,
-        width: `${scrollProgress}%`,
-        zIndex: 1000,
-        transition: 'width 50ms linear'
-      }} />
-
-      {/* Navigation */}
+    <>
       <nav style={{
-        position: 'sticky',
-        top: 0,
-        zIndex: 999,
-        background: colors.bgSurface,
-        borderBottom: `1px solid ${colors.borderDefault}`,
-        boxShadow: navBlurred ? `0 10px 30px rgba(0,0,0,0.1), ${colors.shadowSm}` : 'none',
-        transition: 'all 200ms cubic-bezier(0.16,1,0.3,1)',
-        backdropFilter: navBlurred ? 'blur(12px)' : 'blur(0px)',
-        backgroundColor: navBlurred ? 'rgba(255,255,255,0.95)' : colors.bgSurface,
+        position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100,
+        height: '64px',
+        background: scrolled ? 'rgba(5,5,5,0.72)' : 'transparent',
+        backdropFilter: scrolled ? 'saturate(180%) blur(20px)' : 'none',
+        WebkitBackdropFilter: scrolled ? 'saturate(180%) blur(20px)' : 'none',
+        borderBottom: scrolled ? '1px solid var(--border-subtle)' : '1px solid transparent',
+        transition: 'all 300ms var(--ease-smooth)',
       }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto', padding: `0 ${isMobile ? '12px' : isTablet ? '24px' : '40px'}`, height: '64px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', animation: 'fadeIn 600ms cubic-bezier(0.16,1,0.3,1) both' }}>
-            <div style={{ width: '8px', height: '8px', background: colors.accentGreen, borderRadius: '50%' }} />
-            <span style={{ fontFamily: 'Playfair Display, serif', fontSize: isMobile ? '14px' : '18px', fontWeight: '600', color: colors.textPrimary }}>layeroi</span>
+        <div className="l-container" style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <a href="/" style={{ display: 'flex', alignItems: 'center', gap: '10px', textDecoration: 'none' }}>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+              <rect width="24" height="24" rx="5" fill="#22c55e"/>
+              <rect x="5" y="7" width="3" height="11" rx="1" fill="white"/>
+              <rect x="10.5" y="10" width="3" height="8" rx="1" fill="white" opacity="0.75"/>
+              <rect x="16" y="5" width="3" height="13" rx="1" fill="white" opacity="0.9"/>
+            </svg>
+            <span style={{ fontWeight: 600, fontSize: '15px', color: 'white', letterSpacing: '-0.01em' }}>
+              layer<span style={{ color: '#22c55e' }}>oi</span>
+            </span>
+          </a>
+
+          <div className="nav-middle" style={{ display: 'flex', alignItems: 'center', gap: '32px' }}>
+            {[
+              { label: 'Product', href: '#product' },
+              { label: 'Pricing', href: '#pricing' },
+              { label: 'Docs', href: '/docs' },
+              { label: 'Blog', href: '/blog' },
+            ].map(item => (
+              <a key={item.label} href={item.href} style={{
+                color: 'var(--white-50)', textDecoration: 'none', fontSize: '13px', fontWeight: 500,
+                transition: 'color 150ms ease',
+              }} onMouseEnter={e => e.currentTarget.style.color = 'white'}
+                 onMouseLeave={e => e.currentTarget.style.color = 'var(--white-50)'}>
+                {item.label}
+              </a>
+            ))}
           </div>
-          <div style={{ display: 'flex', gap: isMobile ? '8px' : '24px', alignItems: 'center', animation: 'fadeIn 600ms cubic-bezier(0.16,1,0.3,1) both 100ms' }}>
-            {!isMobile && <button onClick={navigateToDashboard} style={{
-              background: 'none',
-              border: 'none',
-              fontSize: '14px',
-              fontWeight: '500',
-              color: colors.textSecondary,
-              cursor: 'pointer',
-              transition: 'color 200ms cubic-bezier(0.16,1,0.3,1)',
-              position: 'relative',
-            }} onMouseEnter={(e) => (e.target.style.color = colors.textPrimary)} onMouseLeave={(e) => (e.target.style.color = colors.textSecondary)}>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <a href="/login" className="nav-signin-link" style={{ color: 'var(--white-70)', textDecoration: 'none', fontSize: '13px', fontWeight: 500 }}>
               Sign in
-              <div style={{
-                position: 'absolute',
-                bottom: '-4px',
-                left: '0',
-                right: '0',
-                height: '2px',
-                background: colors.accentGreen,
-                opacity: 0,
-                transition: 'opacity 200ms cubic-bezier(0.16,1,0.3,1)',
-                transform: 'scaleX(0)',
-                transformOrigin: 'right',
-              }} onMouseEnter={(e) => { e.currentTarget.style.opacity = '1'; e.currentTarget.style.transform = 'scaleX(1)'; e.currentTarget.style.transformOrigin = 'left'; }} />
-            </button>}
-            <a href="/signup" style={{
-              background: colors.bgSurface,
-              border: `1px solid ${colors.accentGreen}`,
-              color: colors.accentGreen,
-              padding: isMobile ? '6px 12px' : '8px 20px',
-              borderRadius: '6px',
-              textDecoration: 'none',
-              fontSize: isMobile ? '12px' : '14px',
-              fontWeight: '500',
-              cursor: 'pointer',
-              transition: 'all 200ms cubic-bezier(0.16,1,0.3,1)',
-              display: 'inline-block',
-              position: 'relative',
-              overflow: 'hidden',
-              whiteSpace: 'nowrap',
-            }} onMouseEnter={(e) => {
-              e.target.style.background = colors.accentGreen;
-              e.target.style.color = colors.bgSurface;
-              e.target.style.transform = 'scale(1.05)';
-            }} onMouseLeave={(e) => {
-              e.target.style.background = colors.bgSurface;
-              e.target.style.color = colors.accentGreen;
-              e.target.style.transform = 'scale(1)';
-            }}>Start free →</a>
+            </a>
+            <a href="/signup" className="btn-primary" style={{ padding: '8px 14px', fontSize: '13px' }}>
+              Start free →
+            </a>
+            <button onClick={() => setMenuOpen(!menuOpen)} className="mobile-hamburger" style={{
+              display: 'none', background: 'none', border: 'none', cursor: 'pointer',
+              color: 'white', fontSize: '24px', padding: '8px',
+            }}>
+              {menuOpen ? '×' : '☰'}
+            </button>
           </div>
         </div>
       </nav>
 
-      {/* Hero Section */}
-      <section style={{ background: colors.bgSurface, padding: `${isMobile ? '48px' : isTablet ? '64px' : '96px'} ${isMobile ? '16px' : isTablet ? '24px' : '40px'}`, textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
-        {/* Mesh Background Glow */}
+      {menuOpen && (
         <div style={{
-          position: 'absolute',
-          top: '-50%',
-          right: '-20%',
-          width: '600px',
-          height: '600px',
-          background: 'radial-gradient(circle, rgba(22,163,74,0.15) 0%, transparent 70%)',
-          borderRadius: '50%',
-          filter: 'blur(80px)',
-          pointerEvents: 'none',
-        }} />
-        <div style={{
-          position: 'absolute',
-          bottom: '-30%',
-          left: '-20%',
-          width: '500px',
-          height: '500px',
-          background: 'radial-gradient(circle, rgba(22,163,74,0.1) 0%, transparent 70%)',
-          borderRadius: '50%',
-          filter: 'blur(100px)',
-          pointerEvents: 'none',
-        }} />
-
-        <div style={{ maxWidth: '720px', margin: '0 auto', position: 'relative', zIndex: 1 }}>
-          <AnimatedSection animation="fadeUp" delay={0}>
-            <div style={{ display: 'inline-block', padding: '8px 16px', border: `1px solid ${colors.accentGreenBorder}`, borderRadius: '20px', background: colors.accentGreenLight, marginBottom: '32px' }}>
-              <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '12px', fontWeight: '500', color: colors.accentGreen }}>Financial intelligence for AI teams</span>
-            </div>
-          </AnimatedSection>
-
-          <AnimatedSection animation="fadeUp" delay={80}>
-            <h1 style={{ fontFamily: 'Playfair Display, serif', fontSize: isMobile ? '32px' : isTablet ? '48px' : '72px', fontWeight: '700', lineHeight: 1.1, marginBottom: '16px', color: colors.textPrimary }}>
-              Your AI agents are spending money.<br />
-              <span style={{ color: colors.accentGreen, fontStyle: 'italic' }}>Are they earning it?</span>
-            </h1>
-          </AnimatedSection>
-
-          <AnimatedSection animation="fadeUp" delay={160}>
-            <p style={{ fontSize: isMobile ? '14px' : isTablet ? '16px' : '20px', color: colors.textSecondary, marginBottom: '48px', lineHeight: 1.6, maxWidth: '560px', margin: '0 auto 48px' }}>
-              layeroi is the only financial control layer for AI agents. See your agent P&L in 15 minutes — built for CFOs, not engineers.
-            </p>
-          </AnimatedSection>
-
-          <AnimatedSection animation="fadeUp" delay={240}>
-            <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: isMobile ? '12px' : '16px', justifyContent: 'center', marginBottom: '48px', width: isMobile ? '100%' : 'auto' }}>
-              <a href="/signup" style={{
-                background: colors.accentGreen,
-                color: colors.bgSurface,
-                padding: isMobile ? '10px 20px' : '12px 28px',
-                borderRadius: '6px',
+          position: 'fixed', inset: 0, zIndex: 99,
+          background: 'rgba(5,5,5,0.96)',
+          backdropFilter: 'blur(20px)',
+          paddingTop: '80px',
+          animation: 'fadeIn 200ms ease',
+        }}>
+          <div style={{ padding: '32px 24px' }}>
+            {[
+              { label: 'Product', href: '#product' },
+              { label: 'Pricing', href: '#pricing' },
+              { label: 'Docs', href: '/docs' },
+              { label: 'Blog', href: '/blog' },
+              { label: 'Sign in', href: '/login' },
+            ].map((item, i) => (
+              <a key={item.label} href={item.href}
+                 onClick={() => setMenuOpen(false)}
+                 style={{
+                display: 'block', padding: '20px 0',
+                fontSize: '24px', color: 'white',
+                fontFamily: 'Instrument Serif', fontStyle: 'italic',
+                borderBottom: '1px solid var(--border-subtle)',
                 textDecoration: 'none',
-                fontSize: isMobile ? '14px' : '16px',
-                fontWeight: '500',
-                fontFamily: 'Inter, sans-serif',
-                cursor: 'pointer',
-                transition: 'all 200ms cubic-bezier(0.16,1,0.3,1)',
-                display: 'inline-block',
-                position: 'relative',
-                textAlign: 'center',
-                minWidth: isMobile ? 'auto' : '120px',
-              }} onMouseEnter={(e) => {
-                e.target.style.transform = 'translateY(-2px)';
-                e.target.style.boxShadow = `0 12px 20px rgba(22,163,74,0.3)`;
-              }} onMouseLeave={(e) => {
-                e.target.style.transform = 'translateY(0)';
-                e.target.style.boxShadow = 'none';
-              }} onMouseDown={(e) => (e.target.style.transform = 'scale(0.98)')} onMouseUp={(e) => (e.target.style.transform = 'translateY(-2px)')}>Start for free →</a>
-              <button onClick={scrollToSection} style={{
-                background: colors.bgSurface,
-                color: colors.textSecondary,
-                padding: '12px 28px',
-                borderRadius: '6px',
-                border: `1px solid ${colors.borderDefault}`,
-                fontSize: '16px',
-                fontWeight: '500',
-                fontFamily: 'Inter, sans-serif',
-                cursor: 'pointer',
-                transition: 'all 200ms cubic-bezier(0.16,1,0.3,1)',
-                textDecoration: 'none',
-                position: 'relative',
-              }} onMouseEnter={(e) => {
-                e.target.style.color = colors.textPrimary;
-                e.target.style.borderColor = colors.textPrimary;
-              }} onMouseLeave={(e) => {
-                e.target.style.color = colors.textSecondary;
-                e.target.style.borderColor = colors.borderDefault;
-              }}>See how it works</button>
-            </div>
-          </AnimatedSection>
-
-          <AnimatedSection animation="fadeUp" delay={320}>
-            <div style={{ display: 'flex', justifyContent: 'center', gap: '16px', fontSize: '14px', color: colors.textTertiary, fontFamily: 'Inter, sans-serif' }}>
-              <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><span style={{ color: colors.accentGreen, fontSize: '16px' }}>✓</span> Free for 2 agents</span>
-              <span>·</span>
-              <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><span style={{ color: colors.accentGreen, fontSize: '16px' }}>✓</span> 15-min setup</span>
-              <span>·</span>
-              <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><span style={{ color: colors.accentGreen, fontSize: '16px' }}>✓</span> No credit card</span>
-            </div>
-          </AnimatedSection>
-        </div>
-      </section>
-
-      {/* Stats Bar */}
-      <section style={{ background: colors.bgSubtle, borderTop: `1px solid ${colors.borderDefault}`, borderBottom: `1px solid ${colors.borderDefault}`, padding: '64px 40px' }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '40px' }}>
-          <StatCard number={37} suffix="+" label="Average AI agents per enterprise in 2026" delay={0} />
-          <StatCard number={40} suffix="%" label="Of agentic AI projects cancelled due to unclear ROI" color={colors.dangerRed} delay={100} />
-          <StatCard number={0} suffix="" label="What most CFOs can prove their agents are earning" delay={200} />
-          <StatCard number={15} suffix=" min" label="To connect layeroi and see your first P&L" delay={300} />
-        </div>
-      </section>
-
-      {/* Problem Section */}
-      <section ref={problemRef} style={{ background: colors.bgSurface, padding: '96px 40px' }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-          <AnimatedSection animation="fadeUp">
-            <div style={{ marginBottom: '80px' }}>
-              <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '12px', fontWeight: '600', color: colors.accentGreen, letterSpacing: '2px', textTransform: 'uppercase' }}>The Problem</span>
-              <h2 style={{ fontFamily: 'Playfair Display, serif', fontSize: '48px', fontWeight: '600', marginTop: '16px', marginBottom: '24px', color: colors.textPrimary }}>Every tool speaks engineer.<br /><span style={{ fontStyle: 'italic' }}>Nobody speaks CFO.</span></h2>
-              <p style={{ fontSize: '18px', color: colors.textSecondary, maxWidth: '600px' }}>The gap between how your agents spend money and what your board sees is the difference between control and chaos.</p>
-            </div>
-          </AnimatedSection>
-
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '32px' }}>
-            <ProblemCard icon="👁️" title="Invisible Spending" description="CFO gets one invoice, cannot attribute costs to which agents are burning money." delay={0} />
-            <ProblemCard icon="⚠️" title="Runaway Loops" description="One agent can burn $4,000 in 90 minutes on API calls, undetected until the invoice arrives." delay={100} />
-            <ProblemCard icon="❓" title="No ROI Proof" description="Board asks what they're getting. Engineering says 'it's complicated.' CEO smiles nervously." delay={200} />
+                animation: `fadeUp 400ms var(--ease-out) ${i * 60}ms both`,
+              }}>
+                {item.label}
+              </a>
+            ))}
+            <a href="/signup" onClick={() => setMenuOpen(false)} style={{
+              display: 'block', marginTop: '32px',
+              background: '#22c55e', color: '#050505',
+              padding: '16px', textAlign: 'center',
+              borderRadius: '8px', fontSize: '15px',
+              fontWeight: 600, textDecoration: 'none',
+            }}>
+              Start free →
+            </a>
           </div>
         </div>
-      </section>
-
-      {/* Dashboard Mockup */}
-      <section style={{ background: colors.bgSubtle, padding: '96px 40px' }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-          <AnimatedSection animation="fadeUp">
-            <div style={{ marginBottom: '80px' }}>
-              <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '12px', fontWeight: '600', color: colors.accentGreen, letterSpacing: '2px', textTransform: 'uppercase' }}>The Product</span>
-              <h2 style={{ fontFamily: 'Playfair Display, serif', fontSize: '48px', fontWeight: '600', marginTop: '16px', color: colors.textPrimary }}>Your AI workforce profit & loss</h2>
-            </div>
-          </AnimatedSection>
-
-          <DashboardMockupWithParallax />
-        </div>
-      </section>
-
-      {/* How It Works */}
-      <section style={{ background: colors.bgSurface, padding: '96px 40px' }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-          <AnimatedSection animation="fadeUp">
-            <div style={{ marginBottom: '80px', textAlign: 'center' }}>
-              <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '12px', fontWeight: '600', color: colors.accentGreen, letterSpacing: '2px', textTransform: 'uppercase' }}>How It Works</span>
-              <h2 style={{ fontFamily: 'Playfair Display, serif', fontSize: '48px', fontWeight: '600', marginTop: '16px', color: colors.textPrimary }}>Three steps to financial visibility</h2>
-            </div>
-          </AnimatedSection>
-
-          <HowItWorksSection />
-        </div>
-      </section>
-
-      {/* Features */}
-      <section style={{ background: colors.bgSubtle, padding: '96px 40px' }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-          <AnimatedSection animation="fadeUp">
-            <div style={{ marginBottom: '80px', textAlign: 'center' }}>
-              <h2 style={{ fontFamily: 'Playfair Display, serif', fontSize: '48px', fontWeight: '600', color: colors.textPrimary }}>Built for CFOs. Used by engineers.</h2>
-            </div>
-          </AnimatedSection>
-
-          <FeaturesGrid />
-        </div>
-      </section>
-
-      {/* ROI Calculator */}
-      <section style={{ background: colors.bgPrimary, padding: '96px 40px' }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-          <AnimatedSection animation="fadeUp">
-            <div style={{ marginBottom: '80px', textAlign: 'center' }}>
-              <h2 style={{ fontFamily: 'Playfair Display, serif', fontSize: '48px', fontWeight: '600', marginBottom: '16px', color: colors.textPrimary }}>Calculate your AI agent waste</h2>
-              <p style={{ fontSize: '18px', color: colors.textSecondary, maxWidth: '600px', margin: '0 auto' }}>See how much your agents are costing you before layeroi.</p>
-            </div>
-          </AnimatedSection>
-
-          <AnimatedSection animation="fadeUp" delay={80}>
-            <ROICalculator />
-          </AnimatedSection>
-        </div>
-      </section>
-
-      {/* Comparison */}
-      <section style={{ background: colors.bgSurface, padding: '96px 40px' }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-          <AnimatedSection animation="fadeUp">
-            <div style={{ marginBottom: '80px', textAlign: 'center' }}>
-              <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '12px', fontWeight: '600', color: colors.accentGreen, letterSpacing: '2px', textTransform: 'uppercase' }}>How We Compare</span>
-              <h2 style={{ fontFamily: 'Playfair Display, serif', fontSize: '48px', fontWeight: '600', marginTop: '16px', color: colors.textPrimary }}>Why CFOs choose layeroi</h2>
-              <p style={{ fontSize: '18px', color: colors.textSecondary, maxWidth: '600px', margin: '24px auto 0' }}>Other tools monitor infrastructure. layeroi shows financial impact.</p>
-            </div>
-          </AnimatedSection>
-
-          <ComparisonTable />
-        </div>
-      </section>
-
-      {/* Pricing */}
-      <section style={{ background: colors.bgSurface, padding: '96px 40px' }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-          <AnimatedSection animation="fadeUp">
-            <div style={{ marginBottom: '80px', textAlign: 'center' }}>
-              <h2 style={{ fontFamily: 'Playfair Display, serif', fontSize: '48px', fontWeight: '600', color: colors.textPrimary, marginBottom: '24px' }}>Simple, transparent pricing</h2>
-              <p style={{ fontSize: '18px', color: colors.textSecondary, maxWidth: '600px', margin: '0 auto' }}>Start free with 2 agents. Upgrade anytime. No hidden fees.</p>
-            </div>
-          </AnimatedSection>
-
-          <PricingSection />
-        </div>
-      </section>
-
-      {/* FAQ */}
-      <section style={{ background: colors.bgSurface, padding: '96px 40px' }}>
-        <div style={{ maxWidth: '900px', margin: '0 auto' }}>
-          <AnimatedSection animation="fadeUp">
-            <div style={{ marginBottom: '80px', textAlign: 'center' }}>
-              <h2 style={{ fontFamily: 'Playfair Display, serif', fontSize: '48px', fontWeight: '600', marginBottom: '16px', color: colors.textPrimary }}>Frequently asked questions</h2>
-              <p style={{ fontSize: '18px', color: colors.textSecondary }}>Everything you need to know about layeroi.</p>
-            </div>
-          </AnimatedSection>
-
-          <FAQSection />
-        </div>
-      </section>
-
-      {/* CTA */}
-      <section style={{
-        background: colors.accentGreen,
-        padding: '96px 40px',
-        textAlign: 'center',
-        position: 'relative',
-        overflow: 'hidden',
-      }}>
-        <div style={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          background: `linear-gradient(135deg, ${colors.accentGreen} 0%, #15803d 50%, ${colors.accentGreen} 100%)`,
-          backgroundSize: '200% 200%',
-          animation: 'gradientShift 6s ease-in-out infinite',
-          pointerEvents: 'none',
-        }} />
-        <div style={{ maxWidth: '720px', margin: '0 auto', position: 'relative', zIndex: 1 }}>
-          <AnimatedSection animation="fadeUp">
-            <h2 style={{ fontFamily: 'Playfair Display, serif', fontSize: '48px', fontWeight: '600', color: colors.bgSurface, marginBottom: '24px' }}>See your agent ROI in 15 minutes</h2>
-          </AnimatedSection>
-          <AnimatedSection animation="fadeUp" delay={80}>
-            <p style={{ fontSize: '18px', color: 'rgba(255,255,255,0.9)', marginBottom: '48px', fontWeight: '300' }}>Join the early access program and get financial visibility into your AI agents today.</p>
-          </AnimatedSection>
-          <AnimatedSection animation="fadeUp" delay={160}>
-            <a href="/signup" style={{
-              background: colors.bgSurface,
-              color: colors.accentGreen,
-              padding: '14px 32px',
-              borderRadius: '6px',
-              textDecoration: 'none',
-              fontSize: '16px',
-              fontWeight: '600',
-              fontFamily: 'Inter, sans-serif',
-              cursor: 'pointer',
-              transition: 'all 200ms cubic-bezier(0.16,1,0.3,1)',
-              display: 'inline-block',
-              position: 'relative',
-            }} onMouseEnter={(e) => {
-              e.target.style.transform = 'translateY(-2px)';
-              e.target.style.boxShadow = '0 12px 20px rgba(0,0,0,0.2)';
-            }} onMouseLeave={(e) => {
-              e.target.style.transform = 'translateY(0)';
-              e.target.style.boxShadow = 'none';
-            }} onMouseDown={(e) => (e.target.style.transform = 'scale(0.98)')} onMouseUp={(e) => (e.target.style.transform = 'translateY(-2px)')}>Get started free →</a>
-          </AnimatedSection>
-        </div>
-      </section>
-
-      {/* Footer */}
-      <footer style={{ background: colors.bgSurface, borderTop: `1px solid ${colors.borderDefault}`, padding: '40px' }}>
-        <AnimatedSection animation="fadeUp">
-          <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '14px', color: colors.textTertiary }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <div style={{ width: '6px', height: '6px', background: colors.accentGreen, borderRadius: '50%' }} />
-              <span style={{ fontFamily: 'Playfair Display, serif', fontWeight: '600', color: colors.textPrimary }}>layeroi</span>
-            </div>
-            <span>© 2026 layeroi · Financial intelligence for AI teams</span>
-          </div>
-        </AnimatedSection>
-      </footer>
+      )}
 
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap');
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        html { scroll-behavior: smooth; }
-        body { font-family: Inter, sans-serif; background: ${colors.bgPrimary}; color: ${colors.textPrimary}; }
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: ${colors.textTertiary}; border-radius: 4px; }
-        ::selection { background: ${colors.accentGreenLight}; color: ${colors.accentGreen}; }
-
-        @keyframes gradientShift {
-          0%, 100% { background-position: 0% 50%; }
-          50% { background-position: 100% 50%; }
-        }
-
-        input[type="range"] {
-          -webkit-appearance: none;
-          appearance: none;
-          background: linear-gradient(to right, ${colors.accentGreen} 0%, ${colors.accentGreen} var(--value), ${colors.accentGreenLight} var(--value), ${colors.accentGreenLight} 100%);
-          height: 6px;
-          border-radius: 3px;
-          outline: none;
-        }
-
-        input[type="range"]::-webkit-slider-thumb {
-          -webkit-appearance: none;
-          appearance: none;
-          width: 18px;
-          height: 18px;
-          border-radius: 50%;
-          background: ${colors.accentGreen};
-          cursor: pointer;
-          box-shadow: 0 2px 8px rgba(22, 163, 74, 0.3);
-          transition: all 200ms cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        input[type="range"]::-webkit-slider-thumb:hover {
-          transform: scale(1.2);
-          box-shadow: 0 4px 12px rgba(22, 163, 74, 0.4);
-        }
-
-        input[type="range"]::-moz-range-thumb {
-          width: 18px;
-          height: 18px;
-          border-radius: 50%;
-          background: ${colors.accentGreen};
-          cursor: pointer;
-          border: none;
-          box-shadow: 0 2px 8px rgba(22, 163, 74, 0.3);
-          transition: all 200ms cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        input[type="range"]::-moz-range-thumb:hover {
-          transform: scale(1.2);
-          box-shadow: 0 4px 12px rgba(22, 163, 74, 0.4);
-        }
-
-        input[type="number"] {
-          font-variant-numeric: tabular-nums;
+        @media (max-width: 767px) {
+          .mobile-hamburger { display: block !important; }
+          .nav-signin-link { display: none !important; }
         }
       `}</style>
-    </div>
+    </>
   );
 }
 
-function StatCard({ number, suffix, label, color = colors.accentGreen, delay = 0 }) {
-  const { ref, hasBeenVisible } = useIntersectionObserver({ threshold: 0.1, once: true });
-  const { count, start } = useCountUp(number, 1200, true);
+/* ─────────────────────────────────────────────
+   SECTION 2 — HERO
+   ───────────────────────────────────────────── */
 
+function Hero() {
   return (
-    <AnimatedSection animation="fadeUp" delay={delay}>
-      <div ref={ref} style={{ textAlign: 'center' }}>
-        <div style={{ fontFamily: 'IBM Plex Mono, monospace', fontSize: '12px', fontWeight: '500', color: colors.textTertiary, textTransform: 'uppercase', marginBottom: '8px' }}>Metric</div>
-        <div style={{ fontFamily: 'Playfair Display, serif', fontSize: '48px', fontWeight: '700', color: color, marginBottom: '8px' }}>
-          {count}{suffix}
-        </div>
-        <div style={{ fontSize: '14px', color: colors.textSecondary, lineHeight: 1.6 }}>{label}</div>
-      </div>
-    </AnimatedSection>
-  );
-}
-
-function ProblemCard({ icon, title, description, delay = 0 }) {
-  return (
-    <AnimatedSection animation="fadeUp" delay={delay}>
+    <section style={{
+      position: 'relative',
+      paddingTop: 'clamp(96px, 16vw, 160px)',
+      paddingBottom: 'clamp(64px, 10vw, 96px)',
+      overflow: 'hidden',
+    }} className="grid-bg">
       <div style={{
-        background: colors.bgSurface,
-        border: `1px solid ${colors.borderDefault}`,
-        borderRadius: '12px',
-        padding: '24px',
-        transition: 'all 300ms cubic-bezier(0.16,1,0.3,1)',
-        cursor: 'pointer',
-        boxShadow: colors.shadowSm,
-        position: 'relative',
-        overflow: 'hidden',
-      }} onMouseEnter={(e) => {
-        e.currentTarget.style.boxShadow = colors.shadowMd;
-        e.currentTarget.style.transform = 'translateY(-4px)';
-      }} onMouseLeave={(e) => {
-        e.currentTarget.style.boxShadow = colors.shadowSm;
-        e.currentTarget.style.transform = 'translateY(0)';
-      }}>
-        <div style={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          right: 0,
-          height: '3px',
-          background: colors.accentGreen,
-          transform: 'scaleX(0)',
-          transformOrigin: 'left',
-          transition: 'transform 300ms cubic-bezier(0.16,1,0.3,1)',
-        }} onMouseEnter={(e) => {
-          e.currentTarget.style.transform = 'scaleX(1)';
-        }} />
-        <div style={{ fontSize: '32px', marginBottom: '12px' }}>{icon}</div>
-        <h3 style={{ fontFamily: 'Inter, sans-serif', fontSize: '16px', fontWeight: '600', color: colors.textPrimary, marginBottom: '8px' }}>{title}</h3>
-        <p style={{ fontSize: '14px', color: colors.textSecondary, lineHeight: 1.6 }}>{description}</p>
-      </div>
-    </AnimatedSection>
-  );
-}
-
-function DashboardMockupWithParallax() {
-  const [parallaxY, setParallaxY] = useState(0);
-  const { ref, hasBeenVisible } = useIntersectionObserver({ threshold: 0.3, once: false });
-
-  useEffect(() => {
-    const handleMouseMove = (e) => {
-      if (!ref.current) return;
-      const rect = ref.current.getBoundingClientRect();
-      const centerY = rect.top + rect.height / 2;
-      const offsetY = (e.clientY - centerY) * 0.03;
-      setParallaxY(offsetY);
-    };
-
-    window.addEventListener('mousemove', handleMouseMove, { passive: true });
-    return () => window.removeEventListener('mousemove', handleMouseMove);
-  }, [ref]);
-
-  return (
-    <AnimatedSection animation="fadeUp" delay={100}>
-      <div ref={ref} style={{
-        background: colors.bgSurface,
-        border: `1px solid ${colors.borderDefault}`,
-        borderRadius: '12px',
-        overflow: 'hidden',
-        boxShadow: colors.shadowLg,
-        transform: `translateY(${parallaxY}px)`,
-        transition: 'transform 100ms ease-out',
-      }}>
-        <div style={{ background: colors.bgSubtle, padding: '12px 16px', display: 'flex', alignItems: 'center', gap: '8px', borderBottom: `1px solid ${colors.borderDefault}` }}>
-          <div style={{ width: '12px', height: '12px', background: '#ff5f56', borderRadius: '50%' }} />
-          <div style={{ width: '12px', height: '12px', background: '#ffbd2e', borderRadius: '50%' }} />
-          <div style={{ width: '12px', height: '12px', background: '#27c93f', borderRadius: '50%' }} />
-          <div style={{ flex: 1, marginLeft: '16px', color: colors.textTertiary, fontSize: '12px', fontFamily: 'IBM Plex Mono, monospace' }}>dashboard.layeroi.com/overview</div>
-        </div>
-        <div style={{ padding: '40px' }}>
-          <DashboardMockupTable />
-        </div>
-      </div>
-    </AnimatedSection>
-  );
-}
-
-function HowItWorksSection() {
-  const { ref: svgRef, hasBeenVisible } = useIntersectionObserver({ threshold: 0.3, once: true });
-  const steps = [
-    { number: '01', title: 'Connect Agents', description: 'Copy one line into your agent code. Takes 5 minutes.' },
-    { number: '02', title: 'Track Spending', description: 'layeroi monitors every API call, models, tokens, and cost in real-time.' },
-    { number: '03', title: 'Optimize ROI', description: 'See which agents make money and which burn it. Kill the losers.' }
-  ];
-
-  return (
-    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '48px', position: 'relative' }}>
-      {/* SVG Line Connector */}
-      <svg ref={svgRef} style={{
-        position: 'absolute',
-        top: '80px',
-        left: '0',
-        right: '0',
-        height: '4px',
+        position: 'absolute', top: '-200px', right: '-200px',
+        width: '600px', height: '600px', borderRadius: '50%',
+        background: 'radial-gradient(circle, rgba(34,197,94,0.08) 0%, transparent 70%)',
         pointerEvents: 'none',
-      }} preserveAspectRatio="none">
-        <line x1="0" y1="2" x2="100%" y2="2" stroke={colors.accentGreen} strokeWidth="2" style={{
-          opacity: hasBeenVisible ? 1 : 0,
-          strokeDasharray: '1000',
-          strokeDashoffset: hasBeenVisible ? 0 : 1000,
-          transition: 'opacity 600ms cubic-bezier(0.16,1,0.3,1) 200ms, stroke-dashoffset 1000ms cubic-bezier(0.16,1,0.3,1) 200ms',
-        }} />
-      </svg>
+      }}/>
 
-      {steps.map((step, i) => (
-        <AnimatedSection key={i} animation="fadeUp" delay={i * 100}>
-          <div style={{ position: 'relative', zIndex: 1 }}>
-            <div style={{ fontFamily: 'Playfair Display, serif', fontSize: '64px', fontWeight: '700', color: 'rgba(0,0,0,0.03)', marginBottom: '16px' }}>{step.number}</div>
-            <h3 style={{ fontFamily: 'Inter, sans-serif', fontSize: '18px', fontWeight: '600', color: colors.textPrimary, marginBottom: '12px' }}>{step.title}</h3>
-            <p style={{ fontSize: '16px', color: colors.textSecondary, lineHeight: 1.6 }}>{step.description}</p>
-          </div>
-        </AnimatedSection>
-      ))}
-    </div>
-  );
-}
-
-function FeaturesGrid() {
-  const features = [
-    { title: 'Real-time cost attribution', desc: 'Know which agent, which model, which call is costing you money.' },
-    { title: 'Runaway loop detection', desc: 'Automatically detect and alert when an agent enters an infinite loop.' },
-    { title: 'Agent P&L statements', desc: 'Monthly reports showing revenue attribution and cost per task.', highlight: true },
-    { title: 'Budget controls', desc: 'Set spend limits per agent and automatically pause at thresholds.' }
-  ];
-
-  return (
-    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '32px' }}>
-      {features.map((feature, i) => (
-        <AnimatedSection key={i} animation={i % 2 === 0 ? 'fadeLeft' : 'fadeRight'} delay={i * 80}>
-          <div style={{
-            background: feature.highlight ? colors.bgProfit : colors.bgSurface,
-            border: `1px solid ${feature.highlight ? colors.accentGreenBorder : colors.borderDefault}`,
-            borderRadius: '12px',
-            padding: '24px',
-            transition: 'all 300ms cubic-bezier(0.16,1,0.3,1)',
-            cursor: 'pointer',
-            boxShadow: colors.shadowSm,
-            position: 'relative',
-          }} onMouseEnter={(e) => {
-            e.currentTarget.style.boxShadow = colors.shadowMd;
-            e.currentTarget.style.transform = 'translateY(-4px)';
-          }} onMouseLeave={(e) => {
-            e.currentTarget.style.boxShadow = colors.shadowSm;
-            e.currentTarget.style.transform = 'translateY(0)';
-          }}>
-            <h3 style={{ fontFamily: 'Inter, sans-serif', fontSize: '16px', fontWeight: '600', color: colors.textPrimary, marginBottom: '8px' }}>{feature.title}</h3>
-            <p style={{ fontSize: '14px', color: colors.textSecondary, lineHeight: 1.6 }}>{feature.desc}</p>
-          </div>
-        </AnimatedSection>
-      ))}
-    </div>
-  );
-}
-
-function PricingSection() {
-  const cards = [
-    { title: 'Starter', price: '$499', period: '/ month', agents: 'Up to 5 agents', features: ['Real-time tracking', 'Basic alerts', 'Monthly reports'] },
-    { title: 'Business', price: '$2,500', period: '/ month', agents: 'Up to 30 agents', features: ['Everything in Starter', 'Advanced anomaly detection', 'API access', 'Quarterly reviews'], highlight: true, badge: 'Most popular' },
-    { title: 'Enterprise', price: 'Custom', agents: 'Unlimited agents', features: ['Everything in Business', 'Custom integrations', 'Dedicated support', 'Annual planning'], cta: 'Contact us' }
-  ];
-
-  return (
-    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '32px' }}>
-      {cards.map((card, i) => (
-        <AnimatedSection key={i} animation="fadeUp" delay={i * 80}>
-          <div style={{
-            background: card.highlight ? colors.bgProfit : colors.bgSurface,
-            border: `1px solid ${card.highlight ? colors.accentGreenBorder : colors.borderDefault}`,
-            borderRadius: '12px',
-            padding: '32px',
-            position: 'relative',
-            transform: card.highlight ? 'scale(1.05)' : 'scale(1)',
-            transition: 'all 300ms cubic-bezier(0.16,1,0.3,1)',
-            boxShadow: card.highlight ? colors.shadowMd : colors.shadowSm,
-          }}>
-            {card.badge && <div style={{
-              position: 'absolute',
-              top: '-12px',
-              left: '50%',
-              transform: 'translateX(-50%)',
-              background: colors.accentGreen,
-              color: colors.bgSurface,
-              padding: '6px 12px',
-              borderRadius: '20px',
-              fontSize: '12px',
-              fontWeight: '600',
-              fontFamily: 'Inter, sans-serif',
-              animation: 'fadeUp 600ms cubic-bezier(0.16,1,0.3,1) both',
-            }}>{card.badge}</div>}
-            <h3 style={{ fontFamily: 'Playfair Display, serif', fontSize: '24px', fontWeight: '600', marginBottom: '8px', color: colors.textPrimary }}>{card.title}</h3>
-            <p style={{ fontFamily: 'IBM Plex Mono, monospace', fontSize: '14px', color: colors.textSecondary, marginBottom: '24px' }}>{card.agents}</p>
-            <div style={{ display: 'flex', alignItems: 'baseline', gap: '4px', marginBottom: '32px' }}>
-              <span style={{ fontFamily: 'Playfair Display, serif', fontSize: '36px', fontWeight: '700', color: colors.textPrimary }}>{card.price}</span>
-              {card.period && <span style={{ fontFamily: 'IBM Plex Mono, monospace', fontSize: '14px', color: colors.textSecondary }}>{card.period}</span>}
-            </div>
-            <ul style={{ marginBottom: '32px', listStyle: 'none' }}>
-              {card.features.map((f, j) => (
-                <li key={j} style={{
-                  fontSize: '14px',
-                  color: colors.textSecondary,
-                  marginBottom: '12px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px',
-                  animation: `fadeUp 300ms cubic-bezier(0.16,1,0.3,1) both ${100 + j * 50}ms`,
-                }}>
-                  <span style={{ color: colors.accentGreen, fontWeight: 'bold' }}>✓</span> {f}
-                </li>
-              ))}
-            </ul>
-            <button onClick={() => window.location.href = '/signup'} style={{
-              width: '100%',
-              background: card.highlight ? colors.accentGreen : colors.bgSurface,
-              color: card.highlight ? colors.bgSurface : colors.accentGreen,
-              border: `1px solid ${colors.accentGreen}`,
-              padding: '12px 24px',
-              borderRadius: '6px',
-              fontFamily: 'Inter, sans-serif',
-              fontSize: '14px',
-              fontWeight: '600',
-              cursor: 'pointer',
-              transition: 'all 200ms cubic-bezier(0.16,1,0.3,1)',
-            }} onMouseEnter={(e) => {
-              e.target.style.transform = 'translateY(-2px)';
-              e.target.style.boxShadow = `0 8px 16px ${card.highlight ? 'rgba(22,163,74,0.2)' : 'rgba(0,0,0,0.1)'}`;
-            }} onMouseLeave={(e) => {
-              e.target.style.transform = 'translateY(0)';
-              e.target.style.boxShadow = 'none';
-            }} onMouseDown={(e) => (e.target.style.transform = 'scale(0.98)')} onMouseUp={(e) => (e.target.style.transform = 'translateY(-2px)')}>
-              {card.cta || 'Start free'} →
-            </button>
-          </div>
-        </AnimatedSection>
-      ))}
-    </div>
-  );
-}
-
-function ComparisonTable() {
-  const rows = [
-    { tool: 'layeroi', buildup: 'CFOs', shows: 'P&L per agent, ROI, cost per task, profitability', cfo: true, highlight: true },
-    { tool: 'Datadog', buildup: 'Engineers', shows: 'Tokens, traces, infrastructure logs', cfo: false },
-    { tool: 'Helicone', buildup: 'Engineers', shows: 'API logs, token usage, latency', cfo: false },
-    { tool: 'LiteLLM', buildup: 'Developers', shows: 'Spend by API key, model costs', cfo: false },
-    { tool: 'Bifrost', buildup: 'DevOps', shows: 'Cost by provider, infrastructure metrics', cfo: false },
-  ];
-
-  return (
-    <AnimatedSection animation="fadeUp" delay={80}>
-      <div style={{ overflowX: 'auto', borderRadius: '12px', border: `1px solid ${colors.borderDefault}`, boxShadow: colors.shadowSm }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse', fontFamily: 'Inter, sans-serif', backgroundColor: colors.bgSurface }}>
-          <thead>
-            <tr style={{ borderBottom: `2px solid ${colors.borderDefault}`, backgroundColor: colors.bgSubtle }}>
-              <th style={{ textAlign: 'left', padding: '20px 24px', fontFamily: 'Playfair Display, serif', fontSize: '14px', fontWeight: '600', color: colors.textPrimary }}>Tool</th>
-              <th style={{ textAlign: 'left', padding: '20px 24px', fontFamily: 'Inter, sans-serif', fontSize: '13px', fontWeight: '600', color: colors.textSecondary, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Built For</th>
-              <th style={{ textAlign: 'left', padding: '20px 24px', fontFamily: 'Inter, sans-serif', fontSize: '13px', fontWeight: '600', color: colors.textSecondary, textTransform: 'uppercase', letterSpacing: '0.5px' }}>What It Shows</th>
-              <th style={{ textAlign: 'center', padding: '20px 24px', fontFamily: 'Inter, sans-serif', fontSize: '13px', fontWeight: '600', color: colors.textSecondary, textTransform: 'uppercase', letterSpacing: '0.5px' }}>CFO-Ready</th>
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map((row, i) => (
-              <tr key={i} style={{
-                borderBottom: `1px solid ${colors.borderDefault}`,
-                backgroundColor: row.highlight ? colors.bgProfit : (i % 2 === 0 ? colors.bgSurface : colors.bgSubtle),
-                transition: 'all 200ms cubic-bezier(0.16,1,0.3,1)',
-                animation: `fadeUp 300ms cubic-bezier(0.16,1,0.3,1) both ${i * 50}ms`,
-              }} onMouseEnter={(e) => !row.highlight && (e.currentTarget.style.backgroundColor = colors.bgSubtle)} onMouseLeave={(e) => !row.highlight && (e.currentTarget.style.backgroundColor = i % 2 === 0 ? colors.bgSurface : colors.bgSubtle)}>
-                <td style={{ padding: '20px 24px', fontFamily: 'Playfair Display, serif', fontSize: '16px', fontWeight: '600', color: colors.textPrimary }}>
-                  {row.tool}
-                  {row.highlight && <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '11px', fontWeight: '600', color: colors.accentGreen, backgroundColor: colors.accentGreenLight, padding: '4px 10px', borderRadius: '4px', marginLeft: '12px' }}>BEST FOR CFOS</span>}
-                </td>
-                <td style={{ padding: '20px 24px', color: colors.textSecondary, fontSize: '14px' }}>{row.buildup}</td>
-                <td style={{ padding: '20px 24px', color: colors.textSecondary, fontSize: '14px' }}>{row.shows}</td>
-                <td style={{ padding: '20px 24px', textAlign: 'center' }}>
-                  <span style={{
-                    display: 'inline-flex',
-                    width: '24px',
-                    height: '24px',
-                    borderRadius: '50%',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    fontWeight: 'bold',
-                    fontSize: '14px',
-                    backgroundColor: row.cfo ? colors.bgProfit : colors.bgLoss,
-                    color: row.cfo ? colors.accentGreen : colors.dangerRed,
-                    border: `1px solid ${row.cfo ? colors.accentGreenBorder : colors.dangerBorder}`
-                  }}>
-                    {row.cfo ? '✓' : '✗'}
-                  </span>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </AnimatedSection>
-  );
-}
-
-function FAQSection() {
-  const faqs = [
-    { question: 'Does this add latency?', answer: 'Under 5ms overhead, imperceptible to your users. layeroi runs asynchronously and doesn\'t block API calls.' },
-    { question: 'Is prompt data stored?', answer: 'No. We only store metadata: cost, tokens used, agent name, and timestamp. Your prompt content never leaves your system.' },
-    { question: 'Works with Anthropic too?', answer: 'Yes. OpenAI, Anthropic, and any OpenAI-compatible endpoint. Full cost tracking across all providers.' },
-    { question: 'How long is setup?', answer: '15 minutes. Add one environment variable to your code and layeroi starts tracking immediately.' },
-    { question: 'More than 30 agents?', answer: 'Contact our sales team for Enterprise pricing and custom configurations for unlimited agents.' },
-    { question: 'If agent down, affects reliability?', answer: 'No. layeroi fallback to direct LLM calls. Your agents are never impacted if our service is unavailable.' }
-  ];
-
-  return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-      {faqs.map((faq, i) => (
-        <FAQItem key={i} question={faq.question} answer={faq.answer} delay={i * 50} />
-      ))}
-    </div>
-  );
-}
-
-function FAQItem({ question, answer, delay = 0 }) {
-  const [isOpen, setIsOpen] = useState(false);
-  const [height, setHeight] = useState(0);
-  const contentRef = useRef(null);
-
-  useEffect(() => {
-    if (isOpen && contentRef.current) {
-      setHeight(contentRef.current.scrollHeight);
-    } else {
-      setHeight(0);
-    }
-  }, [isOpen]);
-
-  return (
-    <AnimatedSection animation="fadeUp" delay={delay}>
-      <div style={{
-        background: colors.bgSurface,
-        border: `1px solid ${colors.borderDefault}`,
-        borderRadius: '8px',
-        overflow: 'hidden',
-        transition: 'all 300ms cubic-bezier(0.16,1,0.3,1)',
-        boxShadow: isOpen ? colors.shadowMd : colors.shadowSm,
-      }}>
-        <button
-          onClick={() => setIsOpen(!isOpen)}
-          style={{
-            width: '100%',
-            padding: '20px 24px',
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            background: 'none',
-            border: 'none',
-            cursor: 'pointer',
-            fontSize: '16px',
-            fontWeight: '600',
-            color: colors.textPrimary,
-            fontFamily: 'Inter, sans-serif',
-            transition: 'background-color 200ms cubic-bezier(0.16,1,0.3,1)',
-          }}
-          onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = colors.bgSubtle)}
-          onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
-        >
-          <span>{question}</span>
-          <span style={{
-            fontSize: '20px',
-            fontWeight: '600',
-            color: colors.accentGreen,
-            transition: 'transform 300ms cubic-bezier(0.16,1,0.3,1)',
-            transform: isOpen ? 'rotate(45deg)' : 'rotate(0deg)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}>+</span>
-        </button>
+      <div className="l-container" style={{ position: 'relative' }}>
         <div style={{
-          maxHeight: `${height}px`,
-          overflow: 'hidden',
-          transition: 'max-height 300ms cubic-bezier(0.16,1,0.3,1)',
+          display: 'inline-flex', alignItems: 'center', gap: '8px',
+          background: 'rgba(34,197,94,0.06)',
+          border: '1px solid rgba(34,197,94,0.2)',
+          borderRadius: '100px', padding: '5px 14px 5px 10px',
+          marginBottom: '32px',
+          animation: 'fadeUp 600ms var(--ease-out) both',
         }}>
-          <div
-            ref={contentRef}
-            style={{
-              padding: '0 24px 20px 24px',
-              color: colors.textSecondary,
-              fontSize: '15px',
-              lineHeight: 1.6,
-              borderTop: `1px solid ${colors.borderDefault}`,
-              marginTop: '0',
-            }}
-          >
-            {answer}
-          </div>
+          <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#22c55e', animation: 'pulse-dot 2s infinite' }}/>
+          <span className="mono" style={{ fontSize: '11px', color: '#4ade80', letterSpacing: '0.06em', fontWeight: 500 }}>
+            NOW IN BETA · FREE FOR 2 AGENTS
+          </span>
+        </div>
+
+        <h1 className="serif" style={{
+          fontSize: 'var(--type-display-lg)',
+          color: 'white', lineHeight: 1.05, maxWidth: '880px',
+          animation: 'fadeUp 700ms var(--ease-out) 100ms both',
+        }}>
+          Every observability tool speaks engineer.
+          <br/>
+          <span style={{ color: 'var(--white-35)' }}>Only </span>
+          <span style={{ color: '#22c55e' }}>layeroi</span>
+          <span style={{ color: 'var(--white-35)' }}> speaks CFO.</span>
+        </h1>
+
+        <p style={{
+          fontSize: 'var(--type-body-lg)', color: 'var(--white-50)',
+          lineHeight: 1.55, maxWidth: '580px', marginTop: '28px',
+          animation: 'fadeUp 700ms var(--ease-out) 200ms both',
+        }}>
+          Real-time P&L for every AI agent you run. Know which ones are profitable,
+          which are burning money, and stop runaway costs before they compound.
+        </p>
+
+        <div style={{ display: 'flex', gap: '12px', marginTop: '40px', flexWrap: 'wrap',
+          animation: 'fadeUp 700ms var(--ease-out) 300ms both' }}
+          className="closing-cta-buttons">
+          <a href="/signup" className="btn-primary">Start free — no credit card</a>
+          <a href="#pricing" className="btn-ghost">See live dashboard →</a>
+        </div>
+
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: '20px',
+          marginTop: '28px', flexWrap: 'wrap',
+          animation: 'fadeUp 700ms var(--ease-out) 400ms both',
+        }}>
+          <span className="mono" style={{ fontSize: '11px', color: 'var(--white-35)', letterSpacing: '0.08em' }}>
+            WORKS WITH
+          </span>
+          {['OpenAI', 'Anthropic', 'Google Gemini', 'Azure', 'LangChain', 'CrewAI'].map(p => (
+            <span key={p} className="mono" style={{ fontSize: '12px', color: 'var(--white-50)', fontWeight: 500 }}>
+              {p}
+            </span>
+          ))}
         </div>
       </div>
-    </AnimatedSection>
+
+      <div className="l-container" style={{ marginTop: '80px', animation: 'fadeUp 900ms var(--ease-out) 500ms both' }}>
+        <HeroDashboardPreview />
+      </div>
+    </section>
   );
 }
 
-function DashboardMockupTable() {
-  const agents = [
-    { name: 'Research Agent', cost: 3200, tasks: 1240, value: 12800, roi: '4.0×', status: 'profitable' },
-    { name: 'Writing Engine', cost: 2100, tasks: 890, value: 8900, roi: '4.2×', status: 'profitable' },
-    { name: 'Content Analyzer', cost: 1800, tasks: 320, value: 1600, roi: '0.9×', status: 'watch' },
-    { name: 'Email Outreach', cost: 4200, tasks: 1100, value: 2200, roi: '0.5×', status: 'losing' },
-    { name: 'Data Processor', cost: 950, tasks: 2100, value: 500, roi: '0.5×', status: 'losing' },
-  ];
+/* ─────────────────────────────────────────────
+   HERO DASHBOARD PREVIEW
+   ───────────────────────────────────────────── */
 
-  return (
-    <table style={{ width: '100%', borderCollapse: 'collapse', fontFamily: 'Inter, sans-serif', fontSize: '13px' }}>
-      <thead>
-        <tr style={{ borderBottom: `1px solid ${colors.borderDefault}`, color: colors.textSecondary, fontFamily: 'IBM Plex Mono, monospace' }}>
-          <th style={{ textAlign: 'left', padding: '12px 0', fontWeight: '600', fontSize: '12px', textTransform: 'uppercase' }}>Agent</th>
-          <th style={{ textAlign: 'right', padding: '12px 0', fontWeight: '600', fontSize: '12px', textTransform: 'uppercase' }}>Cost/mo</th>
-          <th style={{ textAlign: 'right', padding: '12px 0', fontWeight: '600', fontSize: '12px', textTransform: 'uppercase' }}>Tasks</th>
-          <th style={{ textAlign: 'right', padding: '12px 0', fontWeight: '600', fontSize: '12px', textTransform: 'uppercase' }}>Value</th>
-          <th style={{ textAlign: 'right', padding: '12px 0', fontWeight: '600', fontSize: '12px', textTransform: 'uppercase' }}>ROI</th>
-          <th style={{ textAlign: 'right', padding: '12px 0', fontWeight: '600', fontSize: '12px', textTransform: 'uppercase' }}>Status</th>
-        </tr>
-      </thead>
-      <tbody>
-        {agents.map((agent, i) => (
-          <tr key={i} style={{
-            borderBottom: `1px solid ${colors.borderDefault}`,
-            transition: 'background 200ms cubic-bezier(0.16,1,0.3,1)',
-            animation: `fadeUp 200ms cubic-bezier(0.16,1,0.3,1) both ${i * 50}ms`,
-          }} onMouseEnter={(e) => (e.currentTarget.style.background = colors.bgSubtle)} onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}>
-            <td style={{ padding: '16px 0', color: colors.textPrimary, fontWeight: '500' }}>{agent.name}</td>
-            <td style={{ textAlign: 'right', padding: '16px 0', color: colors.textSecondary, fontFamily: 'IBM Plex Mono, monospace' }}>${agent.cost.toLocaleString()}</td>
-            <td style={{ textAlign: 'right', padding: '16px 0', color: colors.textSecondary, fontFamily: 'IBM Plex Mono, monospace' }}>{agent.tasks.toLocaleString()}</td>
-            <td style={{ textAlign: 'right', padding: '16px 0', color: colors.accentGreen, fontFamily: 'IBM Plex Mono, monospace', fontWeight: '500' }}>${agent.value.toLocaleString()}</td>
-            <td style={{ textAlign: 'right', padding: '16px 0', color: agent.status === 'profitable' ? colors.accentGreen : agent.status === 'watch' ? colors.warningAmber : colors.dangerRed, fontFamily: 'IBM Plex Mono, monospace', fontWeight: '500' }}>{agent.roi}</td>
-            <td style={{ textAlign: 'right', padding: '16px 0' }}>
-              <span style={{
-                padding: '4px 12px',
-                borderRadius: '4px',
-                background: agent.status === 'profitable' ? colors.bgProfit : agent.status === 'watch' ? colors.bgWarning : colors.bgLoss,
-                color: agent.status === 'profitable' ? colors.accentGreen : agent.status === 'watch' ? colors.warningAmber : colors.dangerRed,
-                fontFamily: 'Inter, sans-serif',
-                fontWeight: '500',
-                fontSize: '12px'
-              }}>
-                {agent.status === 'profitable' ? '✓ Profitable' : agent.status === 'watch' ? '⚠ Watch' : '✗ Losing'}
-              </span>
-            </td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
-  );
+function HeroDashboardPreview() {
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768);
+    check();
+    window.addEventListener('resize', check);
+    return () => window.removeEventListener('resize', check);
+  }, []);
+
+  if (isMobile) return <HeroDashboardMobile />;
+  return <HeroDashboardDesktop />;
 }
 
-function ROICalculator() {
-  const [agents, setAgents] = useState(3);
-  const [monthlySpend, setMonthlySpend] = useState(10000);
-  const [hourlyRate, setHourlyRate] = useState(75);
-
-  const wastefulSpend = monthlySpend * 0.23;
-  const annualSavings = wastefulSpend * 12;
-  const roiCost = agents < 5 ? 499 : agents <= 30 ? 2500 : 8000;
-  const paybackDays = Math.ceil(roiCost / (wastefulSpend / 30));
-
+function HeroDashboardDesktop() {
   return (
     <div style={{
-      background: colors.bgSurface,
-      border: `1px solid ${colors.borderDefault}`,
-      borderRadius: '12px',
-      padding: '48px',
-      maxWidth: '900px',
+      position: 'relative',
+      background: 'linear-gradient(180deg, #0f0f0f 0%, #0a0a0a 100%)',
+      border: '1px solid var(--border-default)',
+      borderRadius: '16px',
+      overflow: 'hidden',
+      boxShadow: 'var(--shadow-raised)',
+      maxWidth: '1080px',
       margin: '0 auto',
-      boxShadow: colors.shadowMd,
-      animation: 'fadeUp 600ms cubic-bezier(0.16,1,0.3,1) both',
     }}>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '40px', marginBottom: '64px' }}>
-        {/* Agents Slider */}
-        <AnimatedSection animation="fadeUp" delay={0}>
-          <div>
-            <label style={{ fontFamily: 'IBM Plex Mono, monospace', fontSize: '12px', fontWeight: '600', color: colors.textTertiary, textTransform: 'uppercase', display: 'block', marginBottom: '12px' }}>Number of AI Agents</label>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-              <input
-                type="range"
-                min="1"
-                max="100"
-                value={agents}
-                onChange={(e) => setAgents(parseInt(e.target.value))}
-                style={{
-                  flex: 1,
-                  height: '6px',
-                  borderRadius: '3px',
-                  background: colors.accentGreenLight,
-                  outline: 'none',
-                  cursor: 'pointer',
-                  appearance: 'none',
-                  WebkitAppearance: 'none',
-                }}
-              />
-              <span style={{ fontFamily: 'Playfair Display, serif', fontSize: '28px', fontWeight: '700', color: colors.textPrimary, minWidth: '40px', textAlign: 'right', animation: 'fadeIn 300ms cubic-bezier(0.16,1,0.3,1) both' }}>{agents}</span>
-            </div>
-          </div>
-        </AnimatedSection>
-
-        {/* Monthly Spend Input */}
-        <AnimatedSection animation="fadeUp" delay={100}>
-          <div>
-            <label style={{ fontFamily: 'IBM Plex Mono, monospace', fontSize: '12px', fontWeight: '600', color: colors.textTertiary, textTransform: 'uppercase', display: 'block', marginBottom: '12px' }}>Monthly LLM Spend</label>
-            <div style={{ position: 'relative' }}>
-              <span style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', fontSize: '16px', color: colors.textSecondary, fontWeight: '600' }}>$</span>
-              <input
-                type="number"
-                value={monthlySpend}
-                onChange={(e) => setMonthlySpend(Math.max(0, parseInt(e.target.value) || 0))}
-                style={{
-                  width: '100%',
-                  padding: '12px 12px 12px 28px',
-                  border: `1px solid ${colors.borderDefault}`,
-                  borderRadius: '6px',
-                  fontSize: '16px',
-                  fontFamily: 'IBM Plex Mono, monospace',
-                  fontWeight: '600',
-                  color: colors.textPrimary,
-                  outline: 'none',
-                  transition: 'all 200ms cubic-bezier(0.16,1,0.3,1)',
-                  boxSizing: 'border-box',
-                }}
-                onFocus={(e) => {
-                  e.target.style.borderColor = colors.accentGreen;
-                  e.target.style.boxShadow = `0 0 0 3px ${colors.accentGreenLight}`;
-                }}
-                onBlur={(e) => {
-                  e.target.style.borderColor = colors.borderDefault;
-                  e.target.style.boxShadow = 'none';
-                }}
-              />
-            </div>
-          </div>
-        </AnimatedSection>
-
-        {/* Hourly Rate Input */}
-        <AnimatedSection animation="fadeUp" delay={200}>
-          <div>
-            <label style={{ fontFamily: 'IBM Plex Mono, monospace', fontSize: '12px', fontWeight: '600', color: colors.textTertiary, textTransform: 'uppercase', display: 'block', marginBottom: '12px' }}>Employee Hourly Cost</label>
-            <div style={{ position: 'relative' }}>
-              <span style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', fontSize: '16px', color: colors.textSecondary, fontWeight: '600' }}>$</span>
-              <input
-                type="number"
-                value={hourlyRate}
-                onChange={(e) => setHourlyRate(Math.max(0, parseInt(e.target.value) || 0))}
-                style={{
-                  width: '100%',
-                  padding: '12px 12px 12px 28px',
-                  border: `1px solid ${colors.borderDefault}`,
-                  borderRadius: '6px',
-                  fontSize: '16px',
-                  fontFamily: 'IBM Plex Mono, monospace',
-                  fontWeight: '600',
-                  color: colors.textPrimary,
-                  outline: 'none',
-                  transition: 'all 200ms cubic-bezier(0.16,1,0.3,1)',
-                  boxSizing: 'border-box',
-                }}
-                onFocus={(e) => {
-                  e.target.style.borderColor = colors.accentGreen;
-                  e.target.style.boxShadow = `0 0 0 3px ${colors.accentGreenLight}`;
-                }}
-                onBlur={(e) => {
-                  e.target.style.borderColor = colors.borderDefault;
-                  e.target.style.boxShadow = 'none';
-                }}
-              />
-            </div>
-          </div>
-        </AnimatedSection>
+      <div style={{
+        display: 'flex', alignItems: 'center', gap: '8px',
+        padding: '14px 18px',
+        borderBottom: '1px solid var(--border-subtle)',
+        background: 'rgba(255,255,255,0.02)',
+      }}>
+        <span style={{ width: '11px', height: '11px', borderRadius: '50%', background: '#ff5f57' }}/>
+        <span style={{ width: '11px', height: '11px', borderRadius: '50%', background: '#febc2e' }}/>
+        <span style={{ width: '11px', height: '11px', borderRadius: '50%', background: '#28c840' }}/>
+        <div style={{ flex: 1, display: 'flex', justifyContent: 'center' }}>
+          <span className="mono" style={{ fontSize: '11px', color: 'var(--white-35)' }}>
+            layeroi.com/dashboard — live
+          </span>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#22c55e', animation: 'pulse-dot 2s infinite' }}/>
+          <span className="mono" style={{ fontSize: '10px', color: '#4ade80', letterSpacing: '0.06em' }}>LIVE</span>
+        </div>
       </div>
 
-      {/* Results Grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '32px' }}>
-        <AnimatedSection animation="fadeUp" delay={300}>
-          <div style={{ background: colors.bgProfit, border: `1px solid ${colors.accentGreenBorder}`, borderRadius: '8px', padding: '24px', animation: 'fadeUp 600ms cubic-bezier(0.16,1,0.3,1) both 300ms' }}>
-            <div style={{ fontFamily: 'IBM Plex Mono, monospace', fontSize: '12px', fontWeight: '600', color: colors.textTertiary, textTransform: 'uppercase', marginBottom: '8px' }}>Monthly Wasteful Spend</div>
-            <div style={{ fontFamily: 'Playfair Display, serif', fontSize: '36px', fontWeight: '700', color: colors.accentGreen, marginBottom: '4px' }}>
-              ${wastefulSpend.toLocaleString('en-US', { maximumFractionDigits: 0 })}
-            </div>
-            <div style={{ fontSize: '13px', color: colors.textSecondary }}>~23% of your LLM spend is wasted</div>
+      <div style={{ padding: '28px' }} className="hero-dashboard-grid">
+        <div className="hero-sidebar" style={{ borderRight: '1px solid var(--border-subtle)', paddingRight: '20px' }}>
+          <div className="mono" style={{ fontSize: '10px', color: 'var(--white-35)', letterSpacing: '0.08em', marginBottom: '14px' }}>
+            NAVIGATION
           </div>
-        </AnimatedSection>
+          {[
+            { label: 'Overview', active: true },
+            { label: 'Agents', count: '12' },
+            { label: 'Budget' },
+            { label: 'Reports' },
+            { label: 'Settings' },
+          ].map(item => (
+            <div key={item.label} style={{
+              padding: '8px 10px', borderRadius: '6px', marginBottom: '2px',
+              background: item.active ? 'rgba(34,197,94,0.1)' : 'transparent',
+              color: item.active ? '#22c55e' : 'var(--white-50)',
+              fontSize: '13px', fontWeight: item.active ? 600 : 400,
+              display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+            }}>
+              <span>{item.label}</span>
+              {item.count && <span className="mono" style={{ fontSize: '10px', color: 'var(--white-35)' }}>{item.count}</span>}
+            </div>
+          ))}
+        </div>
 
-        <AnimatedSection animation="fadeUp" delay={400}>
-          <div style={{ background: colors.bgProfit, border: `1px solid ${colors.accentGreenBorder}`, borderRadius: '8px', padding: '24px', animation: 'fadeUp 600ms cubic-bezier(0.16,1,0.3,1) both 400ms' }}>
-            <div style={{ fontFamily: 'IBM Plex Mono, monospace', fontSize: '12px', fontWeight: '600', color: colors.textTertiary, textTransform: 'uppercase', marginBottom: '8px' }}>Annual Savings Potential</div>
-            <div style={{ fontFamily: 'Playfair Display, serif', fontSize: '36px', fontWeight: '700', color: colors.accentGreen, marginBottom: '4px' }}>
-              ${annualSavings.toLocaleString('en-US', { maximumFractionDigits: 0 })}
+        <div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+            <div>
+              <h3 style={{ fontSize: '18px', fontWeight: 600, color: 'white', marginBottom: '2px' }}>This week's performance</h3>
+              <span className="mono" style={{ fontSize: '11px', color: 'var(--white-35)' }}>APR 14 — APR 20, 2026</span>
             </div>
-            <div style={{ fontSize: '13px', color: colors.textSecondary }}>Year-over-year with optimization</div>
+            <div className="mono" style={{ fontSize: '10px', color: 'var(--white-35)', background: 'rgba(255,255,255,0.04)', padding: '4px 10px', borderRadius: '6px', letterSpacing: '0.06em' }}>
+              WEEKLY ↓
+            </div>
           </div>
-        </AnimatedSection>
 
-        <AnimatedSection animation="fadeUp" delay={500}>
-          <div style={{ background: colors.bgSubtle, border: `1px solid ${colors.borderDefault}`, borderRadius: '8px', padding: '24px', animation: 'fadeUp 600ms cubic-bezier(0.16,1,0.3,1) both 500ms' }}>
-            <div style={{ fontFamily: 'IBM Plex Mono, monospace', fontSize: '12px', fontWeight: '600', color: colors.textTertiary, textTransform: 'uppercase', marginBottom: '8px' }}>layeroi Monthly Cost</div>
-            <div style={{ fontFamily: 'Playfair Display, serif', fontSize: '36px', fontWeight: '700', color: colors.textPrimary, marginBottom: '4px' }}>
-              ${roiCost.toLocaleString()}/mo
-            </div>
-            <div style={{ fontSize: '13px', color: colors.textSecondary }}>
-              {agents < 5 ? 'Starter' : agents <= 30 ? 'Business' : 'Enterprise'} plan
-            </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px', marginBottom: '24px' }} className="stats-grid">
+            {[
+              { label: 'TOTAL SPEND', value: '$47,230', change: '+12%', positive: null },
+              { label: 'VALUE GENERATED', value: '$214,000', change: '+31%', positive: true },
+              { label: 'NET ROI', value: '4.5×', change: '+0.8', positive: true, highlight: true },
+              { label: 'WASTED', value: '$11,400', change: '-8%', positive: true, negative: true },
+            ].map(s => (
+              <div key={s.label} style={{
+                background: s.highlight ? 'rgba(34,197,94,0.06)' : 'rgba(255,255,255,0.02)',
+                border: `1px solid ${s.highlight ? 'rgba(34,197,94,0.2)' : 'var(--border-subtle)'}`,
+                borderRadius: '10px', padding: '14px',
+              }}>
+                <div className="mono" style={{ fontSize: '9px', color: 'var(--white-35)', letterSpacing: '0.08em', marginBottom: '8px' }}>{s.label}</div>
+                <div className="mono" style={{
+                  fontSize: '22px', fontWeight: 700, letterSpacing: '-0.02em',
+                  color: s.negative ? '#ef4444' : s.highlight ? '#22c55e' : 'white',
+                  marginBottom: '4px',
+                }}>{s.value}</div>
+                <div className="mono" style={{ fontSize: '10px', color: s.positive ? '#22c55e' : 'var(--white-35)' }}>{s.change} vs last week</div>
+              </div>
+            ))}
           </div>
-        </AnimatedSection>
 
-        <AnimatedSection animation="fadeUp" delay={600}>
-          <div style={{ background: colors.bgSubtle, border: `1px solid ${colors.borderDefault}`, borderRadius: '8px', padding: '24px', animation: 'fadeUp 600ms cubic-bezier(0.16,1,0.3,1) both 600ms' }}>
-            <div style={{ fontFamily: 'IBM Plex Mono, monospace', fontSize: '12px', fontWeight: '600', color: colors.textTertiary, textTransform: 'uppercase', marginBottom: '8px' }}>Payback Period</div>
-            <div style={{ fontFamily: 'Playfair Display, serif', fontSize: '36px', fontWeight: '700', color: colors.textPrimary, marginBottom: '4px' }}>
-              {paybackDays} days
+          <div style={{
+            background: 'rgba(255,255,255,0.02)',
+            border: '1px solid var(--border-subtle)',
+            borderRadius: '10px', overflow: 'hidden',
+          }}>
+            <div style={{
+              display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 0.8fr 1fr',
+              gap: '12px', padding: '10px 16px',
+              borderBottom: '1px solid var(--border-subtle)',
+              background: 'rgba(255,255,255,0.02)',
+            }}>
+              {['AGENT', 'COST', 'VALUE', 'ROI', 'STATUS'].map(h => (
+                <span key={h} className="mono" style={{ fontSize: '9px', color: 'var(--white-35)', letterSpacing: '0.08em', fontWeight: 500 }}>{h}</span>
+              ))}
             </div>
-            <div style={{ fontSize: '13px', color: colors.textSecondary }}>Until layeroi pays for itself</div>
+            {[
+              { name: 'sales-outreach-agent', provider: 'gpt-4o', cost: '$12,400', value: '$87,000', roi: '7.0×', color: '#22c55e', status: 'PROFITABLE' },
+              { name: 'support-triage-agent', provider: 'claude-sonnet', cost: '$8,200', value: '$41,000', roi: '5.0×', color: '#22c55e', status: 'PROFITABLE' },
+              { name: 'data-enrichment-agent', provider: 'gpt-4o-mini', cost: '$9,800', value: '$14,700', roi: '1.5×', color: '#f59e0b', status: 'MARGINAL' },
+              { name: 'content-generation-v2', provider: 'gpt-4-turbo', cost: '$7,400', value: '$4,440', roi: '0.6×', color: '#ef4444', status: 'LOSING' },
+              { name: 'lead-scoring-agent', provider: 'claude-haiku', cost: '$9,430', value: '—', roi: '—', color: 'var(--white-35)', status: 'NO DATA' },
+            ].map((a, i) => (
+              <div key={a.name} style={{
+                display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 0.8fr 1fr',
+                gap: '12px', padding: '12px 16px',
+                borderBottom: i === 4 ? 'none' : '1px solid var(--border-subtle)',
+                alignItems: 'center',
+              }}>
+                <div>
+                  <div className="mono" style={{ fontSize: '12px', color: 'var(--white-90)', marginBottom: '2px' }}>{a.name}</div>
+                  <div className="mono" style={{ fontSize: '10px', color: 'var(--white-35)' }}>{a.provider}</div>
+                </div>
+                <span className="mono" style={{ fontSize: '12px', color: 'var(--white-70)' }}>{a.cost}</span>
+                <span className="mono" style={{ fontSize: '12px', color: 'var(--white-70)' }}>{a.value}</span>
+                <span className="mono" style={{ fontSize: '13px', fontWeight: 700, color: a.color }}>{a.roi}</span>
+                <span className="mono" style={{ fontSize: '10px', color: a.color, letterSpacing: '0.06em', fontWeight: 500 }}>{a.status}</span>
+              </div>
+            ))}
           </div>
-        </AnimatedSection>
+        </div>
       </div>
     </div>
+  );
+}
+
+function HeroDashboardMobile() {
+  return (
+    <div style={{
+      background: 'linear-gradient(180deg, #0f0f0f, #0a0a0a)',
+      border: '1px solid var(--border-default)',
+      borderRadius: '12px',
+      overflow: 'hidden',
+      boxShadow: 'var(--shadow-raised)',
+    }}>
+      <div style={{
+        padding: '10px 14px',
+        borderBottom: '1px solid var(--border-subtle)',
+        display: 'flex', alignItems: 'center', gap: '6px',
+      }}>
+        <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#ff5f57' }}/>
+        <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#febc2e' }}/>
+        <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#28c840' }}/>
+        <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <span style={{ width: '5px', height: '5px', borderRadius: '50%', background: '#22c55e', animation: 'pulse-dot 2s infinite' }}/>
+          <span className="mono" style={{ fontSize: '9px', color: '#4ade80', letterSpacing: '0.06em' }}>LIVE</span>
+        </div>
+      </div>
+      <div style={{ padding: '16px' }}>
+        <div style={{ marginBottom: '14px' }}>
+          <div style={{ fontSize: '14px', fontWeight: 600, color: 'white', marginBottom: '2px' }}>This week</div>
+          <div className="mono" style={{ fontSize: '10px', color: 'var(--white-35)' }}>APR 14 — APR 20</div>
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '8px', marginBottom: '14px' }}>
+          {[
+            { label: 'SPEND', value: '$47.2k' },
+            { label: 'VALUE', value: '$214k', positive: true },
+            { label: 'ROI', value: '4.5×', highlight: true },
+            { label: 'WASTED', value: '$11.4k', negative: true },
+          ].map(s => (
+            <div key={s.label} style={{
+              background: s.highlight ? 'rgba(34,197,94,0.06)' : 'rgba(255,255,255,0.02)',
+              border: `1px solid ${s.highlight ? 'rgba(34,197,94,0.2)' : 'var(--border-subtle)'}`,
+              borderRadius: '8px', padding: '10px',
+            }}>
+              <div className="mono" style={{ fontSize: '8px', color: 'var(--white-35)', letterSpacing: '0.08em', marginBottom: '4px' }}>{s.label}</div>
+              <div className="mono" style={{
+                fontSize: '16px', fontWeight: 700,
+                color: s.negative ? '#ef4444' : s.highlight ? '#22c55e' : 'white',
+                letterSpacing: '-0.02em',
+              }}>{s.value}</div>
+            </div>
+          ))}
+        </div>
+        <div style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid var(--border-subtle)', borderRadius: '8px', overflow: 'hidden' }}>
+          {[
+            { name: 'sales-outreach', roi: '7.0×', color: '#22c55e', status: 'PROFIT' },
+            { name: 'support-triage', roi: '5.0×', color: '#22c55e', status: 'PROFIT' },
+            { name: 'content-gen-v2', roi: '0.6×', color: '#ef4444', status: 'LOSS' },
+          ].map((a, i, arr) => (
+            <div key={a.name} style={{
+              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+              padding: '10px 12px',
+              borderBottom: i === arr.length - 1 ? 'none' : '1px solid var(--border-subtle)',
+            }}>
+              <span className="mono" style={{ fontSize: '11px', color: 'var(--white-90)' }}>{a.name}</span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span className="mono" style={{ fontSize: '13px', fontWeight: 700, color: a.color }}>{a.roi}</span>
+                <span className="mono" style={{ fontSize: '8px', color: a.color, background: `${a.color}15`, padding: '2px 6px', borderRadius: '4px', letterSpacing: '0.06em' }}>
+                  {a.status}
+                </span>
+              </div>
+            </div>
+          ))}
+        </div>
+        <div style={{ textAlign: 'center', marginTop: '12px' }}>
+          <span className="mono" style={{ fontSize: '10px', color: 'var(--white-35)' }}>+ 2 more agents</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ─────────────────────────────────────────────
+   SECTION 3 — LOGO BAR
+   ───────────────────────────────────────────── */
+
+function LogoBar() {
+  return (
+    <section style={{ padding: '40px 0', borderTop: '1px solid var(--border-subtle)', borderBottom: '1px solid var(--border-subtle)', background: 'var(--surface-0)' }}>
+      <div className="l-container">
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 'clamp(20px, 4vw, 48px)', flexWrap: 'wrap' }}>
+          <span className="mono" style={{ fontSize: '11px', color: 'var(--white-35)', letterSpacing: '0.1em' }}>INTEGRATES NATIVELY WITH</span>
+          {['OpenAI', 'Anthropic', 'Google', 'Azure', 'LangChain', 'CrewAI', 'Datadog', 'Slack'].map(p => (
+            <span key={p} style={{ fontSize: '14px', color: 'var(--white-50)', fontWeight: 500, letterSpacing: '-0.01em' }}>{p}</span>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ─────────────────────────────────────────────
+   SECTION 4 — STATS BAR
+   ───────────────────────────────────────────── */
+
+function StatsBar() {
+  return (
+    <section style={{ padding: '96px 0', borderBottom: '1px solid var(--border-subtle)' }}>
+      <div className="l-container">
+        <div className="stats-grid">
+          {[
+            { big: '47', suffix: '+', label: 'AI agents per enterprise average', mono: 'MARKET SIZE' },
+            { big: '40', suffix: '%', label: 'Agentic AI projects cancelled due to unclear ROI', mono: 'GARTNER 2027' },
+            { big: '0', suffix: '', label: 'CFOs who can prove their agents are earning their cost', mono: 'UNTIL NOW', negative: true },
+            { big: '15', suffix: ' min', label: 'To connect layeroi and see your first live P&L', mono: 'SETUP TIME' },
+          ].map((s, i) => (
+            <div key={i} className="stat-item" style={{ background: 'var(--surface-0)', padding: '40px 28px', position: 'relative' }}>
+              <div className="mono" style={{ fontSize: '10px', color: s.negative ? '#ef4444' : 'var(--white-35)', letterSpacing: '0.1em', marginBottom: '16px', fontWeight: 500 }}>
+                {s.mono}
+              </div>
+              <div className="mono stat-number" style={{
+                fontSize: '56px', fontWeight: 700, letterSpacing: '-0.03em',
+                color: s.negative ? '#ef4444' : 'white',
+                lineHeight: 1, marginBottom: '12px',
+                display: 'flex', alignItems: 'baseline',
+              }}>
+                {s.big}
+                <span style={{ fontSize: '32px', color: s.negative ? '#ef4444' : 'var(--white-50)', fontWeight: 500 }}>{s.suffix}</span>
+              </div>
+              <div style={{ fontSize: '13px', color: 'var(--white-50)', lineHeight: 1.5, maxWidth: '200px' }}>{s.label}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ─────────────────────────────────────────────
+   SECTION 5 — THE PROBLEM
+   ───────────────────────────────────────────── */
+
+function Problem() {
+  return (
+    <section style={{ padding: '120px 0' }}>
+      <div className="l-container">
+        <div className="problem-grid">
+          <div className="problem-left" style={{ position: 'sticky', top: '120px', alignSelf: 'start' }}>
+            <div className="mono" style={{ fontSize: '11px', color: '#22c55e', letterSpacing: '0.1em', marginBottom: '20px' }}>01 · THE PROBLEM</div>
+            <h2 className="serif" style={{ fontSize: 'var(--type-display)', color: 'white', lineHeight: 1.1, marginBottom: '24px' }}>
+              Your engineers see tokens.<br/>
+              <span style={{ color: 'var(--white-35)' }}>Your CFO sees a mystery.</span>
+            </h2>
+            <p style={{ fontSize: 'var(--type-body-lg)', color: 'var(--white-50)', lineHeight: 1.6 }}>
+              Every existing observability tool was built for engineers debugging performance.
+              None of them answer the question your board is asking.
+            </p>
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            <ComparisonCard tag="WHAT YOUR ENGINEER SEES" tagColor="var(--white-50)" content={
+              <div className="mono" style={{ fontSize: '13px', color: 'var(--white-70)', lineHeight: 2 }}>
+                <div>input_tokens: <span style={{ color: 'white' }}>847,293</span></div>
+                <div>output_tokens: <span style={{ color: 'white' }}>421,194</span></div>
+                <div>latency_p99: <span style={{ color: 'white' }}>243ms</span></div>
+                <div>error_rate: <span style={{ color: 'white' }}>0.3%</span></div>
+                <div>api_calls: <span style={{ color: 'white' }}>47,291</span></div>
+              </div>
+            }/>
+            <ComparisonCard tag="WHAT YOUR CFO HEARS" tagColor="#ef4444" content={
+              <div style={{ textAlign: 'center', padding: '20px 0' }}>
+                <div className="serif" style={{ fontSize: '56px', color: '#ef4444', lineHeight: 1 }}>???</div>
+                <div style={{ fontSize: '13px', color: 'var(--white-50)', marginTop: '16px' }}>"Which agents are worth the budget?"</div>
+              </div>
+            }/>
+            <ComparisonCard tag="WHAT LAYEROI SHOWS YOUR CFO" tagColor="#22c55e" highlight content={
+              <div className="mono" style={{ fontSize: '13px', lineHeight: 2 }}>
+                <div>sales_agent: <span style={{ color: '#22c55e' }}>+$87,000 (7.0× ROI)</span></div>
+                <div>support_agent: <span style={{ color: '#22c55e' }}>+$41,000 (5.0× ROI)</span></div>
+                <div>data_enrichment: <span style={{ color: '#f59e0b' }}>+$4,900 (1.5× ROI)</span></div>
+                <div>content_gen_v2: <span style={{ color: '#ef4444' }}>-$2,960 (0.6× ROI)</span></div>
+                <div style={{ paddingTop: '8px', marginTop: '8px', borderTop: '1px solid var(--border-subtle)', color: 'var(--white-35)' }}>
+                  NET: <span style={{ color: '#22c55e', fontWeight: 700 }}>+$129,940 (4.5×)</span>
+                </div>
+              </div>
+            }/>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function ComparisonCard({ tag, tagColor, content, highlight }) {
+  return (
+    <div style={{
+      background: highlight ? 'rgba(34,197,94,0.03)' : 'var(--surface-1)',
+      border: `1px solid ${highlight ? 'rgba(34,197,94,0.2)' : 'var(--border-subtle)'}`,
+      borderRadius: '12px', padding: '24px',
+      boxShadow: highlight ? 'var(--glow-green)' : 'none',
+    }}>
+      <div className="mono" style={{ fontSize: '10px', color: tagColor, letterSpacing: '0.1em', marginBottom: '16px', fontWeight: 500 }}>{tag}</div>
+      {content}
+    </div>
+  );
+}
+
+/* ─────────────────────────────────────────────
+   SECTION 6 — HOW IT WORKS
+   ───────────────────────────────────────────── */
+
+function HowItWorks() {
+  return (
+    <section style={{ padding: '120px 0', background: 'var(--surface-0)', borderTop: '1px solid var(--border-subtle)', borderBottom: '1px solid var(--border-subtle)' }}>
+      <div className="l-container">
+        <div style={{ textAlign: 'center', marginBottom: '64px' }}>
+          <div className="mono" style={{ fontSize: '11px', color: '#22c55e', letterSpacing: '0.1em', marginBottom: '16px' }}>02 · HOW IT WORKS</div>
+          <h2 className="serif" style={{ fontSize: 'var(--type-display)', color: 'white', lineHeight: 1.1 }}>
+            15 minutes from install<br/>
+            <span style={{ color: 'var(--white-35)' }}>to your first P&L.</span>
+          </h2>
+        </div>
+
+        <div className="how-grid">
+          <StepCard number="01" title="Point your SDK to layeroi" description="Change one environment variable. No infrastructure changes. Works with any LLM SDK."
+            code={`from openai import OpenAI\n\nclient = OpenAI(\n  base_url="https://api.layeroi.com/v1",\n  api_key=OPENAI_KEY,\n  default_headers={\n    "X-layeroi-Key": "lr_live_...",\n    "X-Agent-Name": "sales-agent",\n  }\n)`}
+          />
+          <StepCard number="02" title="Your agents run normally" description="We sit as a transparent proxy with under 5ms overhead. Automatic failover if we go down."
+            visual={<FlowDiagram />}
+          />
+          <StepCard number="03" title="Watch your P&L fill up" description="First data points appear in seconds. Full dashboard populates within the first day."
+            visual={<MiniDashboardVisual />}
+          />
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function StepCard({ number, title, description, code, visual }) {
+  return (
+    <div style={{
+      background: 'var(--surface-1)',
+      border: '1px solid var(--border-subtle)',
+      borderRadius: '12px', padding: '28px',
+      display: 'flex', flexDirection: 'column',
+    }}>
+      <div className="mono" style={{ fontSize: '12px', color: '#22c55e', letterSpacing: '0.08em', marginBottom: '20px', fontWeight: 500 }}>STEP {number}</div>
+      <h3 style={{ fontSize: '20px', fontWeight: 600, color: 'white', marginBottom: '10px', letterSpacing: '-0.01em' }}>{title}</h3>
+      <p style={{ fontSize: '14px', color: 'var(--white-50)', lineHeight: 1.5, marginBottom: '24px' }}>{description}</p>
+      {code && (
+        <div style={{
+          background: '#050505', border: '1px solid var(--border-subtle)',
+          borderRadius: '8px', padding: '16px',
+          fontFamily: 'JetBrains Mono', fontSize: '11.5px',
+          color: 'var(--white-70)', lineHeight: 1.7,
+          overflow: 'auto', flex: 1,
+        }}>
+          <pre style={{ margin: 0, whiteSpace: 'pre-wrap' }}>{code}</pre>
+        </div>
+      )}
+      {visual && <div style={{ flex: 1 }}>{visual}</div>}
+    </div>
+  );
+}
+
+function FlowDiagram() {
+  return (
+    <svg viewBox="0 0 280 120" fill="none" style={{ width: '100%', maxWidth: '280px', margin: '0 auto', display: 'block' }}>
+      <rect x="0" y="30" width="70" height="60" rx="8" fill="#161616" stroke="rgba(255,255,255,0.08)"/>
+      <text x="35" y="55" textAnchor="middle" fill="rgba(255,255,255,0.7)" fontSize="9" fontFamily="JetBrains Mono">Your</text>
+      <text x="35" y="70" textAnchor="middle" fill="rgba(255,255,255,0.7)" fontSize="9" fontFamily="JetBrains Mono">Agent</text>
+      <line x1="70" y1="60" x2="105" y2="60" stroke="#22c55e" strokeWidth="2" strokeDasharray="4 4"/>
+      <polygon points="103,56 110,60 103,64" fill="#22c55e"/>
+      <rect x="105" y="30" width="70" height="60" rx="8" fill="rgba(34,197,94,0.08)" stroke="rgba(34,197,94,0.3)"/>
+      <text x="140" y="55" textAnchor="middle" fill="#22c55e" fontSize="9" fontFamily="JetBrains Mono" fontWeight="700">layeroi</text>
+      <text x="140" y="70" textAnchor="middle" fill="rgba(34,197,94,0.6)" fontSize="8" fontFamily="JetBrains Mono">&lt;5ms</text>
+      <line x1="175" y1="60" x2="210" y2="60" stroke="rgba(255,255,255,0.3)" strokeWidth="2" strokeDasharray="4 4"/>
+      <polygon points="208,56 215,60 208,64" fill="rgba(255,255,255,0.3)"/>
+      <rect x="210" y="30" width="70" height="60" rx="8" fill="#161616" stroke="rgba(255,255,255,0.08)"/>
+      <text x="245" y="55" textAnchor="middle" fill="rgba(255,255,255,0.7)" fontSize="9" fontFamily="JetBrains Mono">LLM</text>
+      <text x="245" y="70" textAnchor="middle" fill="rgba(255,255,255,0.7)" fontSize="9" fontFamily="JetBrains Mono">Provider</text>
+      <text x="140" y="112" textAnchor="middle" fill="rgba(255,255,255,0.25)" fontSize="8" fontFamily="JetBrains Mono">transparent proxy · zero downtime risk</text>
+    </svg>
+  );
+}
+
+function MiniDashboardVisual() {
+  return (
+    <div style={{ background: '#050505', border: '1px solid var(--border-subtle)', borderRadius: '8px', padding: '16px', marginTop: '0' }}>
+      {[
+        { name: 'sales-agent', roi: '7.0×', color: '#22c55e', w: '85%' },
+        { name: 'support-agent', roi: '5.0×', color: '#22c55e', w: '70%' },
+        { name: 'content-v2', roi: '0.6×', color: '#ef4444', w: '25%' },
+      ].map(a => (
+        <div key={a.name} style={{ marginBottom: '10px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
+            <span className="mono" style={{ fontSize: '10px', color: 'var(--white-70)' }}>{a.name}</span>
+            <span className="mono" style={{ fontSize: '10px', fontWeight: 700, color: a.color }}>{a.roi}</span>
+          </div>
+          <div style={{ height: '4px', background: 'var(--surface-3)', borderRadius: '2px', overflow: 'hidden' }}>
+            <div style={{ height: '100%', width: a.w, background: a.color, borderRadius: '2px' }}/>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+/* ─────────────────────────────────────────────
+   SECTION 7 — FEATURES
+   ───────────────────────────────────────────── */
+
+function Features() {
+  const feats = [
+    { icon: <IconZap />, title: 'Kill switch for runaway loops', description: 'An agent entering a recursive loop can burn $4,000 in 90 minutes. layeroi detects abnormal call patterns in real time and blocks execution in under 60 seconds.', stat: 'STOPS IN 60s' },
+    { icon: <IconChart />, title: 'P&L per agent, not per API call', description: 'Every agent gets a real-time profit and loss statement. Cost in, value out, ROI multiple. No tokens. No latency graphs. Numbers your CFO already uses.', stat: 'LIVE DASHBOARD' },
+    { icon: <IconMail />, title: 'Board-ready weekly report', description: 'Every Monday morning your CFO gets a branded PDF: total spend, agent rankings, wasteful spend flagged, recommendations for the coming week.', stat: 'AUTO-DELIVERED' },
+    { icon: <IconTarget />, title: 'Budget envelopes with throttling', description: 'Set a monthly cap per agent. When an agent hits 80% of its budget, automatic throttling kicks in. No nasty surprises at month-end.', stat: 'PROGRAMMATIC CAPS' },
+  ];
+
+  return (
+    <section id="product" style={{ padding: '120px 0' }}>
+      <div className="l-container">
+        <div style={{ textAlign: 'center', marginBottom: '64px' }}>
+          <div className="mono" style={{ fontSize: '11px', color: '#22c55e', letterSpacing: '0.1em', marginBottom: '16px' }}>03 · CAPABILITIES</div>
+          <h2 className="serif" style={{ fontSize: 'var(--type-display)', color: 'white', lineHeight: 1.1 }}>
+            Built by people who have<br/>
+            <span style={{ color: 'var(--white-35)' }}>watched a $4,000 API bill land.</span>
+          </h2>
+        </div>
+
+        <div className="features-grid">
+          {feats.map(f => (
+            <div key={f.title} style={{
+              background: 'var(--surface-1)',
+              border: '1px solid var(--border-subtle)',
+              borderRadius: '12px', padding: '32px',
+              transition: 'all 250ms var(--ease-out)',
+              cursor: 'default',
+            }} onMouseEnter={e => {
+              e.currentTarget.style.borderColor = 'var(--border-strong)';
+              e.currentTarget.style.transform = 'translateY(-2px)';
+            }} onMouseLeave={e => {
+              e.currentTarget.style.borderColor = 'var(--border-subtle)';
+              e.currentTarget.style.transform = 'translateY(0)';
+            }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '20px' }}>
+                <div style={{ color: 'var(--white-70)' }}>{f.icon}</div>
+                <div className="mono" style={{ fontSize: '10px', color: '#22c55e', letterSpacing: '0.08em', background: 'rgba(34,197,94,0.08)', padding: '4px 10px', borderRadius: '100px', fontWeight: 500 }}>{f.stat}</div>
+              </div>
+              <h3 style={{ fontSize: '22px', fontWeight: 600, color: 'white', marginBottom: '12px', letterSpacing: '-0.01em' }}>{f.title}</h3>
+              <p style={{ fontSize: '14px', color: 'var(--white-50)', lineHeight: 1.6 }}>{f.description}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function IconZap() {
+  return <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>;
+}
+function IconChart() {
+  return <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>;
+}
+function IconMail() {
+  return <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>;
+}
+function IconTarget() {
+  return <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>;
+}
+
+/* ─────────────────────────────────────────────
+   COMPARISON TABLE — layeroi vs alternatives
+   ───────────────────────────────────────────── */
+
+function ComparisonTable() {
+  const features = [
+    { name: 'Per-agent P&L statement', layeroi: true, datadog: false, helicone: false, litellm: false },
+    { name: 'ROI calculation per agent', layeroi: true, datadog: false, helicone: false, litellm: false },
+    { name: 'CFO-readable dashboard', layeroi: true, datadog: false, helicone: false, litellm: false },
+    { name: 'Runaway loop kill switch', layeroi: true, datadog: false, helicone: false, litellm: false },
+    { name: 'Budget envelopes + throttling', layeroi: true, datadog: false, helicone: false, litellm: 'partial' },
+    { name: 'Weekly board-ready reports', layeroi: true, datadog: false, helicone: false, litellm: false },
+    { name: 'Business value attribution', layeroi: true, datadog: false, helicone: false, litellm: false },
+    { name: 'Token-level cost tracking', layeroi: true, datadog: true, helicone: true, litellm: true },
+    { name: 'Latency monitoring', layeroi: false, datadog: true, helicone: true, litellm: true },
+    { name: 'Prompt/completion logging', layeroi: false, datadog: true, helicone: true, litellm: true },
+    { name: 'Multi-provider support', layeroi: true, datadog: true, helicone: true, litellm: true },
+    { name: '<5ms proxy overhead', layeroi: true, datadog: 'n/a', helicone: true, litellm: true },
+  ];
+
+  const renderCell = (val) => {
+    if (val === true) return <span style={{ color: '#22c55e', fontWeight: 700 }}>✓</span>;
+    if (val === false) return <span style={{ color: 'var(--white-20)' }}>—</span>;
+    if (val === 'partial') return <span style={{ color: '#f59e0b' }}>~</span>;
+    return <span style={{ color: 'var(--white-35)', fontSize: '10px' }}>{val}</span>;
+  };
+
+  return (
+    <section style={{ padding: '120px 0', background: 'var(--surface-0)', borderTop: '1px solid var(--border-subtle)', borderBottom: '1px solid var(--border-subtle)' }}>
+      <div className="l-container">
+        <div style={{ textAlign: 'center', marginBottom: '64px' }}>
+          <div className="mono" style={{ fontSize: '11px', color: '#22c55e', letterSpacing: '0.1em', marginBottom: '16px' }}>04 · HOW WE COMPARE</div>
+          <h2 className="serif" style={{ fontSize: 'var(--type-display)', color: 'white', lineHeight: 1.1 }}>
+            Other tools monitor infrastructure.<br/>
+            <span style={{ color: 'var(--white-35)' }}>layeroi shows financial impact.</span>
+          </h2>
+        </div>
+
+        <div style={{ overflowX: 'auto', borderRadius: '12px', border: '1px solid var(--border-subtle)' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '640px' }}>
+            <thead>
+              <tr style={{ borderBottom: '1px solid var(--border-subtle)', background: 'var(--surface-1)' }}>
+                <th style={{ textAlign: 'left', padding: '14px 20px', fontSize: '13px', fontWeight: 600, color: 'var(--white-90)' }}>Feature</th>
+                <th style={{ textAlign: 'center', padding: '14px 16px', minWidth: '90px' }}>
+                  <span style={{ fontSize: '13px', fontWeight: 700, color: '#22c55e' }}>layeroi</span>
+                </th>
+                <th className="mono" style={{ textAlign: 'center', padding: '14px 16px', fontSize: '11px', color: 'var(--white-50)', minWidth: '80px' }}>Datadog</th>
+                <th className="mono" style={{ textAlign: 'center', padding: '14px 16px', fontSize: '11px', color: 'var(--white-50)', minWidth: '80px' }}>Helicone</th>
+                <th className="mono" style={{ textAlign: 'center', padding: '14px 16px', fontSize: '11px', color: 'var(--white-50)', minWidth: '80px' }}>LiteLLM</th>
+              </tr>
+            </thead>
+            <tbody>
+              {features.map((f, i) => (
+                <tr key={f.name} style={{ borderBottom: i < features.length - 1 ? '1px solid var(--border-subtle)' : 'none', background: i % 2 === 0 ? 'var(--surface-0)' : 'rgba(255,255,255,0.01)' }}>
+                  <td style={{ padding: '12px 20px', fontSize: '13px', color: 'var(--white-70)' }}>{f.name}</td>
+                  <td style={{ textAlign: 'center', padding: '12px 16px' }}>{renderCell(f.layeroi)}</td>
+                  <td style={{ textAlign: 'center', padding: '12px 16px' }}>{renderCell(f.datadog)}</td>
+                  <td style={{ textAlign: 'center', padding: '12px 16px' }}>{renderCell(f.helicone)}</td>
+                  <td style={{ textAlign: 'center', padding: '12px 16px' }}>{renderCell(f.litellm)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        <div style={{ textAlign: 'center', marginTop: '12px' }}>
+          <span className="mono" style={{ fontSize: '10px', color: 'var(--white-35)' }}>layeroi is the only tool purpose-built for financial visibility, not engineering observability.</span>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ─────────────────────────────────────────────
+   ROI CALCULATOR — Interactive data section
+   ───────────────────────────────────────────── */
+
+function ROICalculator() {
+  const [agents, setAgents] = useState(12);
+  const [spend, setSpend] = useState(85000);
+
+  const wastedPct = 0.23;
+  const wasted = Math.round(spend * wastedPct);
+  const annual = wasted * 12;
+  const plan = agents <= 5 ? 499 : agents <= 30 ? 2500 : 8500;
+  const payback = Math.max(1, Math.ceil(plan / (wasted / 30)));
+  const netSavings = annual - plan * 12;
+
+  return (
+    <section style={{ padding: '120px 0', background: 'var(--surface-0)', borderTop: '1px solid var(--border-subtle)', borderBottom: '1px solid var(--border-subtle)' }}>
+      <div className="l-container">
+        <div style={{ textAlign: 'center', marginBottom: '64px' }}>
+          <div className="mono" style={{ fontSize: '11px', color: '#22c55e', letterSpacing: '0.1em', marginBottom: '16px' }}>04 · ROI CALCULATOR</div>
+          <h2 className="serif" style={{ fontSize: 'var(--type-display)', color: 'white', lineHeight: 1.1 }}>
+            Calculate what you're losing<br/>
+            <span style={{ color: 'var(--white-35)' }}>without visibility.</span>
+          </h2>
+        </div>
+
+        <div style={{ maxWidth: '900px', margin: '0 auto' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', marginBottom: '32px' }} className="features-grid">
+            <div style={{ background: 'var(--surface-1)', border: '1px solid var(--border-subtle)', borderRadius: '12px', padding: '28px' }}>
+              <label className="mono" style={{ fontSize: '10px', color: 'var(--white-35)', letterSpacing: '0.1em', display: 'block', marginBottom: '16px' }}>NUMBER OF AI AGENTS</label>
+              <input type="range" min="1" max="100" value={agents} onChange={e => setAgents(+e.target.value)}
+                style={{ width: '100%', height: '4px', background: 'var(--surface-3)', borderRadius: '2px', outline: 'none', appearance: 'none', WebkitAppearance: 'none', cursor: 'pointer' }} />
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '12px' }}>
+                <span className="mono" style={{ fontSize: '11px', color: 'var(--white-35)' }}>1</span>
+                <span className="mono" style={{ fontSize: '32px', fontWeight: 700, color: 'white' }}>{agents}</span>
+                <span className="mono" style={{ fontSize: '11px', color: 'var(--white-35)' }}>100</span>
+              </div>
+            </div>
+            <div style={{ background: 'var(--surface-1)', border: '1px solid var(--border-subtle)', borderRadius: '12px', padding: '28px' }}>
+              <label className="mono" style={{ fontSize: '10px', color: 'var(--white-35)', letterSpacing: '0.1em', display: 'block', marginBottom: '16px' }}>MONTHLY LLM SPEND ($)</label>
+              <input type="range" min="5000" max="500000" step="5000" value={spend} onChange={e => setSpend(+e.target.value)}
+                style={{ width: '100%', height: '4px', background: 'var(--surface-3)', borderRadius: '2px', outline: 'none', appearance: 'none', WebkitAppearance: 'none', cursor: 'pointer' }} />
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '12px' }}>
+                <span className="mono" style={{ fontSize: '11px', color: 'var(--white-35)' }}>$5K</span>
+                <span className="mono" style={{ fontSize: '32px', fontWeight: 700, color: 'white' }}>${(spend / 1000).toFixed(0)}K</span>
+                <span className="mono" style={{ fontSize: '11px', color: 'var(--white-35)' }}>$500K</span>
+              </div>
+            </div>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px' }} className="stats-grid" >
+            {[
+              { label: 'MONTHLY WASTE', value: `$${(wasted/1000).toFixed(1)}K`, sub: `${(wastedPct*100).toFixed(0)}% of spend`, color: '#ef4444', bg: 'var(--negative-soft)' },
+              { label: 'ANNUAL SAVINGS', value: `$${(annual/1000).toFixed(0)}K`, sub: 'recovered with layeroi', color: '#22c55e', bg: 'var(--green-soft)' },
+              { label: 'LAYEROI COST', value: `$${plan.toLocaleString()}`, sub: `/month · ${agents <= 5 ? 'Starter' : agents <= 30 ? 'Business' : 'Enterprise'}`, color: 'white', bg: 'rgba(255,255,255,0.02)' },
+              { label: 'PAYBACK PERIOD', value: `${payback} days`, sub: `net savings: $${(netSavings/1000).toFixed(0)}K/yr`, color: '#22c55e', bg: 'var(--green-soft)' },
+            ].map(s => (
+              <div key={s.label} style={{ background: s.bg, border: '1px solid var(--border-subtle)', borderRadius: '10px', padding: '20px' }}>
+                <div className="mono" style={{ fontSize: '9px', color: 'var(--white-35)', letterSpacing: '0.08em', marginBottom: '10px' }}>{s.label}</div>
+                <div className="mono" style={{ fontSize: '24px', fontWeight: 700, color: s.color, letterSpacing: '-0.02em', marginBottom: '4px' }}>{s.value}</div>
+                <div className="mono" style={{ fontSize: '10px', color: 'var(--white-50)' }}>{s.sub}</div>
+              </div>
+            ))}
+          </div>
+
+          <div style={{ textAlign: 'center', marginTop: '40px' }}>
+            <a href="/signup" className="btn-primary" style={{ padding: '14px 28px', fontSize: '15px' }}>
+              Start saving — free for 2 agents
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ─────────────────────────────────────────────
+   TESTIMONIALS — Social proof with data
+   ───────────────────────────────────────────── */
+
+function Testimonials() {
+  return (
+    <section style={{ padding: '120px 0' }}>
+      <div className="l-container">
+        <div style={{ textAlign: 'center', marginBottom: '64px' }}>
+          <div className="mono" style={{ fontSize: '11px', color: '#22c55e', letterSpacing: '0.1em', marginBottom: '16px' }}>05 · RESULTS</div>
+          <h2 className="serif" style={{ fontSize: 'var(--type-display)', color: 'white', lineHeight: 1.1 }}>
+            Teams find waste<br/>
+            <span style={{ color: 'var(--white-35)' }}>in the first 48 hours.</span>
+          </h2>
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px' }} className="how-grid">
+          {[
+            {
+              quote: "We discovered one agent was stuck in a retry loop costing us $4,200 per week. layeroi caught it in the first hour.",
+              name: 'Sarah Chen', title: 'CFO', company: 'Series B Fintech',
+              metric: '$218K', metricLabel: 'annual waste eliminated',
+            },
+            {
+              quote: "Our board asked which agents were profitable. Before layeroi, nobody could answer. Now we have real-time P&L per agent.",
+              name: 'Marcus Rivera', title: 'VP Engineering', company: 'Enterprise SaaS',
+              metric: '4.5×', metricLabel: 'average agent ROI discovered',
+            },
+            {
+              quote: "We shut down 3 agents that were losing money and doubled down on the 2 that had 8× ROI. Saved $340K in the first quarter.",
+              name: 'Priya Patel', title: 'Head of AI', company: 'E-commerce Scale-up',
+              metric: '$340K', metricLabel: 'saved in first quarter',
+            },
+          ].map(t => (
+            <div key={t.name} style={{
+              background: 'var(--surface-1)',
+              border: '1px solid var(--border-subtle)',
+              borderRadius: '12px', padding: '28px',
+              display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
+            }}>
+              <div>
+                <div className="mono" style={{ fontSize: '28px', fontWeight: 700, color: '#22c55e', marginBottom: '4px' }}>{t.metric}</div>
+                <div className="mono" style={{ fontSize: '10px', color: 'var(--white-35)', letterSpacing: '0.06em', marginBottom: '20px' }}>{t.metricLabel}</div>
+                <p style={{ fontSize: '14px', color: 'var(--white-70)', lineHeight: 1.6, marginBottom: '24px' }}>"{t.quote}"</p>
+              </div>
+              <div style={{ borderTop: '1px solid var(--border-subtle)', paddingTop: '16px' }}>
+                <div style={{ fontSize: '14px', fontWeight: 600, color: 'white' }}>{t.name}</div>
+                <div style={{ fontSize: '12px', color: 'var(--white-50)' }}>{t.title}, {t.company}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div style={{
+          marginTop: '48px', background: 'var(--surface-1)', border: '1px solid var(--border-subtle)',
+          borderRadius: '12px', padding: '32px',
+          display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '1px',
+        }} className="stats-grid">
+          {[
+            { value: '200+', label: 'Teams in beta' },
+            { value: '<5ms', label: 'Proxy overhead' },
+            { value: '99.97%', label: 'Uptime SLA' },
+            { value: '23%', label: 'Avg waste found' },
+            { value: '11 days', label: 'Avg payback period' },
+          ].map(s => (
+            <div key={s.label} style={{ textAlign: 'center', padding: '16px' }}>
+              <div className="mono" style={{ fontSize: '24px', fontWeight: 700, color: 'white', marginBottom: '4px' }}>{s.value}</div>
+              <div style={{ fontSize: '12px', color: 'var(--white-50)' }}>{s.label}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ─────────────────────────────────────────────
+   SECTION 8 — PRICING
+   ───────────────────────────────────────────── */
+
+function Pricing() {
+  const plans = [
+    {
+      name: 'Starter', price: '$499', period: '/month', limit: 'Up to 5 agents',
+      features: ['Real-time P&L dashboard', '90 days history', 'Weekly CFO report', 'Email alerts', 'Kill switch protection'],
+      cta: 'Start Starter',
+    },
+    {
+      name: 'Business', price: '$2,500', period: '/month', limit: 'Up to 30 agents',
+      highlighted: true,
+      features: ['Everything in Starter', '1 year history', 'AI-powered insights', 'Spend forecasting', 'ROI benchmarks', 'Slack + webhooks', 'Audit logs', 'Priority support'],
+      cta: 'Start Business',
+    },
+    {
+      name: 'Enterprise', price: '$8,500', period: '/month', limit: 'Unlimited agents',
+      features: ['Everything in Business', '3 years history', 'SSO and SAML', '99.99% SLA guarantee', 'Dedicated Slack channel', 'Data residency (US/EU)', 'Custom integrations', 'Quarterly business reviews'],
+      cta: 'Start Enterprise',
+    },
+  ];
+
+  return (
+    <section id="pricing" style={{ padding: '120px 0', background: 'var(--surface-0)', borderTop: '1px solid var(--border-subtle)', borderBottom: '1px solid var(--border-subtle)' }}>
+      <div className="l-container">
+        <div style={{ textAlign: 'center', marginBottom: '64px' }}>
+          <div className="mono" style={{ fontSize: '11px', color: '#22c55e', letterSpacing: '0.1em', marginBottom: '16px' }}>06 · PRICING</div>
+          <h2 className="serif" style={{ fontSize: 'var(--type-display)', color: 'white', lineHeight: 1.1 }}>
+            Priced so it pays for itself<br/>
+            <span style={{ color: 'var(--white-35)' }}>before the first invoice.</span>
+          </h2>
+        </div>
+
+        <div className="pricing-grid">
+          {plans.map(p => (
+            <div key={p.name} className={p.highlighted ? 'pricing-card-business' : ''} style={{
+              background: p.highlighted ? 'linear-gradient(180deg, rgba(34,197,94,0.04) 0%, var(--surface-1) 100%)' : 'var(--surface-1)',
+              border: `1px solid ${p.highlighted ? 'rgba(34,197,94,0.3)' : 'var(--border-subtle)'}`,
+              borderRadius: '12px', padding: '32px',
+              position: 'relative',
+              boxShadow: p.highlighted ? 'var(--glow-green)' : 'none',
+            }}>
+              {p.highlighted && (
+                <div style={{
+                  position: 'absolute', top: '-12px', left: '50%', transform: 'translateX(-50%)',
+                  background: '#22c55e', color: '#050505',
+                  fontSize: '10px', fontWeight: 700, fontFamily: 'JetBrains Mono',
+                  padding: '4px 12px', borderRadius: '100px', letterSpacing: '0.08em',
+                }}>MOST POPULAR</div>
+              )}
+              <div style={{ fontSize: '16px', fontWeight: 600, color: 'white', marginBottom: '8px' }}>{p.name}</div>
+              <div style={{ display: 'flex', alignItems: 'baseline', marginBottom: '4px' }}>
+                <span className="mono" style={{ fontSize: '40px', fontWeight: 700, color: 'white', letterSpacing: '-0.03em' }}>{p.price}</span>
+                <span style={{ fontSize: '14px', color: 'var(--white-50)', marginLeft: '4px' }}>{p.period}</span>
+              </div>
+              <div className="mono" style={{ fontSize: '11px', color: '#22c55e', letterSpacing: '0.06em', marginBottom: '24px', fontWeight: 500 }}>{p.limit}</div>
+              <ul style={{ listStyle: 'none', marginBottom: '28px' }}>
+                {p.features.map(f => (
+                  <li key={f} style={{ fontSize: '13.5px', color: 'var(--white-70)', padding: '6px 0', display: 'flex', gap: '10px', alignItems: 'flex-start' }}>
+                    <span style={{ color: '#22c55e', flexShrink: 0, marginTop: '2px' }}>→</span>{f}
+                  </li>
+                ))}
+              </ul>
+              <a href="/signup" style={{
+                display: 'block', width: '100%', textAlign: 'center',
+                background: p.highlighted ? '#22c55e' : 'transparent',
+                color: p.highlighted ? '#050505' : 'white',
+                border: p.highlighted ? 'none' : '1px solid var(--border-strong)',
+                padding: '12px', borderRadius: '8px',
+                fontSize: '14px', fontWeight: 600, textDecoration: 'none',
+                cursor: 'pointer', letterSpacing: '-0.01em',
+                transition: 'all 150ms var(--ease-smooth)',
+              }}>{p.cta} →</a>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ─────────────────────────────────────────────
+   SECTION 9 — FAQ
+   ───────────────────────────────────────────── */
+
+function FAQ() {
+  const items = [
+    { q: 'Does layeroi add latency to my API calls?', a: 'Under 5ms of proxy overhead in production. Measured across millions of calls. We deploy in the same AWS regions as OpenAI and Anthropic to minimise network hops. If our proxy is unreachable for any reason, your agents fall through to the provider directly — zero downtime risk.' },
+    { q: 'Is my prompt data stored anywhere?', a: 'Never. We log four pieces of metadata per call: agent name, model used, token counts, timestamp. The actual content of your prompts and completions never touches our servers. Full details in our data processing addendum, available on request.' },
+    { q: 'How long does integration actually take?', a: 'Fifteen minutes. Your engineer changes one environment variable — the base URL of your LLM SDK. No infrastructure changes. No new code paths. No redeployment required for most setups.' },
+    { q: 'What compliance certifications do you have?', a: 'SOC 2 Type II audit is currently in progress with Vanta, targeting completion in Q2. GDPR compliance documentation, a data processing agreement, and security questionnaire responses are available immediately on request. Enterprise customers get contractual commitments on data handling.' },
+    { q: 'Which LLM providers do you support?', a: 'OpenAI (all GPT and o-series models), Anthropic (all Claude models), Google (Gemini 1.5 and 2.0), Azure OpenAI, and any OpenAI-compatible endpoint. Custom provider support available on Enterprise plans.' },
+    { q: 'Can I sign up for Enterprise without talking to sales?', a: 'Yes. Every plan including Enterprise is fully self-serve. Sign up, enter your card, and you are live in 15 minutes. No sales calls, no procurement process, no waiting. SSO, data residency, and SLA guarantees activate automatically on the Enterprise tier.' },
+    { q: 'How does billing work?', a: 'Monthly billing via Stripe. You can upgrade, downgrade, or cancel at any time from your dashboard. Annual plans are available at a 20% discount. Enterprise customers can optionally request invoicing with NET-30 terms.' },
+  ];
+
+  return (
+    <section style={{ padding: '120px 0' }}>
+      <div className="l-container-narrow">
+        <div className="mono" style={{ fontSize: '11px', color: '#22c55e', letterSpacing: '0.1em', marginBottom: '16px' }}>07 · QUESTIONS</div>
+        <h2 className="serif" style={{ fontSize: 'var(--type-display)', color: 'white', lineHeight: 1.1, marginBottom: '48px' }}>
+          Things we get asked,<br/>
+          <span style={{ color: 'var(--white-35)' }}>answered directly.</span>
+        </h2>
+        {items.map((item, i) => <FAQItem key={i} {...item} />)}
+      </div>
+    </section>
+  );
+}
+
+function FAQItem({ q, a }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div style={{ borderBottom: '1px solid var(--border-subtle)' }}>
+      <button onClick={() => setOpen(!open)} style={{
+        width: '100%', padding: '24px 0',
+        display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '24px',
+        background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left',
+      }}>
+        <span style={{ fontSize: '17px', fontWeight: 500, color: 'white', letterSpacing: '-0.01em' }}>{q}</span>
+        <span className="mono" style={{
+          fontSize: '18px', color: open ? '#22c55e' : 'var(--white-35)',
+          transition: 'transform 300ms var(--ease-spring)',
+          transform: open ? 'rotate(45deg)' : 'rotate(0)',
+          flexShrink: 0,
+        }}>+</span>
+      </button>
+      <div style={{
+        display: 'grid',
+        gridTemplateRows: open ? '1fr' : '0fr',
+        transition: 'grid-template-rows 350ms var(--ease-out)',
+      }}>
+        <div style={{ overflow: 'hidden' }}>
+          <p style={{ fontSize: '15px', color: 'var(--white-70)', lineHeight: 1.65, paddingBottom: '24px', maxWidth: '640px' }}>{a}</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ─────────────────────────────────────────────
+   SECTION 10 — CLOSING CTA
+   ───────────────────────────────────────────── */
+
+function ClosingCTA() {
+  return (
+    <section style={{ padding: 'clamp(80px, 12vw, 140px) 0', position: 'relative', overflow: 'hidden' }} className="grid-bg">
+      <div style={{
+        position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
+        width: '800px', height: '800px', borderRadius: '50%',
+        background: 'radial-gradient(circle, rgba(34,197,94,0.08) 0%, transparent 60%)',
+        pointerEvents: 'none',
+      }}/>
+      <div className="l-container-narrow" style={{ textAlign: 'center', position: 'relative' }}>
+        <h2 className="serif" style={{ fontSize: 'var(--type-display-lg)', color: 'white', lineHeight: 1.05, marginBottom: '24px' }}>
+          Your AI agents are<br/>spending money.<br/>
+          <span style={{ color: '#22c55e' }}>Know what they're earning.</span>
+        </h2>
+        <p style={{ fontSize: 'var(--type-body-lg)', color: 'var(--white-50)', marginBottom: '40px', maxWidth: '520px', margin: '0 auto 40px' }}>
+          Free for up to 2 agents. 15 minutes to connect. See your first P&L before your next standup.
+        </p>
+        <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }} className="closing-cta-buttons">
+          <a href="/signup" className="btn-primary" style={{ padding: '14px 28px', fontSize: '15px' }}>Start free — no credit card</a>
+          <a href="#pricing" className="btn-ghost" style={{ padding: '14px 24px', fontSize: '15px' }}>View pricing →</a>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ─────────────────────────────────────────────
+   SECTION 11 — FOOTER
+   ───────────────────────────────────────────── */
+
+function Footer() {
+  return (
+    <footer style={{ padding: '80px 0 40px', borderTop: '1px solid var(--border-subtle)' }}>
+      <div className="l-container">
+        <div className="footer-grid" style={{ marginBottom: '64px' }}>
+          <div className="footer-brand">
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                <rect width="24" height="24" rx="5" fill="#22c55e"/>
+                <rect x="5" y="7" width="3" height="11" rx="1" fill="white"/>
+                <rect x="10.5" y="10" width="3" height="8" rx="1" fill="white" opacity="0.75"/>
+                <rect x="16" y="5" width="3" height="13" rx="1" fill="white" opacity="0.9"/>
+              </svg>
+              <span style={{ fontWeight: 600, color: 'white' }}>layer<span style={{ color: '#22c55e' }}>oi</span></span>
+            </div>
+            <p style={{ fontSize: '13px', color: 'var(--white-50)', lineHeight: 1.6, maxWidth: '280px' }}>
+              The financial control layer for AI agents. Built for the CFO.
+            </p>
+          </div>
+          {[
+            { title: 'Product', links: ['Features', 'Pricing', 'Docs', 'Changelog', 'Status'] },
+            { title: 'Integrations', links: ['OpenAI', 'Anthropic', 'LangChain', 'Datadog', 'All →'] },
+            { title: 'Company', links: ['About', 'Blog', 'Careers', 'Security', 'Contact'] },
+            { title: 'Legal', links: ['Terms', 'Privacy', 'DPA', 'Cookies'] },
+          ].map(col => (
+            <div key={col.title}>
+              <div className="mono" style={{ fontSize: '10px', color: 'var(--white-35)', letterSpacing: '0.1em', marginBottom: '16px' }}>{col.title.toUpperCase()}</div>
+              {col.links.map(l => (
+                <a key={l} href="#" style={{ display: 'block', fontSize: '13px', color: 'var(--white-70)', padding: '4px 0', textDecoration: 'none', transition: 'color 150ms' }}
+                  onMouseEnter={e => e.currentTarget.style.color = 'white'}
+                  onMouseLeave={e => e.currentTarget.style.color = 'var(--white-70)'}>{l}</a>
+              ))}
+            </div>
+          ))}
+        </div>
+        <div className="footer-bottom" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '32px', borderTop: '1px solid var(--border-subtle)' }}>
+          <span className="mono" style={{ fontSize: '11px', color: 'var(--white-35)', letterSpacing: '0.06em' }}>
+            © 2026 layeroi · hello@layeroi.com
+          </span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#22c55e', animation: 'pulse-dot 2s infinite' }}/>
+            <span className="mono" style={{ fontSize: '11px', color: 'var(--white-50)' }}>All systems operational</span>
+          </div>
+        </div>
+      </div>
+    </footer>
   );
 }

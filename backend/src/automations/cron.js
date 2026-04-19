@@ -223,6 +223,48 @@ export function initAutomations() {
     })
   );
 
+  // Marketing: Daily tweet generation at 7 AM UTC (12:30 PM IST)
+  cronJobs.push(
+    cron.schedule('0 7 * * *', async () => {
+      try {
+        console.log('[CRON] Generating daily marketing tweet...');
+        const { generateDailyTweet } = await import('./marketingEngine.js');
+        const result = await generateDailyTweet();
+        console.log(`[CRON] Daily tweet generated: ${result.success}`);
+      } catch (err) {
+        console.error('[CRON ERROR] Daily tweet failed:', err.message);
+      }
+    })
+  );
+
+  // Marketing: Weekly content batch every Monday at 6 AM UTC (11:30 AM IST)
+  cronJobs.push(
+    cron.schedule('0 6 * * 1', async () => {
+      try {
+        console.log('[CRON] Generating weekly marketing content batch...');
+        const { generateWeeklyContent } = await import('./marketingEngine.js');
+        const result = await generateWeeklyContent();
+        console.log(`[CRON] Weekly content generated: ${result.generated} pieces`);
+      } catch (err) {
+        console.error('[CRON ERROR] Weekly content failed:', err.message);
+      }
+    })
+  );
+
+  // Marketing: LinkedIn post every Wednesday at 11 AM UTC (4:30 PM IST)
+  cronJobs.push(
+    cron.schedule('0 11 * * 3', async () => {
+      try {
+        console.log('[CRON] Generating LinkedIn post...');
+        const { generateLinkedInPost } = await import('./marketingEngine.js');
+        const result = await generateLinkedInPost();
+        console.log(`[CRON] LinkedIn post generated: ${result.success}`);
+      } catch (err) {
+        console.error('[CRON ERROR] LinkedIn post failed:', err.message);
+      }
+    })
+  );
+
   console.log(`\n✅ ${cronJobs.length} TOTAL AUTOMATION CRON JOBS SCHEDULED\n`);
   console.log('📝 SEO & Content Generation:');
   console.log('   → Intent keywords: Mon 09:00 UTC');
@@ -243,6 +285,10 @@ export function initAutomations() {
   console.log('   → PH follow-ups: 3 days after launch');
   console.log('   → Partnership outreach: 1st weekday of month 09:00 UTC');
   console.log('   → Acquisition outreach: Quarterly 08:00 UTC');
+  console.log('\n📣 Marketing Automation:');
+  console.log('   → Daily tweet: Daily 07:00 UTC');
+  console.log('   → Weekly content batch: Mon 06:00 UTC');
+  console.log('   → LinkedIn post: Wed 11:00 UTC');
   console.log('\n📊 Admin:');
   console.log('   → Weekly reports: Sun 09:00 UTC\n');
 }

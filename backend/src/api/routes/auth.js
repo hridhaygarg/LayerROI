@@ -16,14 +16,18 @@ router.post('/auth/login', async (req, res) => {
       return res.status(400).json({ error: 'Email and password required' });
     }
 
-    // TODO: Validate password against hash when user table has auth_hash column
-    // For now, create or get user
-    const user = await getUserByEmail(email);
+    // SECURITY NOTE: Password validation is not implemented.
+    // This endpoint currently accepts any email/password combination.
+    // To fix:
+    // 1. Add auth_hash column to users table
+    // 2. Hash passwords with bcrypt on signup
+    // 3. Compare hash on login: const match = await bcrypt.compare(password, user.auth_hash);
 
-    if (!user) {
-      logger.warn('Login attempt for non-existent user', { email });
-      return res.status(401).json({ error: 'Invalid credentials' });
-    }
+    logger.warn('Login endpoint called - password validation not implemented', { email });
+    return res.status(501).json({
+      error: 'Password authentication not yet implemented',
+      message: 'Use OAuth or API key authentication instead'
+    });
 
     const token = signJWT({
       userId: user.id,
@@ -136,29 +140,20 @@ router.post('/auth/google/token', async (req, res) => {
       return res.status(400).json({ error: 'ID token required' });
     }
 
-    // TODO: Verify ID token with Google
-    // For now, extract claims and create/get user
-    // const decoded = await verifyGoogleToken(idToken);
+    // SECURITY NOTE: Google OAuth is not fully implemented.
+    // To enable, implement verifyGoogleToken() using google-auth-library:
+    // npm install google-auth-library
+    // const { OAuth2Client } = require('google-auth-library');
+    // const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+    // const ticket = await client.verifyIdToken({ idToken, audience: GOOGLE_CLIENT_ID });
+    // const payload = ticket.getPayload();
 
-    // Mock implementation - in production use google-auth-library
-    const mockUser = {
-      id: crypto.randomUUID(),
-      email: 'user@example.com',
-      name: 'User Name',
-    };
+    logger.warn('Google OAuth endpoint called but verification not implemented', { idToken: idToken.substring(0, 20) + '...' });
 
-    const token = signJWT({
-      userId: mockUser.id,
-      email: mockUser.email,
+    return res.status(501).json({
+      error: 'Google OAuth verification not yet implemented',
+      message: 'This endpoint requires google-auth-library integration'
     });
-
-    res.json({
-      success: true,
-      token,
-      user: mockUser,
-    });
-
-    logger.info('Google OAuth successful', { email: mockUser.email });
   } catch (err) {
     logger.error('Google OAuth failed', err);
     res.status(500).json({ error: err.message });
@@ -197,9 +192,19 @@ router.post('/auth/revoke-key', (req, res) => {
       return res.status(400).json({ error: 'API key required' });
     }
 
-    // TODO: Update database to mark API key as revoked
-    logger.info('API key revoked');
-    res.json({ success: true, message: 'API key revoked' });
+    // SECURITY NOTE: API key revocation is not implemented.
+    // Currently revoked keys can still be used.
+    // To fix:
+    // 1. Add revoked_at timestamp column to api_keys table
+    // 2. Update: UPDATE api_keys SET revoked_at = NOW() WHERE key = $1
+    // 3. Check in auth middleware: if (apiKey.revoked_at) return 401
+
+    logger.warn('API key revocation not implemented - key remains active', { apiKey: apiKey.substring(0, 10) + '...' });
+    res.json({
+      success: false,
+      message: 'API key revocation not yet implemented',
+      error: 'Please delete the API key from your account settings instead'
+    });
   } catch (err) {
     logger.error('Revoke key failed', err);
     res.status(500).json({ error: err.message });

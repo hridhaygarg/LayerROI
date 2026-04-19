@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { usePageTitle } from '../hooks/usePageTitle';
 import { useToast } from '../components/Toast';
 import { AnimatedSection } from '../components/AnimatedSection';
@@ -27,24 +27,23 @@ export default function Outreach() {
   const [filter, setFilter] = useState('all');
   const [manualRunning, setManualRunning] = useState(false);
 
-  useEffect(() => {
-    loadProspects();
-    loadStats();
-  }, [filter]);
-
-  async function loadProspects() {
+  const loadProspects = useCallback(async () => {
     try {
       setLoading(true);
       const response = await fetch(`/api/outreach?status=${filter}&limit=50`);
       const data = await response.json();
       setProspects(data.data || []);
     } catch (err) {
-      console.error('Error loading prospects:', err);
       showToast('Failed to load prospects', 'error');
     } finally {
       setLoading(false);
     }
-  }
+  }, [filter, showToast]);
+
+  useEffect(() => {
+    loadProspects();
+    loadStats();
+  }, [filter, loadProspects]);
 
   async function loadStats() {
     try {

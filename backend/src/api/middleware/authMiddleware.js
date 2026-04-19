@@ -9,6 +9,11 @@ export const authMiddleware = (req, res, next) => {
     return next();
   }
 
+  // Allow automation triggers (called by cron jobs)
+  if (req.path.startsWith('/automations/trigger/') || req.path.startsWith('/api/automations/trigger/')) {
+    return next();
+  }
+
   // Try JWT first
   const authHeader = req.headers.authorization;
   if (authHeader && authHeader.startsWith('Bearer ')) {

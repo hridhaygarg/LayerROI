@@ -9,8 +9,12 @@ export function useWebSocket() {
   const wsUrlRef = useRef(null);
 
   useEffect(() => {
-    // Get WebSocket URL from environment or use default
-    const wsUrl = process.env.REACT_APP_WS_URL || 'ws://localhost:3000';
+    // Get WebSocket URL from environment
+    const wsUrl = process.env.REACT_APP_WS_URL;
+    if (!wsUrl) {
+      console.error('REACT_APP_WS_URL environment variable is required');
+      return;
+    }
     wsUrlRef.current = wsUrl;
 
     // Create WebSocketManager instance

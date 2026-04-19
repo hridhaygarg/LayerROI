@@ -3,18 +3,127 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content="The only financial control layer for AI agents. See which agents are profitable, which are burning money, and kill runaway costs before they compound." />
-    <meta property="og:title" content="layeroi" />
-    <meta property="og:description" content="Know if your AI agents are worth it" />
-    <meta property="og:url" content="https://layeroi.com" />
+
+    <!-- Primary Meta -->
+    <title>layeroi — Real-Time P&L for Every AI Agent You Run</title>
+    <meta name="description" content="The financial control layer for AI agents. Track per-agent P&L, ROI, and costs in real-time. Kill runaway loops in 60 seconds. Built for CFOs, not engineers. Free for 2 agents." />
+    <meta name="keywords" content="AI agent cost tracking, LLM cost management, AI agent ROI, AI spend visibility, AI agent P&L, AI budget management, LLM observability for finance, AI cost optimization" />
+    <meta name="author" content="layeroi" />
+    <link rel="canonical" href="https://layeroi.com" />
+
+    <!-- Open Graph -->
     <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://layeroi.com" />
+    <meta property="og:title" content="layeroi — Real-Time P&L for Every AI Agent You Run" />
+    <meta property="og:description" content="Track per-agent costs, ROI, and profitability in real-time. Kill runaway loops in 60 seconds. Built for CFOs spending $50K-$500K/month on AI." />
+    <meta property="og:site_name" content="layeroi" />
+
+    <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="layeroi" />
-    <meta name="twitter:description" content="Know if your AI agents are worth it" />
-    <title>layeroi — Know if your AI agents are worth it</title>
+    <meta name="twitter:title" content="layeroi — Real-Time P&L for Every AI Agent" />
+    <meta name="twitter:description" content="The only tool that shows CFOs which AI agents are profitable and which are burning money. Free for 2 agents." />
+    <meta name="twitter:site" content="@layeroi" />
+
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600&family=Playfair+Display:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+    <!-- Structured Data — Organization -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "layeroi",
+      "url": "https://layeroi.com",
+      "description": "The financial control layer for AI agents. Real-time P&L, ROI tracking, and cost management.",
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "email": "hello@layeroi.com",
+        "contactType": "sales"
+      }
+    }
+    </script>
+
+    <!-- Structured Data — SoftwareApplication -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "layeroi",
+      "applicationCategory": "BusinessApplication",
+      "operatingSystem": "Web",
+      "description": "Real-time P&L tracking for AI agents. See which agents are profitable, which are burning money, and stop runaway costs.",
+      "url": "https://layeroi.com",
+      "offers": [
+        {
+          "@type": "Offer",
+          "name": "Starter",
+          "price": "499",
+          "priceCurrency": "USD",
+          "description": "Up to 5 agents, real-time P&L dashboard, weekly CFO report"
+        },
+        {
+          "@type": "Offer",
+          "name": "Business",
+          "price": "2500",
+          "priceCurrency": "USD",
+          "description": "Up to 30 agents, AI-powered insights, spend forecasting, ROI benchmarks"
+        },
+        {
+          "@type": "Offer",
+          "name": "Enterprise",
+          "price": "8500",
+          "priceCurrency": "USD",
+          "description": "Unlimited agents, SSO, SLA guarantees, data residency"
+        }
+      ]
+    }
+    </script>
+
+    <!-- Structured Data — FAQ -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Does layeroi add latency to API calls?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Under 5ms of proxy overhead in production. If the proxy is unreachable, agents fall through to the provider directly — zero downtime risk."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is prompt data stored?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Never. We only log metadata: agent name, model used, token counts, timestamp. Prompt content never touches our servers."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How long does integration take?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "15 minutes. Change one environment variable — the base URL of your LLM SDK. No infrastructure changes required."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Can I sign up for Enterprise without talking to sales?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. Every plan including Enterprise is fully self-serve. Sign up and you are live in 15 minutes. SSO, data residency, and SLA guarantees activate automatically."
+          }
+        }
+      ]
+    }
+    </script>
+
+    <!-- Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-BNYSXHQPSQ"></script>
     <script>
       window.dataLayer = window.dataLayer || [];

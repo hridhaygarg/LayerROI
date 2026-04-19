@@ -1,6 +1,9 @@
 export class WebSocketManager {
   constructor(url) {
-    this.url = url || process.env.REACT_APP_WS_URL || 'ws://localhost:3000';
+    this.url = url || process.env.REACT_APP_WS_URL;
+    if (!this.url) {
+      console.error('WebSocket URL is required. Set REACT_APP_WS_URL environment variable or pass URL to constructor');
+    }
     this.ws = null;
     this.listeners = {};
     this.heartbeatInterval = null;

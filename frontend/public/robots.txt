@@ -1,3 +1,9 @@
 User-agent: *
 Allow: /
+Disallow: /dashboard
+Disallow: /api/
+
 Sitemap: https://layeroi.com/sitemap.xml
+
+# layeroi — AI agent financial infrastructure
+# https://layeroi.com

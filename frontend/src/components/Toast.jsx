@@ -6,17 +6,17 @@ export function ToastProvider({ children }) {
   const [toasts, setToasts] = useState([]);
   const timeoutsRef = useRef({});
 
+  const removeToast = useCallback((id) => {
+    clearTimeout(timeoutsRef.current[id]);
+    setToasts(prev => prev.filter(t => t.id !== id));
+  }, []);
+
   const addToast = useCallback((message, type = 'success', duration = 4000) => {
     const id = Date.now() + Math.random();
     setToasts(prev => [...prev.slice(-2), { id, message, type }]);
     timeoutsRef.current[id] = setTimeout(() => removeToast(id), duration);
     return id;
-  }, []);
-
-  const removeToast = useCallback((id) => {
-    clearTimeout(timeoutsRef.current[id]);
-    setToasts(prev => prev.filter(t => t.id !== id));
-  }, []);
+  }, [removeToast]);
 
   const toast = {
     success: (msg, dur) => addToast(msg, 'success', dur),

@@ -43,12 +43,12 @@ describe('TopBar Component', () => {
     expect(container.querySelector('.top-bar')).toBeInTheDocument();
   });
 
-  test('renders title "Layer ROI"', () => {
+  test('renders title "layeroi"', () => {
     render(
       <TopBar isActive={true} onMenuToggle={() => {}} sidebarOpen={false} isMobile={false} />
     );
 
-    expect(screen.getByText('Layer ROI')).toBeInTheDocument();
+    expect(screen.getByText('layeroi')).toBeInTheDocument();
   });
 
   test('calls onMenuToggle when mobile menu button is clicked', () => {

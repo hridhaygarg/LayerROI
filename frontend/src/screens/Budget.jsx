@@ -145,6 +145,8 @@ export default function Budget() {
               if (newBudget !== monthlyBudget) {
                 handleBudgetChange(newBudget);
               }
+              e.target.style.borderColor = colors.borderDefault;
+              e.target.style.boxShadow = 'none';
             }}
             disabled={updating}
             style={{
@@ -166,10 +168,6 @@ export default function Budget() {
                 e.target.style.borderColor = colors.accentGreen;
                 e.target.style.boxShadow = `0 0 0 3px rgba(22, 163, 74, 0.1)`;
               }
-            }}
-            onBlur={(e) => {
-              e.target.style.borderColor = colors.borderDefault;
-              e.target.style.boxShadow = 'none';
             }}
           />
         </div>
