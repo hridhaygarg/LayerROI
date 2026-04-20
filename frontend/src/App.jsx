@@ -215,7 +215,17 @@ function DarkDashboard({ currentScreen, setCurrentScreen, screenNames, isMobile 
 
   // Listen for TopBar menu navigation events
   useEffect(() => {
-    const handler = (e) => setCurrentScreen(e.detail);
+    const handler = (e) => {
+      const detail = e.detail;
+      if (typeof detail === 'string') {
+        setCurrentScreen(detail);
+      } else if (detail?.screen) {
+        setCurrentScreen(detail.screen);
+        if (detail.tab) {
+          window.sessionStorage.setItem('admin_tab_target', detail.tab);
+        }
+      }
+    };
     window.addEventListener('navigate-screen', handler);
     return () => window.removeEventListener('navigate-screen', handler);
   }, [setCurrentScreen]);

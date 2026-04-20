@@ -28,7 +28,20 @@ const colors = {
 };
 
 export default function Admin() {
-  const [activeTab, setActiveTab] = useState('team');
+  const [activeTab, setActiveTab] = useState(() => {
+    const target = window.sessionStorage.getItem('admin_tab_target');
+    if (target) { window.sessionStorage.removeItem('admin_tab_target'); return target; }
+    return 'team';
+  });
+
+  // Listen for tab changes while mounted
+  useEffect(() => {
+    const handler = (e) => {
+      if (e.detail?.screen === 'admin' && e.detail?.tab) setActiveTab(e.detail.tab);
+    };
+    window.addEventListener('navigate-screen', handler);
+    return () => window.removeEventListener('navigate-screen', handler);
+  }, []);
   const [members, setMembers] = useState([]);
   const [integrations, setIntegrations] = useState([]);
   const [settings, setSettings] = useState({});
