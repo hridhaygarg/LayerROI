@@ -1,7 +1,7 @@
 import crypto from 'crypto';
 import { logger } from '../utils/logger.js';
 
-const DODO_API_BASE = 'https://live.dodopayments.com';
+const DODO_API_BASE = process.env.DODO_TEST_MODE === 'false' ? 'https://live.dodopayments.com' : 'https://test.dodopayments.com';
 
 export const PLANS = {
   starter: {
