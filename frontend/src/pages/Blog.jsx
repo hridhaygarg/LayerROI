@@ -118,11 +118,11 @@ const POSTS = [
     readTime: '5 min read',
     body: () => (
       <>
-        <p>When Sarah Chen, CFO at a Series B fintech startup, asked her engineering team how much their AI agents cost, the answer was "around $50K a month, probably." That "probably" was doing a lot of heavy lifting.</p>
+        <p>When The CFO at a Series B fintech startup asked her engineering team how much their AI agents cost, the answer was "around $50K a month, probably." That "probably" was doing a lot of heavy lifting.</p>
 
         <h3>The Setup</h3>
         <p>The company ran 14 AI agents across sales, support, compliance, and data processing. Monthly LLM spend was somewhere between $40K and $65K — nobody could pin down the exact number because costs were aggregated across a single OpenAI API key.</p>
-        <p>Sarah connected layeroi on a Tuesday morning. By Tuesday afternoon, the dashboard was already telling a story.</p>
+        <p>The team connected layeroi on a Tuesday morning. By Tuesday afternoon, the dashboard was already telling a story.</p>
 
         <h3>The Discovery</h3>
         <p>Within the first hour, layeroi's kill switch flagged an anomaly: the compliance-checking agent was making 340 API calls per minute — 50x its normal rate. It had entered a retry loop after encountering a malformed response, and was burning through $600/hour while producing no useful output.</p>
@@ -139,7 +139,7 @@ const POSTS = [
           <li>Net ROI: 10.4×</li>
         </ul>
 
-        <p>Sarah's summary: "We went from having zero visibility to knowing exactly which agents are money makers and which are money pits. The compliance loop alone justified the entire cost of layeroi for three years."</p>
+        <p>The CFO's summary: "We went from having zero visibility to knowing exactly which agents are money makers and which are money pits. The compliance loop alone justified the entire cost of layeroi for three years."</p>
       </>
     ),
   },

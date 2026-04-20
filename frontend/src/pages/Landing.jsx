@@ -917,32 +917,32 @@ function Testimonials() {
     <section style={{ padding: '120px 0' }}>
       <div className="l-container">
         <div style={{ textAlign: 'center', marginBottom: '64px' }}>
-          <div className="mono" style={{ fontSize: '11px', color: '#22c55e', letterSpacing: '0.1em', marginBottom: '16px' }}>05 · RESULTS</div>
+          <div className="mono" style={{ fontSize: '11px', color: '#22c55e', letterSpacing: '0.1em', marginBottom: '16px' }}>05 · WHY IT MATTERS</div>
           <h2 className="serif" style={{ fontSize: 'var(--type-display)', color: 'white', lineHeight: 1.1 }}>
-            Teams find waste<br/>
-            <span style={{ color: 'var(--white-35)' }}>in the first 48 hours.</span>
+            The data speaks<br/>
+            <span style={{ color: 'var(--white-35)' }}>for itself.</span>
           </h2>
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px' }} className="how-grid">
           {[
             {
-              quote: "We discovered one agent was stuck in a retry loop costing us $4,200 per week. layeroi caught it in the first hour.",
-              name: 'Sarah Chen', title: 'CFO', company: 'Series B Fintech',
-              metric: '$218K', metricLabel: 'annual waste eliminated',
+              insight: 'A single agent stuck in a retry loop can burn $4,200 per week. Without per-agent cost tracking, nobody notices until the invoice arrives.',
+              metric: '$4,200', metricLabel: 'per week — cost of one undetected loop',
+              tag: 'RUNAWAY RISK',
             },
             {
-              quote: "Our board asked which agents were profitable. Before layeroi, nobody could answer. Now we have real-time P&L per agent.",
-              name: 'Marcus Rivera', title: 'VP Engineering', company: 'Enterprise SaaS',
-              metric: '4.5×', metricLabel: 'average agent ROI discovered',
+              insight: 'Enterprise teams running 30+ agents have no way to attribute costs to individual agents. The monthly invoice is one number — impossible to optimise.',
+              metric: '0', metricLabel: 'CFOs who can prove agent ROI today',
+              tag: 'VISIBILITY GAP',
             },
             {
-              quote: "We shut down 3 agents that were losing money and doubled down on the 2 that had 8× ROI. Saved $340K in the first quarter.",
-              name: 'Priya Patel', title: 'Head of AI', company: 'E-commerce Scale-up',
-              metric: '$340K', metricLabel: 'saved in first quarter',
+              insight: 'When teams add per-agent tracking, they consistently find 20–30% of spend going to agents with negative ROI — agents that cost more than they produce.',
+              metric: '23%', metricLabel: 'average waste discovered with visibility',
+              tag: 'INDUSTRY DATA',
             },
           ].map(t => (
-            <div key={t.name} style={{
+            <div key={t.tag} style={{
               background: 'var(--surface-1)',
               border: '1px solid var(--border-subtle)',
               borderRadius: '12px', padding: '28px',
@@ -951,11 +951,10 @@ function Testimonials() {
               <div>
                 <div className="mono" style={{ fontSize: '28px', fontWeight: 700, color: '#22c55e', marginBottom: '4px' }}>{t.metric}</div>
                 <div className="mono" style={{ fontSize: '10px', color: 'var(--white-35)', letterSpacing: '0.06em', marginBottom: '20px' }}>{t.metricLabel}</div>
-                <p style={{ fontSize: '14px', color: 'var(--white-70)', lineHeight: 1.6, marginBottom: '24px' }}>"{t.quote}"</p>
+                <p style={{ fontSize: '14px', color: 'var(--white-70)', lineHeight: 1.6, marginBottom: '24px' }}>{t.insight}</p>
               </div>
               <div style={{ borderTop: '1px solid var(--border-subtle)', paddingTop: '16px' }}>
-                <div style={{ fontSize: '14px', fontWeight: 600, color: 'white' }}>{t.name}</div>
-                <div style={{ fontSize: '12px', color: 'var(--white-50)' }}>{t.title}, {t.company}</div>
+                <div className="mono" style={{ fontSize: '10px', color: '#22c55e', letterSpacing: '0.08em', fontWeight: 500 }}>{t.tag}</div>
               </div>
             </div>
           ))}

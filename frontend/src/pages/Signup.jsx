@@ -129,11 +129,12 @@ export default function Signup() {
             </div>
           </div>
 
-          {/* Testimonial */}
-          <div style={{ background: colors.bgSubtle, border: `1px solid ${colors.borderDefault}`, borderRadius: '12px', padding: '24px' }}>
-            <p style={{ fontSize: '15px', color: colors.textSecondary, fontStyle: 'italic', marginBottom: '16px', lineHeight: 1.6 }}>"We went from having zero visibility into agent costs to seeing exactly which ones are money makers. layeroi showed us we were losing $40k/month on one agent."</p>
-            <div style={{ fontWeight: '600', color: colors.textPrimary, fontSize: '14px' }}>Sarah Chen</div>
-            <div style={{ fontSize: '13px', color: colors.textTertiary }}>CFO, FinTech Startup</div>
+          {/* Value statement */}
+          <div style={{ background: 'rgba(22,163,74,0.04)', border: '1px solid rgba(22,163,74,0.15)', borderRadius: '12px', padding: '24px' }}>
+            <p style={{ fontSize: '17px', color: colors.textPrimary, fontStyle: 'italic', marginBottom: '12px', lineHeight: 1.5 }}>
+              Most companies discover 20–30% of their AI agent spend is going to agents with negative ROI — once they can actually measure it.
+            </p>
+            <div style={{ fontFamily: 'monospace', fontSize: '11px', color: colors.accentGreen, letterSpacing: '0.06em', fontWeight: 600 }}>THE LAYEROI THESIS</div>
           </div>
         </div>
 
@@ -147,7 +148,7 @@ export default function Signup() {
               </div>
 
               {[
-                { label: 'Full name', name: 'name', type: 'text', placeholder: 'Sarah Chen' },
+                { label: 'Full name', name: 'name', type: 'text', placeholder: 'Your name' },
                 { label: 'Work email', name: 'email', type: 'email', placeholder: 'sarah@company.com' },
                 { label: 'Company', name: 'company', type: 'text', placeholder: 'Acme Corp' },
                 { label: 'Password', name: 'password', type: 'password', placeholder: 'Min 8 characters' },
@@ -199,7 +200,7 @@ export default function Signup() {
                   name="name"
                   value={formData.name}
                   onChange={handleChange}
-                  placeholder="Sarah Chen"
+                  placeholder="Your name"
                   style={{ width: '100%', padding: '12px 16px', border: `1px solid ${colors.borderDefault}`, borderRadius: '6px', fontFamily: 'Inter, sans-serif', fontSize: '16px', background: colors.bgSurface, color: colors.textPrimary, transition: 'all 200ms' }}
                   onFocus={(e) => (e.target.style.borderColor = colors.accentGreen)}
                   onBlur={(e) => (e.target.style.borderColor = colors.borderDefault)}
@@ -269,7 +270,7 @@ apiKey: '${apiKey}'`}
                 </code>
               </div>
 
-              <button onClick={() => navigate('/dashboard')} style={{ width: '100%', display: 'inline-block', background: colors.accentGreen, color: colors.bgSurface, padding: '12px', borderRadius: '6px', border: 'none', fontFamily: 'Inter, sans-serif', fontSize: '16px', fontWeight: '600', cursor: 'pointer', transition: 'all 200ms', textAlign: 'center', textDecoration: 'none' }} onMouseDown={(e) => (e.target.style.transform = 'scale(0.98)')} onMouseUp={(e) => (e.target.style.transform = 'scale(1)')}>Go to dashboard →</button>
+              <button onClick={() => { window.location.href = '/dashboard'; }} style={{ width: '100%', display: 'inline-block', background: colors.accentGreen, color: colors.bgSurface, padding: '12px', borderRadius: '6px', border: 'none', fontFamily: 'Inter, sans-serif', fontSize: '16px', fontWeight: '600', cursor: 'pointer', transition: 'all 200ms', textAlign: 'center', textDecoration: 'none' }} onMouseDown={(e) => (e.target.style.transform = 'scale(0.98)')} onMouseUp={(e) => (e.target.style.transform = 'scale(1)')}>Go to dashboard →</button>
             </div>
           )}
         </div>
