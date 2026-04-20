@@ -85,7 +85,10 @@ export function DashboardTopBar({ onToggleSidebar, screenName }) {
                 <div style={{ fontSize: '13px', fontWeight: 600, color: 'white', marginBottom: '2px' }}>{user?.name || 'Account'}</div>
                 <div style={{ fontSize: '11.5px', color: 'var(--white-55)' }}>{user?.email}</div>
               </div>
-              <MenuBtn onClick={() => { window.open('/docs', '_blank'); }}><Icon name='docs' size={14} />Documentation</MenuBtn>
+              <MenuBtn onClick={() => { setMenuOpen(false); }}><Icon name='settings' size={14} />Settings</MenuBtn>
+              <MenuBtn onClick={() => { setMenuOpen(false); }}><Icon name='agents' size={14} />Team & Members</MenuBtn>
+              <MenuBtn onClick={() => { setMenuOpen(false); }}><Icon name='budget' size={14} />Billing</MenuBtn>
+              <MenuBtn onClick={() => { window.open('/docs', '_blank'); setMenuOpen(false); }}><Icon name='external' size={14} />Documentation</MenuBtn>
               <div style={{ height: '1px', background: 'var(--border-subtle)', margin: '4px 0' }} />
               <MenuBtn onClick={handleLogout} danger><Icon name='logout' size={14} />Log out</MenuBtn>
             </div>

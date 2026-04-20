@@ -231,16 +231,25 @@ export default function Agents() {
                 try {
                   let orgId;
                   try { const t = localStorage.getItem('layeroi_token'); if (t) orgId = JSON.parse(atob(t.split('.')[1])).orgId; } catch(e) {}
-                  await fetch('https://api.layeroi.com/api/agents', {
+                  const createRes = await fetch('https://api.layeroi.com/api/agents', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('layeroi_token')}` },
                     body: JSON.stringify({ name: newAgent.name.trim(), provider: newAgent.provider, orgId }),
                   });
+                  const createData = await createRes.json();
+                  if (!createRes.ok || !createData.success) {
+                    setError(createData.error || 'Failed to create agent');
+                    setCreating(false);
+                    return;
+                  }
                   setShowAddModal(false);
                   setNewAgent({ name: '', provider: 'openai' });
-                  // Refetch agents
-                  const res = await apiService.getAgents(orgId);
-                  setAgents(res?.agents || res?.data || []);
+                  // Refetch agents list with direct fetch
+                  const listRes = await fetch(`https://api.layeroi.com/api/agents?orgId=${orgId}`, {
+                    headers: { 'Authorization': `Bearer ${localStorage.getItem('layeroi_token')}` },
+                  });
+                  const listData = await listRes.json();
+                  setAgents(listData?.agents || listData?.data || (Array.isArray(listData) ? listData : []));
                 } catch (err) {
                   setError('Failed to create agent');
                 } finally {
