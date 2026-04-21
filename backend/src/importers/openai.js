@@ -15,7 +15,9 @@ const PRICING = {
 };
 
 function normalizeModel(model) {
-  return model.replace(/-\d{4}-\d{2}-\d{2}$/, '');
+  return model
+    .replace(/-\d{4}-\d{2}-\d{2}$/, '')  // "gpt-4o-2024-08-06" -> "gpt-4o"
+    .replace(/-\d{4}$/, '');              // "gpt-3.5-turbo-0125" -> "gpt-3.5-turbo"
 }
 
 function costFor(model, tokensIn, tokensOut) {

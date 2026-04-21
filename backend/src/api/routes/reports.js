@@ -12,7 +12,7 @@ async function fetchAllLogs(orgId, monthStart) {
   while (true) {
     const { data, error } = await supabase
       .from('api_logs')
-      .select('agent_id, agent_name, cost_usd, value')
+      .select('agent_id, agent_name, provider, cost_usd, value')
       .eq('org_id', orgId)
       .gte('created_at', monthStart.toISOString())
       .range(from, from + pageSize - 1);
@@ -41,16 +41,21 @@ async function buildReportData(orgId) {
 
   logs.forEach(l => {
     const key = l.agent_id || l.agent_name;
-    if (!perAgent[key]) perAgent[key] = { id: key, name: l.agent_name || 'Unknown', provider: 'unknown', cost: 0, value: 0, tasks: 0 };
+    if (!perAgent[key]) perAgent[key] = { id: key, name: l.agent_name || 'Unknown', provider: l.provider || 'unknown', cost: 0, value: 0, tasks: 0 };
+    if (l.provider && perAgent[key].provider === 'unknown') perAgent[key].provider = l.provider;
     perAgent[key].cost += Number(l.cost_usd || 0);
     perAgent[key].value += Number(l.value || 0);
     perAgent[key].tasks += 1;
   });
 
+  const hasValueData = Object.values(perAgent).some(a => a.value > 0);
   const agentRows = Object.values(perAgent).map(a => ({
     ...a,
-    roi: a.cost > 0 ? a.value / a.cost : null,
-    status: a.cost === 0 && a.value === 0 ? 'no_data' : a.cost > 0 && a.value / a.cost >= 3 ? 'profitable' : a.cost > 0 && a.value / a.cost >= 1 ? 'marginal' : 'losing',
+    roi: a.cost > 0 && a.value > 0 ? a.value / a.cost : null,
+    status: !hasValueData ? (a.cost > 0 ? 'tracking' : 'no_data')
+      : a.cost === 0 && a.value === 0 ? 'no_data'
+      : a.cost > 0 && a.value / a.cost >= 3 ? 'profitable'
+      : a.cost > 0 && a.value / a.cost >= 1 ? 'marginal' : 'losing',
   }));
 
   const totalSpend = agentRows.reduce((s, a) => s + a.cost, 0);
@@ -64,6 +69,7 @@ async function buildReportData(orgId) {
     kpis: { total_spend: totalSpend, total_value: totalValue, net_roi: netRoi, wasteful_spend: wasteful, agents_count: agentRows.length, tasks_count: logs.length },
     agents: agentRows.sort((a, b) => b.cost - a.cost),
     has_data: totalSpend > 0 || totalValue > 0,
+    has_value: totalValue > 0,
   };
 }
 
@@ -80,8 +86,15 @@ function buildSummary(data) {
   const { kpis, agents } = data;
   if (!kpis.total_spend) return 'No AI agent activity recorded this period.';
   const active = agents.filter(a => a.cost > 0).length;
+  const hasValue = kpis.total_value > 0;
+
+  if (!hasValue) {
+    const topSpender = agents.reduce((top, a) => (a.cost > (top?.cost || 0) ? a : top), null);
+    return `Across ${active} active agent${active === 1 ? '' : 's'} this period, layeroi tracked ${fmtCurrency(kpis.total_spend)} in AI spend. Value tagging is not yet configured — connect value reporting to see which agents are profitable.${topSpender ? ` Top spender: ${topSpender.name} at ${fmtCurrency(topSpender.cost)}.` : ''}`;
+  }
+
   const profitable = agents.filter(a => a.roi != null && a.roi >= 3).length;
-  const losing = agents.filter(a => a.roi != null && a.roi < 1).length;
+  const losing = agents.filter(a => a.roi != null && a.roi < 1 && a.cost > 0).length;
   const top = agents.reduce((best, a) => (a.value > (best?.value || 0) ? a : best), null);
   return `Across ${active} active agents, layeroi tracked ${fmtCurrency(kpis.total_spend)} in AI spend against ${fmtCurrency(kpis.total_value)} in value — a ${kpis.net_roi.toFixed(1)}× return. ${profitable} agent${profitable === 1 ? '' : 's'} profitable${losing > 0 ? `, ${losing} losing money` : ''}.${top ? ` Top performer: ${top.name} at ${(top.roi||0).toFixed(1)}× ROI.` : ''}`;
 }

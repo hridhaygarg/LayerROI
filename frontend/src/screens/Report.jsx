@@ -127,7 +127,7 @@ export default function Report() {
                   <span className='mono' style={{ fontSize: '13px', color: 'rgba(255,255,255,0.75)' }}>{fmt.currency(a.cost)}</span>
                   <span className='mono' style={{ fontSize: '13px', color: 'rgba(255,255,255,0.75)' }}>{fmt.currency(a.value)}</span>
                   <span className='mono' style={{ fontSize: '13px', fontWeight: 700, color: roiColor(a.roi) }}>{fmt.multiple(a.roi)}</span>
-                  <span className='mono' style={{ fontSize: '10px', color: roiColor(a.roi), letterSpacing: '0.08em' }}>{(a.status || 'no_data').toUpperCase()}</span>
+                  {(() => { const s = statusForAgent(a, data.has_value); return <span className='mono' style={{ fontSize: '10px', color: s.color, letterSpacing: '0.08em' }}>{s.label}</span>; })()}
                 </div>
               ))}
             </div>
@@ -156,10 +156,25 @@ function buildSummary(data) {
   if (!kpis.total_spend) return 'No AI agent activity recorded this period.';
   const fmtC = (n) => '$' + Number(n).toLocaleString(undefined, { maximumFractionDigits: 0 });
   const active = agents.filter(a => a.cost > 0).length;
+  const hasValue = kpis.total_value > 0;
+
+  if (!hasValue) {
+    const topSpender = agents.reduce((top, a) => (a.cost > (top?.cost || 0) ? a : top), null);
+    return `Across ${active} active agent${active === 1 ? '' : 's'} this period, layeroi tracked ${fmtC(kpis.total_spend)} in AI spend. Value tagging is not yet configured — connect value reporting to see which agents are profitable.${topSpender ? ` Top spender: ${topSpender.name} at ${fmtC(topSpender.cost)}.` : ''}`;
+  }
+
   const profitable = agents.filter(a => a.roi != null && a.roi >= 3).length;
-  const losing = agents.filter(a => a.roi != null && a.roi < 1).length;
+  const losing = agents.filter(a => a.roi != null && a.roi < 1 && a.cost > 0).length;
   const top = agents.reduce((best, a) => (a.value > (best?.value || 0) ? a : best), null);
   return `Across ${active} active agents, layeroi tracked ${fmtC(kpis.total_spend)} in AI spend against ${fmtC(kpis.total_value)} in value — a ${kpis.net_roi.toFixed(1)}× return. ${profitable} agent${profitable === 1 ? '' : 's'} profitable${losing > 0 ? `, ${losing} losing money` : ''}.${top ? ` Top performer: ${top.name} at ${(top.roi||0).toFixed(1)}× ROI.` : ''}`;
+}
+
+function statusForAgent(agent, hasValue) {
+  if (!hasValue) return agent.cost > 0 ? { label: 'TRACKING', color: '#888' } : { label: 'NO DATA', color: '#888' };
+  if (agent.roi == null) return { label: 'NO DATA', color: 'rgba(255,255,255,0.38)' };
+  if (agent.roi >= 3) return { label: 'PROFITABLE', color: '#22c55e' };
+  if (agent.roi >= 1) return { label: 'MARGINAL', color: '#f59e0b' };
+  return { label: 'LOSING', color: '#ef4444' };
 }
 
 function roiColor(roi) {
