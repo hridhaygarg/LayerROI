@@ -30,9 +30,12 @@ export async function run(source, { since }) {
   }
   console.log('[openai-importer] TEST MODE NOT TRIGGERED - calling real OpenAI API');
 
-  const sinceUnix = Math.floor((since || new Date(Date.now() - 7 * 86400000)).getTime() / 1000);
+  // OpenAI max limit is 31 for 1d buckets. Cap since to 30 days ago.
+  const maxSince = new Date(Date.now() - 30 * 86400000);
+  const sinceDate = since && since > maxSince ? since : maxSince;
+  const sinceUnix = Math.floor(sinceDate.getTime() / 1000);
 
-  const params = new URLSearchParams({ start_time: sinceUnix.toString(), bucket_width: '1d', group_by: 'model,project_id', limit: '180' });
+  const params = new URLSearchParams({ start_time: sinceUnix.toString(), bucket_width: '1d', group_by: 'model,project_id', limit: '31' });
   const res = await fetch(`https://api.openai.com/v1/organization/usage/completions?${params}`, {
     headers: { Authorization: `Bearer ${apiKey}` },
   });
