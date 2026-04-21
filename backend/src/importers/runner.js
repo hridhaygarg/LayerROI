@@ -34,6 +34,11 @@ export async function syncSource(sourceId) {
 
     const result = await importer.run({ ...source, credentials }, { since });
 
+    console.log('[runner] importer returned', result.rows.length, 'rows');
+    if (result.rows.length > 0) {
+      console.log('[runner] first row sample:', JSON.stringify(result.rows[0]));
+    }
+
     let imported = 0;
     for (let i = 0; i < result.rows.length; i += 500) {
       const batch = result.rows.slice(i, i + 500).map(r => ({
@@ -51,9 +56,23 @@ export async function syncSource(sourceId) {
         created_at: r.created_at,
         status: 'success',
       }));
-      await supabase.from('api_logs').upsert(batch, { onConflict: 'source_id,external_id', ignoreDuplicates: true });
+      console.log('[runner] about to upsert batch of', batch.length, 'rows');
+      console.log('[runner] batch[0] keys:', Object.keys(batch[0]));
+      console.log('[runner] batch[0]:', JSON.stringify(batch[0]));
+
+      const { error: insertErr, data: insertData } = await supabase.from('api_logs').upsert(batch, {
+        onConflict: 'source_id,external_id',
+        ignoreDuplicates: true,
+      });
+
+      if (insertErr) {
+        console.error('[runner] UPSERT FAILED:', JSON.stringify(insertErr));
+        throw insertErr;
+      }
+      console.log('[runner] upsert success, data:', insertData ? insertData.length : 'null');
       imported += batch.length;
     }
+    console.log('[runner] total imported:', imported);
 
     const sourceUpdate = { status: 'active', last_error: null, updated_at: new Date().toISOString() };
     if (imported > 0) sourceUpdate.last_synced_at = new Date().toISOString();
