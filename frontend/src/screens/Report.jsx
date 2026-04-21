@@ -87,9 +87,9 @@ export default function Report() {
           <div style={{ display: 'inline-flex', width: '52px', height: '52px', borderRadius: '14px', background: 'rgba(34,197,94,0.08)', border: '1px solid rgba(34,197,94,0.22)', alignItems: 'center', justifyContent: 'center', marginBottom: '20px', color: '#22c55e' }}>
             <Icon name='reports' size={22} />
           </div>
-          <h2 className='serif' style={{ fontSize: '26px', color: 'white', margin: '0 0 10px' }}>Your first report is coming</h2>
+          <h2 className='serif' style={{ fontSize: '26px', color: 'white', margin: '0 0 10px' }}>No data yet</h2>
           <p style={{ color: 'rgba(255,255,255,0.55)', fontSize: '14.5px', lineHeight: 1.6, margin: '0 auto', maxWidth: '480px' }}>
-            Reports generate automatically once your agents start logging cost and value data. Connect your first agent from the Overview page.
+            Reports populate within an hour of connecting your first source. Head to <a href="/sources" onClick={(e) => { e.preventDefault(); window.dispatchEvent(new CustomEvent('navigate-screen', { detail: { screen: 'sources' } })); }} style={{ color: '#22c55e', textDecoration: 'none', fontWeight: 500 }}>Sources</a> to connect OpenAI, Anthropic, or AWS Bedrock.
           </p>
         </section>
       ) : (
