@@ -17,10 +17,12 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^7.14.1",
+    "react-scripts": "^5.0.1",
     "recharts": "^2.10.0",
     "zustand": "^5.0.12"
   },
   "devDependencies": {
+    "@playwright/test": "^1.59.1",
     "@storybook/addon-a11y": "^7.6.17",
     "@storybook/addon-essentials": "^8.6.14",
     "@storybook/addon-interactions": "^7.6.17",
@@ -30,7 +32,7 @@
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
     "@testing-library/user-event": "^14.6.1",
-    "react-scripts": "^5.0.1",
+    "playwright": "^1.59.1",
     "uipro-cli": "^2.2.3"
   },
   "eslintConfig": {
