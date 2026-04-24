@@ -16,6 +16,7 @@ const Report = lazy(() => import('./screens/Report'))
 const Onboarding = lazy(() => import('./screens/Onboarding'))
 const Outreach = lazy(() => import('./screens/Outreach'))
 const Admin = lazy(() => import('./screens/Admin'))
+const XOps = lazy(() => import('./screens/XOps'))
 const Signup = lazy(() => import('./pages/Signup'))
 const Login = lazy(() => import('./pages/Login'))
 const Docs = lazy(() => import('./pages/Docs'))
@@ -48,8 +49,9 @@ const colors = {
 
 export default function App() {
   const [currentScreen, setCurrentScreen] = useState(() => {
-    const p = window.location.pathname.replace('/dashboard/', '').replace('/dashboard', '').replace('/', '');
-    const validScreens = ['overview', 'agents', 'budget', 'report', 'reports', 'outreach', 'onboarding', 'admin', 'sources'];
+    let p = window.location.pathname.replace('/dashboard/', '').replace('/dashboard', '').replace('/', '');
+    if (p === 'x-ops') p = 'xops';
+    const validScreens = ['overview', 'agents', 'budget', 'report', 'reports', 'outreach', 'onboarding', 'admin', 'sources', 'xops'];
     const screen = validScreens.includes(p) ? p : 'overview';
     return screen === 'reports' ? 'report' : screen;
   })
@@ -63,6 +65,7 @@ export default function App() {
     || currentPath === '/reports' || currentPath === '/sources' || currentPath === '/overview'
     || currentPath === '/agents' || currentPath === '/budget' || currentPath === '/admin'
     || currentPath === '/outreach' || currentPath === '/onboarding'
+    || currentPath === '/x-ops' || currentPath === '/xops'
 
   const screenNames = {
     overview: 'Overview',
@@ -73,6 +76,7 @@ export default function App() {
     outreach: 'Outreach',
     admin: 'Admin',
     sources: 'Sources',
+    xops: 'X Ops',
   }
 
   // Set page title based on current screen
@@ -129,6 +133,7 @@ export default function App() {
     onboarding: Onboarding,
     outreach: Outreach,
     admin: Admin,
+    xops: XOps,
   }
 
   const CurrentScreen = screens[currentScreen] || Overview

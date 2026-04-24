@@ -20,7 +20,8 @@ import {
   managementRoutes,
   automationsRoutes,
   authRoutes,
-  outreachRoutes
+  outreachRoutes,
+  xopsRoutes
 } from './api/routes/index.js';
 import v2Routes from './api/routes/v2.js';
 import docsRoutes from './api/routes/docs.js';
@@ -80,6 +81,7 @@ app.use(statsRoutes);
 app.use(managementRoutes);
 app.use(automationsRoutes);
 app.use(outreachRoutes);
+app.use(xopsRoutes);
 app.use(v2Routes);
 app.use(insightsRoutes);
 app.use(forecastRoutes);

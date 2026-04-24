@@ -265,6 +265,34 @@ export function initAutomations() {
     })
   );
 
+  // X-Ops: Daily content generation at 00:30 UTC (6:00 AM IST)
+  cronJobs.push(
+    cron.schedule('30 0 * * *', async () => {
+      try {
+        console.log('[CRON] Generating X-Ops daily posts...');
+        const { generateDailyPosts } = await import('./xContentEngine.js');
+        await generateDailyPosts();
+        console.log('[CRON] X-Ops daily posts generated');
+      } catch (err) {
+        console.error('[CRON ERROR] X-Ops generation failed:', err.message);
+      }
+    })
+  );
+
+  // X-Ops: Weekly thread generation every Monday at 01:30 UTC (7:00 AM IST)
+  cronJobs.push(
+    cron.schedule('30 1 * * 1', async () => {
+      try {
+        console.log('[CRON] Generating X-Ops weekly thread...');
+        const { generateWeeklyThread } = await import('./xContentEngine.js');
+        await generateWeeklyThread();
+        console.log('[CRON] X-Ops weekly thread generated');
+      } catch (err) {
+        console.error('[CRON ERROR] X-Ops thread failed:', err.message);
+      }
+    })
+  );
+
   console.log(`\n✅ ${cronJobs.length} TOTAL AUTOMATION CRON JOBS SCHEDULED\n`);
   console.log('📝 SEO & Content Generation:');
   console.log('   → Intent keywords: Mon 09:00 UTC');
@@ -289,6 +317,9 @@ export function initAutomations() {
   console.log('   → Daily tweet: Daily 07:00 UTC');
   console.log('   → Weekly content batch: Mon 06:00 UTC');
   console.log('   → LinkedIn post: Wed 11:00 UTC');
+  console.log('\n🐦 X-Ops Content Engine:');
+  console.log('   → Daily 3 posts: Daily 00:30 UTC (6:00 AM IST)');
+  console.log('   → Weekly thread: Mon 01:30 UTC (7:00 AM IST)');
   console.log('\n📊 Admin:');
   console.log('   → Weekly reports: Sun 09:00 UTC\n');
 }

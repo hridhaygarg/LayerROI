@@ -10,6 +10,7 @@ const MAIN_NAV = [
 
 const FOUNDER_NAV = [
   { icon: 'outreach', label: 'Outreach', id: 'outreach' },
+  { icon: 'outreach', label: 'X Ops', id: 'xops' },
 ];
 
 const ACCOUNT_NAV = [
