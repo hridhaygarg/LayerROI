@@ -1,5 +1,5 @@
 {
-  "name": "@layeroi/sdk",
+  "name": "layeroi-sdk",
   "version": "0.1.0",
   "description": "Layeroi SDK — auto-instrument AI agent LLM calls with cost, latency, and task attribution",
   "license": "MIT",
@@ -28,9 +28,6 @@
     "openai": "^4.28.0",
     "tsup": "^8.0.0",
     "typescript": "^5.4.0"
-  },
-  "publishConfig": {
-    "access": "public"
   },
   "keywords": ["layeroi", "ai", "agent", "cost", "observability", "openai", "sdk"],
   "repository": {

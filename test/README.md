@@ -2,7 +2,7 @@
 
 ## SDK Smoke Test
 
-End-to-end verification of `@layeroi/sdk` → `/v1/log` → `api_logs` pipeline against production.
+End-to-end verification of `layeroi-sdk` → `/v1/log` → `api_logs` pipeline against production.
 
 ### Run
 

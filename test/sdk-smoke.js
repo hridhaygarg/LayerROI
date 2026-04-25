@@ -71,7 +71,7 @@ function generateRecords() {
 // ── Main ────────────────────────────────────────────────────
 async function main() {
   console.log('╔════════════════════════════════════════════╗');
-  console.log('║   @layeroi/sdk Smoke Test (Production)    ║');
+  console.log('║   layeroi-sdk Smoke Test (Production)    ║');
   console.log('╚════════════════════════════════════════════╝\n');
 
   // Step 1: Send records via /v1/log

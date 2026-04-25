@@ -1,17 +1,17 @@
-# @layeroi/sdk
+# layeroi-sdk
 
 Auto-instrument your AI agent LLM calls. Track cost, latency, tokens, and ROI per agent — zero config.
 
 ## Install
 
 ```bash
-npm install @layeroi/sdk openai
+npm install layeroi-sdk openai
 ```
 
 ## Quick Start
 
 ```typescript
-import { layeroi } from '@layeroi/sdk';
+import { layeroi } from 'layeroi-sdk';
 import OpenAI from 'openai';
 
 // 1. Initialize once at app startup
