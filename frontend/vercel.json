@@ -1,6 +1,6 @@
 {
-  "installCommand": "npm install --legacy-peer-deps",
-  "buildCommand": "ls -la node_modules/.bin/ | grep react-scripts && cat package.json | grep -A2 'react-scripts' && npm ls react-scripts && CI=false react-scripts build",
+  "installCommand": "cd /vercel/path0/frontend && npm install --legacy-peer-deps",
+  "buildCommand": "CI=false npm run build",
   "rewrites": [
     { "source": "/static/:path*", "destination": "/static/:path*" },
     { "source": "/manifest.json", "destination": "/manifest.json" },
