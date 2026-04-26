@@ -140,4 +140,73 @@ router.get('/api/reports', async (req, res) => {
   res.json({ success: true, data: [] });
 });
 
+// GET /api/orgs/me/sdk-status — SDK installation status for post-signup polling
+const sdkStatusCache = new Map();
+router.get('/api/orgs/me/sdk-status', async (req, res) => {
+  try {
+    // Extract orgId from JWT (set by global auth middleware)
+    let orgId = req.orgId;
+    if (!orgId) {
+      try {
+        const authHeader = req.headers.authorization;
+        if (authHeader) {
+          const { verifyJWT } = await import('../../auth/jwt.js');
+          const decoded = verifyJWT(authHeader.replace('Bearer ', ''));
+          orgId = decoded?.orgId;
+        }
+      } catch {}
+    }
+    if (!orgId) return res.status(401).json({ error: 'Auth required' });
+
+    // 5-second cache per org
+    const cached = sdkStatusCache.get(orgId);
+    if (cached && Date.now() - cached.ts < 5000) {
+      return res.json(cached.data);
+    }
+
+    const { data, error } = await supabase.rpc('get_sdk_status_raw', { p_org_id: orgId }).maybeSingle();
+
+    // Fallback if RPC doesn't exist
+    let result;
+    if (error || !data) {
+      const { data: rows } = await supabase
+        .from('api_logs')
+        .select('created_at')
+        .eq('org_id', orgId)
+        .not('sdk_record_id', 'is', null)
+        .order('created_at', { ascending: true })
+        .limit(1);
+
+      const { count } = await supabase
+        .from('api_logs')
+        .select('id', { count: 'exact', head: true })
+        .eq('org_id', orgId)
+        .not('sdk_record_id', 'is', null);
+
+      const { data: last } = await supabase
+        .from('api_logs')
+        .select('created_at')
+        .eq('org_id', orgId)
+        .not('sdk_record_id', 'is', null)
+        .order('created_at', { ascending: false })
+        .limit(1);
+
+      result = {
+        sdkInstalled: (rows && rows.length > 0),
+        firstCallAt: rows?.[0]?.created_at || null,
+        totalCalls: count || 0,
+        lastCallAt: last?.[0]?.created_at || null,
+      };
+    } else {
+      result = data;
+    }
+
+    sdkStatusCache.set(orgId, { data: result, ts: Date.now() });
+    res.json(result);
+  } catch (err) {
+    logger.error('SDK status error', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 export default router;

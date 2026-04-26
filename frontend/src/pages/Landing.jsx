@@ -203,28 +203,53 @@ function Hero() {
           lineHeight: 1.55, maxWidth: '580px', marginTop: '28px',
           animation: 'fadeUp 700ms var(--ease-out) 200ms both',
         }}>
-          Real-time P&L for every AI agent you run. Know which ones are profitable,
-          which are burning money, and stop runaway costs before they compound.
+          Know which AI agents make you money — before your CFO asks.
         </p>
 
-        <div style={{ display: 'flex', gap: '12px', marginTop: '40px', flexWrap: 'wrap',
+        {/* SDK install block */}
+        <div style={{
+          marginTop: '32px', maxWidth: '540px',
+          animation: 'fadeUp 700ms var(--ease-out) 250ms both',
+        }}>
+          <pre style={{
+            background: 'rgba(0,0,0,0.4)', border: '1px solid rgba(255,255,255,0.06)',
+            borderRadius: '10px', padding: '16px 20px', fontSize: '13px',
+            fontFamily: 'JetBrains Mono, IBM Plex Mono, monospace', color: 'var(--white-70)',
+            lineHeight: 1.7, overflowX: 'auto', margin: 0,
+          }}>
+            <span style={{ color: 'var(--white-35)' }}>$</span> npm install layeroi-sdk{'\n'}
+            {'\n'}
+            <span style={{ color: '#c084fc' }}>import</span> {'{ layeroi }'} <span style={{ color: '#c084fc' }}>from</span> <span style={{ color: '#22c55e' }}>'layeroi-sdk'</span>;{'\n'}
+            <span style={{ color: '#c084fc' }}>import</span> OpenAI <span style={{ color: '#c084fc' }}>from</span> <span style={{ color: '#22c55e' }}>'openai'</span>;{'\n'}
+            {'\n'}
+            layeroi.<span style={{ color: '#60a5fa' }}>init</span>({'{ apiKey: process.env.LAYEROI_API_KEY }'});{'\n'}
+            <span style={{ color: '#c084fc' }}>const</span> openai = layeroi.<span style={{ color: '#60a5fa' }}>wrap</span>(<span style={{ color: '#c084fc' }}>new</span> <span style={{ color: '#fbbf24' }}>OpenAI</span>(), {'{ agent: '}<span style={{ color: '#22c55e' }}>'support-copilot'</span>{' }'});
+          </pre>
+          <p className="mono" style={{ fontSize: '11px', color: 'var(--white-35)', marginTop: '12px', lineHeight: 1.6 }}>
+            Three lines. Every agent call instrumented. CFO-readable reports auto-generated.
+          </p>
+        </div>
+
+        <div style={{ display: 'flex', gap: '12px', marginTop: '32px', flexWrap: 'wrap',
           animation: 'fadeUp 700ms var(--ease-out) 300ms both' }}
           className="closing-cta-buttons">
           <a href="/signup" className="btn-primary">Start free — no credit card</a>
-          <a href="#pricing" className="btn-ghost">See live dashboard →</a>
+          <a href="/docs" className="btn-ghost">Read the docs →</a>
         </div>
 
         <div style={{
-          display: 'flex', alignItems: 'center', gap: '20px',
+          display: 'flex', alignItems: 'center', gap: '16px',
           marginTop: '28px', flexWrap: 'wrap',
           animation: 'fadeUp 700ms var(--ease-out) 400ms both',
         }}>
           <span className="mono" style={{ fontSize: '11px', color: 'var(--white-35)', letterSpacing: '0.08em' }}>
             WORKS WITH
           </span>
-          {['OpenAI', 'Anthropic', 'Google Gemini', 'Azure', 'LangChain', 'CrewAI'].map(p => (
-            <span key={p} className="mono" style={{ fontSize: '12px', color: 'var(--white-50)', fontWeight: 500 }}>
-              {p}
+          <span className="mono" style={{ fontSize: '12px', color: '#22c55e', fontWeight: 600 }}>OpenAI</span>
+          <span className="mono" style={{ fontSize: '12px', color: 'var(--white-50)', fontWeight: 500 }}>Anthropic <span style={{ fontSize: '9px', color: 'var(--white-35)', marginLeft: '4px' }}>this week</span></span>
+          {['Google Gemini', 'Azure', 'LangChain', 'CrewAI'].map(p => (
+            <span key={p} className="mono" style={{ fontSize: '11px', color: 'var(--white-25)', fontWeight: 400 }}>
+              {p} <span style={{ fontSize: '9px' }}>soon</span>
             </span>
           ))}
         </div>

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { authService } from '../services/authService';
 
@@ -19,6 +19,93 @@ const colors = {
   shadowSm: '0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04)',
   shadowMd: '0 4px 6px rgba(0,0,0,0.06), 0 2px 4px rgba(0,0,0,0.04)',
 };
+
+function SdkOnboarding({ apiKey, colors }) {
+  const [sdkStatus, setSdkStatus] = useState({ sdkInstalled: false, firstCallAt: null });
+  const [copied, setCopied] = useState('');
+  const token = localStorage.getItem('layeroi_token');
+
+  useEffect(() => {
+    if (sdkStatus.sdkInstalled) return;
+    const interval = setInterval(async () => {
+      try {
+        const res = await fetch('https://api.layeroi.com/api/orgs/me/sdk-status', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const json = await res.json();
+        if (json.sdkInstalled) setSdkStatus(json);
+      } catch {}
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [sdkStatus.sdkInstalled, token]);
+
+  const copyText = (text, label) => {
+    navigator.clipboard.writeText(text);
+    setCopied(label);
+    setTimeout(() => setCopied(''), 2000);
+  };
+
+  const mono = { fontFamily: 'IBM Plex Mono, monospace' };
+
+  return (
+    <div style={{ textAlign: 'left' }}>
+      <div style={{ textAlign: 'center', marginBottom: '32px' }}>
+        <div style={{ width: '56px', height: '56px', background: colors.accentGreenLight, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px', fontSize: '28px' }}>✓</div>
+        <h2 style={{ fontFamily: 'Playfair Display, serif', fontSize: '28px', fontWeight: '700', color: colors.textPrimary, marginBottom: '8px' }}>Your workspace is ready.</h2>
+        <p style={{ color: colors.textSecondary, fontSize: '15px' }}>Install the SDK to start tracking your AI agents:</p>
+      </div>
+
+      {/* Install command */}
+      <div style={{ background: colors.bgSubtle, border: `1px solid ${colors.borderDefault}`, borderRadius: '8px', padding: '14px 16px', marginBottom: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <code style={{ ...mono, fontSize: '13px', color: colors.textPrimary }}>$ npm install layeroi-sdk</code>
+        <button onClick={() => copyText('npm install layeroi-sdk', 'install')} style={{ background: 'none', border: 'none', color: colors.accentGreen, cursor: 'pointer', fontSize: '12px', fontWeight: 600, ...mono }}>{copied === 'install' ? 'Copied!' : 'Copy'}</button>
+      </div>
+
+      {/* API key */}
+      <div style={{ background: colors.bgSubtle, border: `1px solid ${colors.borderDefault}`, borderRadius: '8px', padding: '14px 16px', marginBottom: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <code style={{ ...mono, fontSize: '12px', color: colors.textSecondary, wordBreak: 'break-all' }}>LAYEROI_API_KEY={apiKey}</code>
+        <button onClick={() => copyText(apiKey, 'key')} style={{ background: 'none', border: 'none', color: colors.accentGreen, cursor: 'pointer', fontSize: '12px', fontWeight: 600, ...mono, flexShrink: 0, marginLeft: '8px' }}>{copied === 'key' ? 'Copied!' : 'Copy'}</button>
+      </div>
+
+      {/* Code example */}
+      <pre style={{ background: colors.bgSubtle, border: `1px solid ${colors.borderDefault}`, borderRadius: '8px', padding: '16px', marginBottom: '20px', fontSize: '12px', ...mono, color: colors.textSecondary, lineHeight: 1.7, overflowX: 'auto', whiteSpace: 'pre-wrap' }}>{`import { layeroi } from 'layeroi-sdk';
+import OpenAI from 'openai';
+
+layeroi.init({ apiKey: process.env.LAYEROI_API_KEY });
+const openai = layeroi.wrap(new OpenAI(), { agent: 'my-agent' });`}</pre>
+
+      {/* SDK status indicator */}
+      <div style={{ background: sdkStatus.sdkInstalled ? 'rgba(22,163,74,0.06)' : colors.bgSubtle, border: `1px solid ${sdkStatus.sdkInstalled ? 'rgba(22,163,74,0.2)' : colors.borderDefault}`, borderRadius: '8px', padding: '14px 16px', marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+        {sdkStatus.sdkInstalled ? (
+          <>
+            <span style={{ color: colors.accentGreen, fontSize: '16px' }}>✓</span>
+            <span style={{ fontSize: '13px', color: colors.accentGreen, fontWeight: 500 }}>
+              SDK connected — first call received{sdkStatus.firstCallAt ? ` at ${new Date(sdkStatus.firstCallAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}` : ''}.{' '}
+              <a href="/dashboard" style={{ color: colors.accentGreen, fontWeight: 600, textDecoration: 'underline' }}>View your dashboard →</a>
+            </span>
+          </>
+        ) : (
+          <>
+            <span style={{ display: 'inline-block', width: '14px', height: '14px', border: `2px solid ${colors.borderStrong}`, borderTopColor: colors.accentGreen, borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
+            <span style={{ fontSize: '13px', color: colors.textTertiary }}>Waiting for first SDK call...</span>
+          </>
+        )}
+      </div>
+
+      {/* Secondary CTA */}
+      <button onClick={() => { window.location.href = '/dashboard'; }} style={{ width: '100%', background: 'transparent', color: colors.textSecondary, padding: '12px', borderRadius: '6px', border: `1px solid ${colors.borderDefault}`, fontFamily: 'Inter, sans-serif', fontSize: '14px', fontWeight: '500', cursor: 'pointer', marginBottom: '16px' }}>Explore demo dashboard</button>
+
+      {/* Demoted Path A */}
+      <details style={{ textAlign: 'left' }}>
+        <summary style={{ fontSize: '13px', color: colors.textTertiary, cursor: 'pointer' }}>Have an OpenAI admin key? Import historical billing data instead.</summary>
+        <div style={{ marginTop: '12px', padding: '12px', background: colors.bgSubtle, borderRadius: '6px', border: `1px solid ${colors.borderDefault}` }}>
+          <p style={{ fontSize: '13px', color: colors.textTertiary, marginBottom: '8px' }}>Connect your OpenAI billing API to import historical cost data:</p>
+          <button onClick={() => { window.location.href = '/sources'; }} style={{ background: 'none', border: `1px solid ${colors.borderDefault}`, color: colors.textSecondary, padding: '8px 14px', borderRadius: '6px', fontSize: '12px', cursor: 'pointer' }}>Go to Sources →</button>
+        </div>
+      </details>
+    </div>
+  );
+}
 
 export default function Signup() {
   const navigate = useNavigate();
@@ -245,26 +332,7 @@ export default function Signup() {
           )}
 
           {step === 'complete' && (
-            <div style={{ textAlign: 'center' }}>
-              <div style={{ width: '64px', height: '64px', background: colors.accentGreenLight, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 24px', fontSize: '32px' }}>✓</div>
-              <h2 style={{ fontFamily: 'Playfair Display, serif', fontSize: '32px', fontWeight: '700', color: colors.textPrimary, marginBottom: '12px' }}>Your workspace is ready.</h2>
-              <p style={{ color: colors.textSecondary, marginBottom: '32px', fontSize: '16px' }}>Connect your first AI billing source to see real spend data, or explore the demo dashboard now.</p>
-
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '32px' }}>
-                <button onClick={() => { window.location.href = '/sources'; }} style={{ width: '100%', background: colors.accentGreen, color: colors.bgSurface, padding: '14px', borderRadius: '6px', border: 'none', fontFamily: 'Inter, sans-serif', fontSize: '16px', fontWeight: '600', cursor: 'pointer', transition: 'all 200ms' }} onMouseDown={(e) => (e.target.style.transform = 'scale(0.98)')} onMouseUp={(e) => (e.target.style.transform = 'scale(1)')}>Connect OpenAI billing →</button>
-                <button onClick={() => { window.location.href = '/dashboard'; }} style={{ width: '100%', background: 'transparent', color: colors.textSecondary, padding: '14px', borderRadius: '6px', border: `1px solid ${colors.borderDefault}`, fontFamily: 'Inter, sans-serif', fontSize: '16px', fontWeight: '600', cursor: 'pointer', transition: 'all 200ms' }} onMouseDown={(e) => (e.target.style.transform = 'scale(0.98)')} onMouseUp={(e) => (e.target.style.transform = 'scale(1)')}>Explore demo dashboard</button>
-              </div>
-
-              <details style={{ background: colors.bgSubtle, border: `1px solid ${colors.borderDefault}`, borderRadius: '8px', padding: '16px', textAlign: 'left' }}>
-                <summary style={{ fontSize: '14px', color: colors.textSecondary, cursor: 'pointer', fontWeight: '500' }}>Have a developer? View API integration</summary>
-                <div style={{ marginTop: '12px' }}>
-                  <p style={{ fontSize: '13px', color: colors.textTertiary, marginBottom: '8px' }}>For programmatic agent tagging, share these credentials with your team:</p>
-                  <code style={{ fontFamily: 'IBM Plex Mono, monospace', fontSize: '12px', color: colors.textSecondary, backgroundColor: 'rgba(0,0,0,0.02)', padding: '8px', borderRadius: '4px', display: 'block', wordBreak: 'break-all' }}>
-                    API key: {apiKey}
-                  </code>
-                </div>
-              </details>
-            </div>
+            <SdkOnboarding apiKey={apiKey} colors={colors} />
           )}
         </div>
       </div>
