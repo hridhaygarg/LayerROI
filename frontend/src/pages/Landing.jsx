@@ -249,7 +249,7 @@ function Hero() {
             WORKS WITH
           </span>
           <span className="mono" style={{ fontSize: '12px', color: 'var(--green)', fontWeight: 600 }}>OpenAI</span>
-          <span className="mono" style={{ fontSize: '12px', color: 'var(--white-50)', fontWeight: 500 }}>Anthropic <span style={{ fontSize: '9px', color: 'var(--white-35)', marginLeft: '4px' }}>this week</span></span>
+          <span className="mono" style={{ fontSize: '12px', color: 'var(--green)', fontWeight: 600 }}>Anthropic</span>
           {['Google Gemini', 'Azure', 'LangChain', 'CrewAI'].map(p => (
             <span key={p} className="mono" style={{ fontSize: '11px', color: 'var(--white-25)', fontWeight: 400 }}>
               {p} <span style={{ fontSize: '9px' }}>soon</span>

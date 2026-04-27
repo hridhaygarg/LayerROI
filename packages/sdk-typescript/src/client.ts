@@ -1,6 +1,7 @@
 import type { LayeroiConfig, WrapOptions, TaskContext } from './types.js';
 import { Transport } from './transport.js';
 import { wrapOpenAI } from './wrap-openai.js';
+import { wrapAnthropic, isAnthropicClient } from './wrap-anthropic.js';
 import { runWithTask } from './context.js';
 
 const DEFAULT_ENDPOINT = 'https://api.layeroi.com';
@@ -24,6 +25,9 @@ export class LayeroiClient {
   wrap<T extends object>(client: T, options: WrapOptions): T {
     if (!this.transport) {
       throw new Error('layeroi.init() must be called before wrap()');
+    }
+    if (isAnthropicClient(client)) {
+      return wrapAnthropic(client, options, this.transport);
     }
     return wrapOpenAI(client, options, this.transport);
   }

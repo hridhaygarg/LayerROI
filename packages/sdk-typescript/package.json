@@ -1,6 +1,6 @@
 {
   "name": "layeroi-sdk",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Layeroi SDK — auto-instrument AI agent LLM calls with cost, latency, and task attribution",
   "license": "MIT",
   "main": "./dist/index.js",
@@ -19,10 +19,12 @@
     "dev": "tsup src/index.ts --format esm,cjs --dts --watch"
   },
   "peerDependencies": {
-    "openai": ">=4.0.0"
+    "openai": ">=4.0.0",
+    "@anthropic-ai/sdk": ">=0.20.0"
   },
   "peerDependenciesMeta": {
-    "openai": { "optional": true }
+    "openai": { "optional": true },
+    "@anthropic-ai/sdk": { "optional": true }
   },
   "devDependencies": {
     "openai": "^4.28.0",

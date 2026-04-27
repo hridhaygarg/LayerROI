@@ -4,7 +4,7 @@ import { computeCost, getModelProvider } from './pricing.js';
 import { getTaskContext } from './context.js';
 import type { Transport } from './transport.js';
 
-const SDK_VERSION = '0.1.0';
+const SDK_VERSION = '0.2.0';
 
 /**
  * Wraps an OpenAI client instance with a Proxy that intercepts

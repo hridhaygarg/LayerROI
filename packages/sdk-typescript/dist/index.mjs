@@ -70,13 +70,20 @@ import { randomUUID } from "crypto";
 
 // src/pricing.ts
 var PRICING = {
+  // OpenAI
   "gpt-4o": { input: 2.5, output: 10 },
   "gpt-4o-mini": { input: 0.15, output: 0.6 },
   "gpt-4-turbo": { input: 10, output: 30 },
   "gpt-3.5-turbo": { input: 0.5, output: 1.5 },
+  // Anthropic — current generation
+  "claude-opus-4-5": { input: 15, output: 75 },
+  "claude-sonnet-4-5": { input: 3, output: 15 },
+  "claude-haiku-4-5": { input: 1, output: 5 },
+  // Anthropic — legacy (dated variants matched via normalizeModel prefix)
   "claude-3-5-sonnet": { input: 3, output: 15 },
   "claude-3-5-haiku": { input: 0.8, output: 4 },
-  "claude-3-opus": { input: 15, output: 75 }
+  "claude-3-opus": { input: 15, output: 75 },
+  "claude-3-haiku": { input: 0.25, output: 1.25 }
 };
 function normalizeModel(model) {
   const lower = model.toLowerCase();
@@ -114,7 +121,7 @@ function runWithTask(ctx, fn) {
 }
 
 // src/wrap-openai.ts
-var SDK_VERSION = "0.1.0";
+var SDK_VERSION = "0.2.0";
 function wrapOpenAI(client, options, transport) {
   return new Proxy(client, {
     get(target, prop, receiver) {
@@ -186,6 +193,91 @@ function wrapOpenAI(client, options, transport) {
   });
 }
 
+// src/wrap-anthropic.ts
+import { randomUUID as randomUUID2 } from "crypto";
+var SDK_VERSION2 = "0.2.0";
+function wrapAnthropic(client, options, transport) {
+  return new Proxy(client, {
+    get(target, prop, receiver) {
+      const value = Reflect.get(target, prop, receiver);
+      if (prop === "messages" && value && typeof value === "object") {
+        return new Proxy(value, {
+          get(msgTarget, msgProp, msgReceiver) {
+            const msgValue = Reflect.get(msgTarget, msgProp, msgReceiver);
+            if (msgProp === "create" && typeof msgValue === "function") {
+              return async function interceptedCreate(...args) {
+                const params = args[0];
+                const model = params?.model || "unknown";
+                const startMs = Date.now();
+                let response;
+                let status = "success";
+                let errorMessage;
+                try {
+                  response = await msgValue.apply(msgTarget, args);
+                } catch (err) {
+                  status = "error";
+                  errorMessage = err instanceof Error ? err.message : String(err);
+                  throw err;
+                } finally {
+                  try {
+                    const latencyMs = Date.now() - startMs;
+                    const usage = response?.usage;
+                    const promptTokens = usage?.input_tokens ?? 0;
+                    const completionTokens = usage?.output_tokens ?? 0;
+                    const totalTokens = promptTokens + completionTokens;
+                    const taskCtx = getTaskContext();
+                    const costUsd = computeCost(model, promptTokens, completionTokens);
+                    const record = {
+                      sdk_record_id: randomUUID2(),
+                      agent: options.agent,
+                      task_id: taskCtx?.taskId,
+                      model,
+                      provider: "anthropic",
+                      prompt_tokens: promptTokens,
+                      completion_tokens: completionTokens,
+                      total_tokens: totalTokens,
+                      cost_usd: costUsd,
+                      latency_ms: latencyMs,
+                      status,
+                      error_message: errorMessage,
+                      metadata: {
+                        ...options.metadata,
+                        ...taskCtx?.metadata,
+                        ...costUsd === 0 && model !== "unknown" ? { pricing_warning: "unknown_model" } : {}
+                      },
+                      sdk_version: SDK_VERSION2,
+                      timestamp: (/* @__PURE__ */ new Date()).toISOString()
+                    };
+                    transport.push(record);
+                  } catch {
+                  }
+                }
+                return response;
+              };
+            }
+            return msgValue;
+          }
+        });
+      }
+      return value;
+    }
+  });
+}
+function isAnthropicClient(client) {
+  if (!client || typeof client !== "object") return false;
+  const c = client;
+  const messages = c.messages;
+  if (!messages || typeof messages !== "object") return false;
+  const create = messages.create;
+  if (typeof create !== "function") return false;
+  const name = client.constructor?.name;
+  if (name === "Anthropic") return true;
+  const opts = c._options;
+  if (typeof opts?.baseURL === "string" && opts.baseURL.includes("anthropic")) return true;
+  if (!c.chat) return true;
+  return false;
+}
+
 // src/client.ts
 var DEFAULT_ENDPOINT = "https://api.layeroi.com";
 var LayeroiClient = class {
@@ -207,6 +299,9 @@ var LayeroiClient = class {
   wrap(client, options) {
     if (!this.transport) {
       throw new Error("layeroi.init() must be called before wrap()");
+    }
+    if (isAnthropicClient(client)) {
+      return wrapAnthropic(client, options, this.transport);
     }
     return wrapOpenAI(client, options, this.transport);
   }

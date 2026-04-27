@@ -61,6 +61,25 @@ const classifier = layeroi.wrap(new OpenAI(), { agent: 'invoice-classifier' });
 // Each agent's costs tracked separately in your Layeroi P&L
 ```
 
+## Anthropic Support
+
+```typescript
+import Anthropic from '@anthropic-ai/sdk';
+import { layeroi } from 'layeroi-sdk';
+
+layeroi.init({ apiKey: process.env.LAYEROI_API_KEY! });
+const anthropic = layeroi.wrap(new Anthropic(), { agent: 'support-copilot' });
+
+// Use normally — every call is auto-instrumented
+const msg = await anthropic.messages.create({
+  model: 'claude-sonnet-4-5',
+  max_tokens: 1024,
+  messages: [{ role: 'user', content: 'Hello' }],
+});
+```
+
+`wrap()` auto-detects the provider — no config needed. Works with both OpenAI and Anthropic clients.
+
 ## Configuration
 
 ```typescript
@@ -73,8 +92,8 @@ layeroi.init({
 
 ## How It Works
 
-1. `wrap()` returns a Proxy around your OpenAI client
-2. Every `chat.completions.create()` call is intercepted
+1. `wrap()` returns a Proxy around your LLM client (OpenAI or Anthropic)
+2. Every `chat.completions.create()` or `messages.create()` call is intercepted
 3. Token usage, cost (pre-computed from model pricing), and latency are captured
 4. Records batch in memory (50 records or 5 seconds, whichever first)
 5. Batches POST to Layeroi's `/v1/log` endpoint asynchronously
@@ -85,7 +104,7 @@ layeroi.init({
 | Provider | Status |
 |----------|--------|
 | OpenAI | ✅ v0.1.0 |
-| Anthropic | 🔜 v0.2.0 |
+| Anthropic | ✅ v0.2.0 |
 | AWS Bedrock | 🔜 v0.2.0 |
 | Google Gemini | 🔜 v0.2.0 |
 
