@@ -48,7 +48,7 @@ function Navigation() {
       <nav style={{
         position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100,
         height: '64px',
-        background: scrolled ? 'rgba(5,5,5,0.72)' : 'transparent',
+        background: scrolled ? 'var(--surface-0)' : 'transparent',
         backdropFilter: scrolled ? 'saturate(180%) blur(20px)' : 'none',
         WebkitBackdropFilter: scrolled ? 'saturate(180%) blur(20px)' : 'none',
         borderBottom: scrolled ? '1px solid var(--border-subtle)' : '1px solid transparent',
@@ -62,8 +62,8 @@ function Navigation() {
               <rect x="10.5" y="10" width="3" height="8" rx="1" fill="white" opacity="0.75"/>
               <rect x="16" y="5" width="3" height="13" rx="1" fill="white" opacity="0.9"/>
             </svg>
-            <span style={{ fontWeight: 600, fontSize: '15px', color: 'white', letterSpacing: '-0.01em' }}>
-              layer<span style={{ color: '#22c55e' }}>oi</span>
+            <span style={{ fontWeight: 600, fontSize: '15px', color: 'var(--white)', letterSpacing: '-0.01em' }}>
+              layer<span style={{ color: 'var(--green)' }}>oi</span>
             </span>
           </a>
 
@@ -94,7 +94,7 @@ function Navigation() {
             </a>
             <button onClick={() => setMenuOpen(!menuOpen)} className="mobile-hamburger" style={{
               display: 'none', background: 'none', border: 'none', cursor: 'pointer',
-              color: 'white', fontSize: '24px', padding: '8px',
+              color: 'var(--white)', fontSize: '24px', padding: '8px',
             }}>
               {menuOpen ? '×' : '☰'}
             </button>
@@ -122,7 +122,7 @@ function Navigation() {
                  onClick={() => setMenuOpen(false)}
                  style={{
                 display: 'block', padding: '20px 0',
-                fontSize: '24px', color: 'white',
+                fontSize: '24px', color: 'var(--white)',
                 fontFamily: 'Instrument Serif', fontStyle: 'italic',
                 borderBottom: '1px solid var(--border-subtle)',
                 textDecoration: 'none',
@@ -190,13 +190,13 @@ function Hero() {
 
         <h1 className="serif" style={{
           fontSize: 'var(--type-display-lg)',
-          color: 'white', lineHeight: 1.05, maxWidth: '880px',
+          color: 'var(--white)', lineHeight: 1.05, maxWidth: '880px',
           animation: 'fadeUp 700ms var(--ease-out) 100ms both',
         }}>
           Every observability tool speaks engineer.
           <br/>
           <span style={{ color: 'var(--white-35)' }}>Only </span>
-          <span style={{ color: '#22c55e' }}>layeroi</span>
+          <span style={{ color: 'var(--green)' }}>layeroi</span>
           <span style={{ color: 'var(--white-35)' }}> speaks CFO.</span>
         </h1>
 
@@ -221,11 +221,11 @@ function Hero() {
           }}>
             <span style={{ color: 'var(--white-35)' }}>$</span> npm install layeroi-sdk{'\n'}
             {'\n'}
-            <span style={{ color: '#c084fc' }}>import</span> {'{ layeroi }'} <span style={{ color: '#c084fc' }}>from</span> <span style={{ color: '#22c55e' }}>'layeroi-sdk'</span>;{'\n'}
-            <span style={{ color: '#c084fc' }}>import</span> OpenAI <span style={{ color: '#c084fc' }}>from</span> <span style={{ color: '#22c55e' }}>'openai'</span>;{'\n'}
+            <span style={{ color: '#c084fc' }}>import</span> {'{ layeroi }'} <span style={{ color: '#c084fc' }}>from</span> <span style={{ color: 'var(--green)' }}>'layeroi-sdk'</span>;{'\n'}
+            <span style={{ color: '#c084fc' }}>import</span> OpenAI <span style={{ color: '#c084fc' }}>from</span> <span style={{ color: 'var(--green)' }}>'openai'</span>;{'\n'}
             {'\n'}
             layeroi.<span style={{ color: '#60a5fa' }}>init</span>({'{ apiKey: process.env.LAYEROI_API_KEY }'});{'\n'}
-            <span style={{ color: '#c084fc' }}>const</span> openai = layeroi.<span style={{ color: '#60a5fa' }}>wrap</span>(<span style={{ color: '#c084fc' }}>new</span> <span style={{ color: '#fbbf24' }}>OpenAI</span>(), {'{ agent: '}<span style={{ color: '#22c55e' }}>'support-copilot'</span>{' }'});
+            <span style={{ color: '#c084fc' }}>const</span> openai = layeroi.<span style={{ color: '#60a5fa' }}>wrap</span>(<span style={{ color: '#c084fc' }}>new</span> <span style={{ color: '#fbbf24' }}>OpenAI</span>(), {'{ agent: '}<span style={{ color: 'var(--green)' }}>'support-copilot'</span>{' }'});
           </pre>
           <p className="mono" style={{ fontSize: '11px', color: 'var(--white-35)', marginTop: '12px', lineHeight: 1.6 }}>
             Three lines. Every agent call instrumented. CFO-readable reports auto-generated.
@@ -247,7 +247,7 @@ function Hero() {
           <span className="mono" style={{ fontSize: '11px', color: 'var(--white-35)', letterSpacing: '0.08em' }}>
             WORKS WITH
           </span>
-          <span className="mono" style={{ fontSize: '12px', color: '#22c55e', fontWeight: 600 }}>OpenAI</span>
+          <span className="mono" style={{ fontSize: '12px', color: 'var(--green)', fontWeight: 600 }}>OpenAI</span>
           <span className="mono" style={{ fontSize: '12px', color: 'var(--white-50)', fontWeight: 500 }}>Anthropic <span style={{ fontSize: '9px', color: 'var(--white-35)', marginLeft: '4px' }}>this week</span></span>
           {['Google Gemini', 'Azure', 'LangChain', 'CrewAI'].map(p => (
             <span key={p} className="mono" style={{ fontSize: '11px', color: 'var(--white-25)', fontWeight: 400 }}>
@@ -341,7 +341,7 @@ function HeroDashboardDesktop() {
         <div>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
             <div>
-              <h3 style={{ fontSize: '18px', fontWeight: 600, color: 'white', marginBottom: '2px' }}>This week's performance</h3>
+              <h3 style={{ fontSize: '18px', fontWeight: 600, color: 'var(--white)', marginBottom: '2px' }}>This week's performance</h3>
               <span className="mono" style={{ fontSize: '11px', color: 'var(--white-35)' }}>APR 14 — APR 20, 2026</span>
             </div>
             <div className="mono" style={{ fontSize: '10px', color: 'var(--white-35)', background: 'rgba(255,255,255,0.04)', padding: '4px 10px', borderRadius: '6px', letterSpacing: '0.06em' }}>
@@ -388,8 +388,8 @@ function HeroDashboardDesktop() {
               ))}
             </div>
             {[
-              { name: 'sales-outreach-agent', provider: 'gpt-4o', cost: '$12,400', value: '$87,000', roi: '7.0×', color: '#22c55e', status: 'PROFITABLE' },
-              { name: 'support-triage-agent', provider: 'claude-sonnet', cost: '$8,200', value: '$41,000', roi: '5.0×', color: '#22c55e', status: 'PROFITABLE' },
+              { name: 'sales-outreach-agent', provider: 'gpt-4o', cost: '$12,400', value: '$87,000', roi: '7.0×', color: 'var(--green)', status: 'PROFITABLE' },
+              { name: 'support-triage-agent', provider: 'claude-sonnet', cost: '$8,200', value: '$41,000', roi: '5.0×', color: 'var(--green)', status: 'PROFITABLE' },
               { name: 'data-enrichment-agent', provider: 'gpt-4o-mini', cost: '$9,800', value: '$14,700', roi: '1.5×', color: '#f59e0b', status: 'MARGINAL' },
               { name: 'content-generation-v2', provider: 'gpt-4-turbo', cost: '$7,400', value: '$4,440', roi: '0.6×', color: '#ef4444', status: 'LOSING' },
               { name: 'lead-scoring-agent', provider: 'claude-haiku', cost: '$9,430', value: '—', roi: '—', color: 'var(--white-35)', status: 'NO DATA' },
@@ -441,7 +441,7 @@ function HeroDashboardMobile() {
       </div>
       <div style={{ padding: '16px' }}>
         <div style={{ marginBottom: '14px' }}>
-          <div style={{ fontSize: '14px', fontWeight: 600, color: 'white', marginBottom: '2px' }}>This week</div>
+          <div style={{ fontSize: '14px', fontWeight: 600, color: 'var(--white)', marginBottom: '2px' }}>This week</div>
           <div className="mono" style={{ fontSize: '10px', color: 'var(--white-35)' }}>APR 14 — APR 20</div>
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '8px', marginBottom: '14px' }}>
@@ -467,8 +467,8 @@ function HeroDashboardMobile() {
         </div>
         <div style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid var(--border-subtle)', borderRadius: '8px', overflow: 'hidden' }}>
           {[
-            { name: 'sales-outreach', roi: '7.0×', color: '#22c55e', status: 'PROFIT' },
-            { name: 'support-triage', roi: '5.0×', color: '#22c55e', status: 'PROFIT' },
+            { name: 'sales-outreach', roi: '7.0×', color: 'var(--green)', status: 'PROFIT' },
+            { name: 'support-triage', roi: '5.0×', color: 'var(--green)', status: 'PROFIT' },
             { name: 'content-gen-v2', roi: '0.6×', color: '#ef4444', status: 'LOSS' },
           ].map((a, i, arr) => (
             <div key={a.name} style={{
@@ -560,8 +560,8 @@ function Problem() {
       <div className="l-container">
         <div className="problem-grid">
           <div className="problem-left" style={{ position: 'sticky', top: '120px', alignSelf: 'start' }}>
-            <div className="mono" style={{ fontSize: '11px', color: '#22c55e', letterSpacing: '0.1em', marginBottom: '20px' }}>01 · THE PROBLEM</div>
-            <h2 className="serif" style={{ fontSize: 'var(--type-display)', color: 'white', lineHeight: 1.1, marginBottom: '24px' }}>
+            <div className="mono" style={{ fontSize: '11px', color: 'var(--green)', letterSpacing: '0.1em', marginBottom: '20px' }}>01 · THE PROBLEM</div>
+            <h2 className="serif" style={{ fontSize: 'var(--type-display)', color: 'var(--white)', lineHeight: 1.1, marginBottom: '24px' }}>
               Your engineers see tokens.<br/>
               <span style={{ color: 'var(--white-35)' }}>Your CFO sees a mystery.</span>
             </h2>
@@ -574,11 +574,11 @@ function Problem() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
             <ComparisonCard tag="WHAT YOUR ENGINEER SEES" tagColor="var(--white-50)" content={
               <div className="mono" style={{ fontSize: '13px', color: 'var(--white-70)', lineHeight: 2 }}>
-                <div>input_tokens: <span style={{ color: 'white' }}>847,293</span></div>
-                <div>output_tokens: <span style={{ color: 'white' }}>421,194</span></div>
-                <div>latency_p99: <span style={{ color: 'white' }}>243ms</span></div>
-                <div>error_rate: <span style={{ color: 'white' }}>0.3%</span></div>
-                <div>api_calls: <span style={{ color: 'white' }}>47,291</span></div>
+                <div>input_tokens: <span style={{ color: 'var(--white)' }}>847,293</span></div>
+                <div>output_tokens: <span style={{ color: 'var(--white)' }}>421,194</span></div>
+                <div>latency_p99: <span style={{ color: 'var(--white)' }}>243ms</span></div>
+                <div>error_rate: <span style={{ color: 'var(--white)' }}>0.3%</span></div>
+                <div>api_calls: <span style={{ color: 'var(--white)' }}>47,291</span></div>
               </div>
             }/>
             <ComparisonCard tag="WHAT YOUR CFO HEARS" tagColor="#ef4444" content={
@@ -589,12 +589,12 @@ function Problem() {
             }/>
             <ComparisonCard tag="WHAT LAYEROI SHOWS YOUR CFO" tagColor="#22c55e" highlight content={
               <div className="mono" style={{ fontSize: '13px', lineHeight: 2 }}>
-                <div>sales_agent: <span style={{ color: '#22c55e' }}>+$87,000 (7.0× ROI)</span></div>
-                <div>support_agent: <span style={{ color: '#22c55e' }}>+$41,000 (5.0× ROI)</span></div>
+                <div>sales_agent: <span style={{ color: 'var(--green)' }}>+$87,000 (7.0× ROI)</span></div>
+                <div>support_agent: <span style={{ color: 'var(--green)' }}>+$41,000 (5.0× ROI)</span></div>
                 <div>data_enrichment: <span style={{ color: '#f59e0b' }}>+$4,900 (1.5× ROI)</span></div>
                 <div>content_gen_v2: <span style={{ color: '#ef4444' }}>-$2,960 (0.6× ROI)</span></div>
                 <div style={{ paddingTop: '8px', marginTop: '8px', borderTop: '1px solid var(--border-subtle)', color: 'var(--white-35)' }}>
-                  NET: <span style={{ color: '#22c55e', fontWeight: 700 }}>+$129,940 (4.5×)</span>
+                  NET: <span style={{ color: 'var(--green)', fontWeight: 700 }}>+$129,940 (4.5×)</span>
                 </div>
               </div>
             }/>
@@ -628,8 +628,8 @@ function HowItWorks() {
     <section style={{ padding: '120px 0', background: 'var(--surface-0)', borderTop: '1px solid var(--border-subtle)', borderBottom: '1px solid var(--border-subtle)' }}>
       <div className="l-container">
         <div style={{ textAlign: 'center', marginBottom: '64px' }}>
-          <div className="mono" style={{ fontSize: '11px', color: '#22c55e', letterSpacing: '0.1em', marginBottom: '16px' }}>02 · HOW IT WORKS</div>
-          <h2 className="serif" style={{ fontSize: 'var(--type-display)', color: 'white', lineHeight: 1.1 }}>
+          <div className="mono" style={{ fontSize: '11px', color: 'var(--green)', letterSpacing: '0.1em', marginBottom: '16px' }}>02 · HOW IT WORKS</div>
+          <h2 className="serif" style={{ fontSize: 'var(--type-display)', color: 'var(--white)', lineHeight: 1.1 }}>
             15 minutes from install<br/>
             <span style={{ color: 'var(--white-35)' }}>to your first P&L.</span>
           </h2>
@@ -659,8 +659,8 @@ function StepCard({ number, title, description, code, visual }) {
       borderRadius: '12px', padding: '28px',
       display: 'flex', flexDirection: 'column',
     }}>
-      <div className="mono" style={{ fontSize: '12px', color: '#22c55e', letterSpacing: '0.08em', marginBottom: '20px', fontWeight: 500 }}>STEP {number}</div>
-      <h3 style={{ fontSize: '20px', fontWeight: 600, color: 'white', marginBottom: '10px', letterSpacing: '-0.01em' }}>{title}</h3>
+      <div className="mono" style={{ fontSize: '12px', color: 'var(--green)', letterSpacing: '0.08em', marginBottom: '20px', fontWeight: 500 }}>STEP {number}</div>
+      <h3 style={{ fontSize: '20px', fontWeight: 600, color: 'var(--white)', marginBottom: '10px', letterSpacing: '-0.01em' }}>{title}</h3>
       <p style={{ fontSize: '14px', color: 'var(--white-50)', lineHeight: 1.5, marginBottom: '24px' }}>{description}</p>
       {code && (
         <div style={{
@@ -703,8 +703,8 @@ function MiniDashboardVisual() {
   return (
     <div style={{ background: '#050505', border: '1px solid var(--border-subtle)', borderRadius: '8px', padding: '16px', marginTop: '0' }}>
       {[
-        { name: 'sales-agent', roi: '7.0×', color: '#22c55e', w: '85%' },
-        { name: 'support-agent', roi: '5.0×', color: '#22c55e', w: '70%' },
+        { name: 'sales-agent', roi: '7.0×', color: 'var(--green)', w: '85%' },
+        { name: 'support-agent', roi: '5.0×', color: 'var(--green)', w: '70%' },
         { name: 'content-v2', roi: '0.6×', color: '#ef4444', w: '25%' },
       ].map(a => (
         <div key={a.name} style={{ marginBottom: '10px' }}>
@@ -737,8 +737,8 @@ function Features() {
     <section id="product" style={{ padding: '120px 0' }}>
       <div className="l-container">
         <div style={{ textAlign: 'center', marginBottom: '64px' }}>
-          <div className="mono" style={{ fontSize: '11px', color: '#22c55e', letterSpacing: '0.1em', marginBottom: '16px' }}>03 · CAPABILITIES</div>
-          <h2 className="serif" style={{ fontSize: 'var(--type-display)', color: 'white', lineHeight: 1.1 }}>
+          <div className="mono" style={{ fontSize: '11px', color: 'var(--green)', letterSpacing: '0.1em', marginBottom: '16px' }}>03 · CAPABILITIES</div>
+          <h2 className="serif" style={{ fontSize: 'var(--type-display)', color: 'var(--white)', lineHeight: 1.1 }}>
             Built by people who have<br/>
             <span style={{ color: 'var(--white-35)' }}>watched a $4,000 API bill land.</span>
           </h2>
@@ -761,9 +761,9 @@ function Features() {
             }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '20px' }}>
                 <div style={{ color: 'var(--white-70)' }}>{f.icon}</div>
-                <div className="mono" style={{ fontSize: '10px', color: '#22c55e', letterSpacing: '0.08em', background: 'rgba(34,197,94,0.08)', padding: '4px 10px', borderRadius: '100px', fontWeight: 500 }}>{f.stat}</div>
+                <div className="mono" style={{ fontSize: '10px', color: 'var(--green)', letterSpacing: '0.08em', background: 'rgba(34,197,94,0.08)', padding: '4px 10px', borderRadius: '100px', fontWeight: 500 }}>{f.stat}</div>
               </div>
-              <h3 style={{ fontSize: '22px', fontWeight: 600, color: 'white', marginBottom: '12px', letterSpacing: '-0.01em' }}>{f.title}</h3>
+              <h3 style={{ fontSize: '22px', fontWeight: 600, color: 'var(--white)', marginBottom: '12px', letterSpacing: '-0.01em' }}>{f.title}</h3>
               <p style={{ fontSize: '14px', color: 'var(--white-50)', lineHeight: 1.6 }}>{f.description}</p>
             </div>
           ))}
@@ -807,7 +807,7 @@ function ComparisonTable() {
   ];
 
   const renderCell = (val) => {
-    if (val === true) return <span style={{ color: '#22c55e', fontWeight: 700 }}>✓</span>;
+    if (val === true) return <span style={{ color: 'var(--green)', fontWeight: 700 }}>✓</span>;
     if (val === false) return <span style={{ color: 'var(--white-20)' }}>—</span>;
     if (val === 'partial') return <span style={{ color: '#f59e0b' }}>~</span>;
     return <span style={{ color: 'var(--white-35)', fontSize: '10px' }}>{val}</span>;
@@ -817,8 +817,8 @@ function ComparisonTable() {
     <section style={{ padding: '120px 0', background: 'var(--surface-0)', borderTop: '1px solid var(--border-subtle)', borderBottom: '1px solid var(--border-subtle)' }}>
       <div className="l-container">
         <div style={{ textAlign: 'center', marginBottom: '64px' }}>
-          <div className="mono" style={{ fontSize: '11px', color: '#22c55e', letterSpacing: '0.1em', marginBottom: '16px' }}>04 · HOW WE COMPARE</div>
-          <h2 className="serif" style={{ fontSize: 'var(--type-display)', color: 'white', lineHeight: 1.1 }}>
+          <div className="mono" style={{ fontSize: '11px', color: 'var(--green)', letterSpacing: '0.1em', marginBottom: '16px' }}>04 · HOW WE COMPARE</div>
+          <h2 className="serif" style={{ fontSize: 'var(--type-display)', color: 'var(--white)', lineHeight: 1.1 }}>
             Other tools monitor infrastructure.<br/>
             <span style={{ color: 'var(--white-35)' }}>layeroi shows financial impact.</span>
           </h2>
@@ -830,7 +830,7 @@ function ComparisonTable() {
               <tr style={{ borderBottom: '1px solid var(--border-subtle)', background: 'var(--surface-1)' }}>
                 <th style={{ textAlign: 'left', padding: '14px 20px', fontSize: '13px', fontWeight: 600, color: 'var(--white-90)' }}>Feature</th>
                 <th style={{ textAlign: 'center', padding: '14px 16px', minWidth: '90px' }}>
-                  <span style={{ fontSize: '13px', fontWeight: 700, color: '#22c55e' }}>layeroi</span>
+                  <span style={{ fontSize: '13px', fontWeight: 700, color: 'var(--green)' }}>layeroi</span>
                 </th>
                 <th className="mono" style={{ textAlign: 'center', padding: '14px 16px', fontSize: '11px', color: 'var(--white-50)', minWidth: '80px' }}>Datadog</th>
                 <th className="mono" style={{ textAlign: 'center', padding: '14px 16px', fontSize: '11px', color: 'var(--white-50)', minWidth: '80px' }}>Helicone</th>
@@ -878,8 +878,8 @@ function ROICalculator() {
     <section style={{ padding: '120px 0', background: 'var(--surface-0)', borderTop: '1px solid var(--border-subtle)', borderBottom: '1px solid var(--border-subtle)' }}>
       <div className="l-container">
         <div style={{ textAlign: 'center', marginBottom: '64px' }}>
-          <div className="mono" style={{ fontSize: '11px', color: '#22c55e', letterSpacing: '0.1em', marginBottom: '16px' }}>04 · ROI CALCULATOR</div>
-          <h2 className="serif" style={{ fontSize: 'var(--type-display)', color: 'white', lineHeight: 1.1 }}>
+          <div className="mono" style={{ fontSize: '11px', color: 'var(--green)', letterSpacing: '0.1em', marginBottom: '16px' }}>04 · ROI CALCULATOR</div>
+          <h2 className="serif" style={{ fontSize: 'var(--type-display)', color: 'var(--white)', lineHeight: 1.1 }}>
             Calculate what you're losing<br/>
             <span style={{ color: 'var(--white-35)' }}>without visibility.</span>
           </h2>
@@ -893,7 +893,7 @@ function ROICalculator() {
                 style={{ width: '100%', height: '4px', background: 'var(--surface-3)', borderRadius: '2px', outline: 'none', appearance: 'none', WebkitAppearance: 'none', cursor: 'pointer' }} />
               <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '12px' }}>
                 <span className="mono" style={{ fontSize: '11px', color: 'var(--white-35)' }}>1</span>
-                <span className="mono" style={{ fontSize: '32px', fontWeight: 700, color: 'white' }}>{agents}</span>
+                <span className="mono" style={{ fontSize: '32px', fontWeight: 700, color: 'var(--white)' }}>{agents}</span>
                 <span className="mono" style={{ fontSize: '11px', color: 'var(--white-35)' }}>100</span>
               </div>
             </div>
@@ -903,7 +903,7 @@ function ROICalculator() {
                 style={{ width: '100%', height: '4px', background: 'var(--surface-3)', borderRadius: '2px', outline: 'none', appearance: 'none', WebkitAppearance: 'none', cursor: 'pointer' }} />
               <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '12px' }}>
                 <span className="mono" style={{ fontSize: '11px', color: 'var(--white-35)' }}>$5K</span>
-                <span className="mono" style={{ fontSize: '32px', fontWeight: 700, color: 'white' }}>${(spend / 1000).toFixed(0)}K</span>
+                <span className="mono" style={{ fontSize: '32px', fontWeight: 700, color: 'var(--white)' }}>${(spend / 1000).toFixed(0)}K</span>
                 <span className="mono" style={{ fontSize: '11px', color: 'var(--white-35)' }}>$500K</span>
               </div>
             </div>
@@ -912,9 +912,9 @@ function ROICalculator() {
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px' }} className="stats-grid" >
             {[
               { label: 'MONTHLY WASTE', value: `$${(wasted/1000).toFixed(1)}K`, sub: `${(wastedPct*100).toFixed(0)}% of spend`, color: '#ef4444', bg: 'var(--negative-soft)' },
-              { label: 'ANNUAL SAVINGS', value: `$${(annual/1000).toFixed(0)}K`, sub: 'recovered with layeroi', color: '#22c55e', bg: 'var(--green-soft)' },
-              { label: 'LAYEROI COST', value: `$${plan.toLocaleString()}`, sub: `/month · ${agents <= 5 ? 'Starter' : agents <= 30 ? 'Business' : 'Enterprise'}`, color: 'white', bg: 'rgba(255,255,255,0.02)' },
-              { label: 'PAYBACK PERIOD', value: `${payback} days`, sub: `net savings: $${(netSavings/1000).toFixed(0)}K/yr`, color: '#22c55e', bg: 'var(--green-soft)' },
+              { label: 'ANNUAL SAVINGS', value: `$${(annual/1000).toFixed(0)}K`, sub: 'recovered with layeroi', color: 'var(--green)', bg: 'var(--green-soft)' },
+              { label: 'LAYEROI COST', value: `$${plan.toLocaleString()}`, sub: `/month · ${agents <= 5 ? 'Starter' : agents <= 30 ? 'Business' : 'Enterprise'}`, color: 'var(--white)', bg: 'rgba(255,255,255,0.02)' },
+              { label: 'PAYBACK PERIOD', value: `${payback} days`, sub: `net savings: $${(netSavings/1000).toFixed(0)}K/yr`, color: 'var(--green)', bg: 'var(--green-soft)' },
             ].map(s => (
               <div key={s.label} style={{ background: s.bg, border: '1px solid var(--border-subtle)', borderRadius: '10px', padding: '20px' }}>
                 <div className="mono" style={{ fontSize: '9px', color: 'var(--white-35)', letterSpacing: '0.08em', marginBottom: '10px' }}>{s.label}</div>
@@ -944,8 +944,8 @@ function Testimonials() {
     <section style={{ padding: '120px 0' }}>
       <div className="l-container">
         <div style={{ textAlign: 'center', marginBottom: '64px' }}>
-          <div className="mono" style={{ fontSize: '11px', color: '#22c55e', letterSpacing: '0.1em', marginBottom: '16px' }}>05 · WHY IT MATTERS</div>
-          <h2 className="serif" style={{ fontSize: 'var(--type-display)', color: 'white', lineHeight: 1.1 }}>
+          <div className="mono" style={{ fontSize: '11px', color: 'var(--green)', letterSpacing: '0.1em', marginBottom: '16px' }}>05 · WHY IT MATTERS</div>
+          <h2 className="serif" style={{ fontSize: 'var(--type-display)', color: 'var(--white)', lineHeight: 1.1 }}>
             The data speaks<br/>
             <span style={{ color: 'var(--white-35)' }}>for itself.</span>
           </h2>
@@ -976,12 +976,12 @@ function Testimonials() {
               display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
             }}>
               <div>
-                <div className="mono" style={{ fontSize: '28px', fontWeight: 700, color: '#22c55e', marginBottom: '4px' }}>{t.metric}</div>
+                <div className="mono" style={{ fontSize: '28px', fontWeight: 700, color: 'var(--green)', marginBottom: '4px' }}>{t.metric}</div>
                 <div className="mono" style={{ fontSize: '10px', color: 'var(--white-35)', letterSpacing: '0.06em', marginBottom: '20px' }}>{t.metricLabel}</div>
                 <p style={{ fontSize: '14px', color: 'var(--white-70)', lineHeight: 1.6, marginBottom: '24px' }}>{t.insight}</p>
               </div>
               <div style={{ borderTop: '1px solid var(--border-subtle)', paddingTop: '16px' }}>
-                <div className="mono" style={{ fontSize: '10px', color: '#22c55e', letterSpacing: '0.08em', fontWeight: 500 }}>{t.tag}</div>
+                <div className="mono" style={{ fontSize: '10px', color: 'var(--green)', letterSpacing: '0.08em', fontWeight: 500 }}>{t.tag}</div>
               </div>
             </div>
           ))}
@@ -1000,7 +1000,7 @@ function Testimonials() {
             { value: '11 days', label: 'Avg payback period' },
           ].map(s => (
             <div key={s.label} style={{ textAlign: 'center', padding: '16px' }}>
-              <div className="mono" style={{ fontSize: '24px', fontWeight: 700, color: 'white', marginBottom: '4px' }}>{s.value}</div>
+              <div className="mono" style={{ fontSize: '24px', fontWeight: 700, color: 'var(--white)', marginBottom: '4px' }}>{s.value}</div>
               <div style={{ fontSize: '12px', color: 'var(--white-50)' }}>{s.label}</div>
             </div>
           ))}
@@ -1038,8 +1038,8 @@ function Pricing() {
     <section id="pricing" style={{ padding: '120px 0', background: 'var(--surface-0)', borderTop: '1px solid var(--border-subtle)', borderBottom: '1px solid var(--border-subtle)' }}>
       <div className="l-container">
         <div style={{ textAlign: 'center', marginBottom: '64px' }}>
-          <div className="mono" style={{ fontSize: '11px', color: '#22c55e', letterSpacing: '0.1em', marginBottom: '16px' }}>06 · PRICING</div>
-          <h2 className="serif" style={{ fontSize: 'var(--type-display)', color: 'white', lineHeight: 1.1 }}>
+          <div className="mono" style={{ fontSize: '11px', color: 'var(--green)', letterSpacing: '0.1em', marginBottom: '16px' }}>06 · PRICING</div>
+          <h2 className="serif" style={{ fontSize: 'var(--type-display)', color: 'var(--white)', lineHeight: 1.1 }}>
             Priced so it pays for itself<br/>
             <span style={{ color: 'var(--white-35)' }}>before the first invoice.</span>
           </h2>
@@ -1062,16 +1062,16 @@ function Pricing() {
                   padding: '4px 12px', borderRadius: '100px', letterSpacing: '0.08em',
                 }}>MOST POPULAR</div>
               )}
-              <div style={{ fontSize: '16px', fontWeight: 600, color: 'white', marginBottom: '8px' }}>{p.name}</div>
+              <div style={{ fontSize: '16px', fontWeight: 600, color: 'var(--white)', marginBottom: '8px' }}>{p.name}</div>
               <div style={{ display: 'flex', alignItems: 'baseline', marginBottom: '4px' }}>
-                <span className="mono" style={{ fontSize: '40px', fontWeight: 700, color: 'white', letterSpacing: '-0.03em' }}>{p.price}</span>
+                <span className="mono" style={{ fontSize: '40px', fontWeight: 700, color: 'var(--white)', letterSpacing: '-0.03em' }}>{p.price}</span>
                 <span style={{ fontSize: '14px', color: 'var(--white-50)', marginLeft: '4px' }}>{p.period}</span>
               </div>
-              <div className="mono" style={{ fontSize: '11px', color: '#22c55e', letterSpacing: '0.06em', marginBottom: '24px', fontWeight: 500 }}>{p.limit}</div>
+              <div className="mono" style={{ fontSize: '11px', color: 'var(--green)', letterSpacing: '0.06em', marginBottom: '24px', fontWeight: 500 }}>{p.limit}</div>
               <ul style={{ listStyle: 'none', marginBottom: '28px' }}>
                 {p.features.map(f => (
                   <li key={f} style={{ fontSize: '13.5px', color: 'var(--white-70)', padding: '6px 0', display: 'flex', gap: '10px', alignItems: 'flex-start' }}>
-                    <span style={{ color: '#22c55e', flexShrink: 0, marginTop: '2px' }}>→</span>{f}
+                    <span style={{ color: 'var(--green)', flexShrink: 0, marginTop: '2px' }}>→</span>{f}
                   </li>
                 ))}
               </ul>
@@ -1111,8 +1111,8 @@ function FAQ() {
   return (
     <section style={{ padding: '120px 0' }}>
       <div className="l-container-narrow">
-        <div className="mono" style={{ fontSize: '11px', color: '#22c55e', letterSpacing: '0.1em', marginBottom: '16px' }}>07 · QUESTIONS</div>
-        <h2 className="serif" style={{ fontSize: 'var(--type-display)', color: 'white', lineHeight: 1.1, marginBottom: '48px' }}>
+        <div className="mono" style={{ fontSize: '11px', color: 'var(--green)', letterSpacing: '0.1em', marginBottom: '16px' }}>07 · QUESTIONS</div>
+        <h2 className="serif" style={{ fontSize: 'var(--type-display)', color: 'var(--white)', lineHeight: 1.1, marginBottom: '48px' }}>
           Things we get asked,<br/>
           <span style={{ color: 'var(--white-35)' }}>answered directly.</span>
         </h2>
@@ -1131,7 +1131,7 @@ function FAQItem({ q, a }) {
         display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '24px',
         background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left',
       }}>
-        <span style={{ fontSize: '17px', fontWeight: 500, color: 'white', letterSpacing: '-0.01em' }}>{q}</span>
+        <span style={{ fontSize: '17px', fontWeight: 500, color: 'var(--white)', letterSpacing: '-0.01em' }}>{q}</span>
         <span className="mono" style={{
           fontSize: '18px', color: open ? '#22c55e' : 'var(--white-35)',
           transition: 'transform 300ms var(--ease-spring)',
@@ -1166,9 +1166,9 @@ function ClosingCTA() {
         pointerEvents: 'none',
       }}/>
       <div className="l-container-narrow" style={{ textAlign: 'center', position: 'relative' }}>
-        <h2 className="serif" style={{ fontSize: 'var(--type-display-lg)', color: 'white', lineHeight: 1.05, marginBottom: '24px' }}>
+        <h2 className="serif" style={{ fontSize: 'var(--type-display-lg)', color: 'var(--white)', lineHeight: 1.05, marginBottom: '24px' }}>
           Your AI agents are<br/>spending money.<br/>
-          <span style={{ color: '#22c55e' }}>Know what they're earning.</span>
+          <span style={{ color: 'var(--green)' }}>Know what they're earning.</span>
         </h2>
         <p style={{ fontSize: 'var(--type-body-lg)', color: 'var(--white-50)', marginBottom: '40px', maxWidth: '520px', margin: '0 auto 40px' }}>
           Free for up to 2 agents. 15 minutes to connect. See your first P&L before your next standup.
@@ -1199,7 +1199,7 @@ function Footer() {
                 <rect x="10.5" y="10" width="3" height="8" rx="1" fill="white" opacity="0.75"/>
                 <rect x="16" y="5" width="3" height="13" rx="1" fill="white" opacity="0.9"/>
               </svg>
-              <span style={{ fontWeight: 600, color: 'white' }}>layer<span style={{ color: '#22c55e' }}>oi</span></span>
+              <span style={{ fontWeight: 600, color: 'var(--white)' }}>layer<span style={{ color: 'var(--green)' }}>oi</span></span>
             </div>
             <p style={{ fontSize: '13px', color: 'var(--white-50)', lineHeight: 1.6, maxWidth: '280px' }}>
               The financial control layer for AI agents. Built for the CFO.

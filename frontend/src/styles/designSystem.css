@@ -83,6 +83,50 @@
   --glow-green: 0 0 0 1px var(--green-border), 0 0 40px rgba(34,197,94,0.15);
 }
 
+/* ═══ LIGHT THEME OVERRIDES ═══ */
+:root[data-theme='light'] {
+  /* Canvas — inverted for light */
+  --black: #fafafa;
+  --surface-0: #ffffff;
+  --surface-1: #f8f8f8;
+  --surface-2: #f0f0f0;
+  --surface-3: #e8e8e8;
+
+  /* Borders — dark borders on light bg */
+  --border-subtle: rgba(0,0,0,0.05);
+  --border-default: rgba(0,0,0,0.10);
+  --border-strong: rgba(0,0,0,0.18);
+  --border-focus: rgba(22,163,74,0.4);
+
+  /* Brand — slightly darker green for light bg */
+  --green: #16a34a;
+  --green-bright: #15803d;
+  --green-soft: rgba(22,163,74,0.08);
+  --green-border: rgba(22,163,74,0.22);
+
+  /* Text — dark text on light bg (using same variable names) */
+  --white: #0a0a0a;
+  --white-90: rgba(10,10,10,0.92);
+  --white-70: rgba(10,10,10,0.75);
+  --white-50: rgba(10,10,10,0.55);
+  --white-35: rgba(10,10,10,0.40);
+  --white-20: rgba(10,10,10,0.20);
+
+  /* Data colours — same hues, adjusted for light bg */
+  --positive: #16a34a;
+  --negative: #dc2626;
+  --negative-soft: rgba(220,38,38,0.08);
+  --warning: #d97706;
+  --warning-soft: rgba(217,119,6,0.08);
+  --info: #2563eb;
+
+  /* Effects — light-appropriate shadows */
+  --shadow-card: 0 1px 3px rgba(0,0,0,0.06), 0 0 0 1px var(--border-subtle);
+  --shadow-card-hover: 0 4px 12px rgba(0,0,0,0.08), 0 0 0 1px var(--border-default);
+  --shadow-raised: 0 0 0 1px var(--border-subtle), 0 12px 40px rgba(0,0,0,0.12);
+  --glow-green: 0 0 0 1px var(--green-border), 0 0 30px rgba(22,163,74,0.1);
+}
+
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
 html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
